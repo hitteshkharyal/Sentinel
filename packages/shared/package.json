@@ -1,0 +1,19 @@
+{
+  "name": "@sentinel/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --project tsconfig.json",
+    "dev": "node ../../node_modules/typescript/bin/tsc --project tsconfig.json --watch",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@sentinel/types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "rimraf": "^5.0.5"
+  }
+}
