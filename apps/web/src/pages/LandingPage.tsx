@@ -1,54 +1,38 @@
-// ─────────────────────────────────────────────
-// SENTINEL Web — Landing Page (Shell)
-// ─────────────────────────────────────────────
-// This is a minimal placeholder for Day 1.
-// The full landing page design will be implemented in Day 2.
+import React from 'react';
+import { LandingNavbar } from '../components/landing/LandingNavbar';
+import { LandingHero } from '../components/landing/LandingHero';
+import { PipelineFlow } from '../components/landing/PipelineFlow';
+import { IndustryShowcase } from '../components/landing/IndustryShowcase';
+import { PrivacyComparison } from '../components/landing/PrivacyComparison';
+import { InteractiveDemo } from '../components/landing/InteractiveDemo';
+import { LandingFooter } from '../components/landing/LandingFooter';
 
-import { Shield } from 'lucide-react';
-
-export function LandingPage() {
+export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col items-center justify-center px-6">
-      {/* ── Logo ── */}
-      <div className="flex items-center gap-3 mb-8 animate-fade-in">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sentinel-500 to-sentinel-700 flex items-center justify-center shadow-lg shadow-sentinel-500/25">
-          <Shield className="w-8 h-8 text-white" />
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight text-sentinel-950">
-          SENTINEL
-        </h1>
-      </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-sentinel-500 selection:text-white">
+      {/* ── Fixed Top Navigation ── */}
+      <LandingNavbar />
 
-      {/* ── Tagline ── */}
-      <p className="text-xl text-sentinel-600 font-medium mb-4 animate-slide-up">
-        Sense. Understand. Act.
-      </p>
-      <p className="text-base text-slate-500 max-w-lg text-center mb-12 animate-slide-up">
-        Privacy-preserving autonomous intelligence for physical spaces.
-      </p>
+      {/* ── Main Landing Experience ── */}
+      <main>
+        {/* 1. Hero with Live Radar Simulation HUD & Metrics */}
+        <LandingHero />
 
-      {/* ── Status Card ── */}
-      <div className="glass rounded-2xl p-8 max-w-md w-full shadow-xl shadow-slate-200/50 animate-slide-up">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse-subtle" />
-          <span className="text-sm font-medium text-emerald-600">
-            System Initializing
-          </span>
-        </div>
-        <h2 className="text-lg font-semibold text-slate-800 mb-2">
-          Day 1 — Architecture Complete
-        </h2>
-        <p className="text-sm text-slate-500 leading-relaxed">
-          Monorepo structure, TypeScript configuration, shared packages, API
-          shell, and frontend shell are ready. Full landing page and UI system
-          will be implemented in Day 2.
-        </p>
-      </div>
+        {/* 2. Sense → Understand → Decide → Act Pipeline & Triple Outcomes */}
+        <PipelineFlow />
 
-      {/* ── Footer ── */}
-      <p className="mt-12 text-xs text-slate-400">
-        SENTINEL v0.1.0 · Privacy-Preserving IoT Automation
-      </p>
+        {/* 3. Multi-Industry Showcase across all 8 sectors */}
+        <IndustryShowcase />
+
+        {/* 4. The Privacy Paradigm: Why Non-Optical Radar Trumps CCTV */}
+        <PrivacyComparison />
+
+        {/* 5. Live Interactive Sandbox Testbed */}
+        <InteractiveDemo />
+      </main>
+
+      {/* ── Footer & Compliance Credits ── */}
+      <LandingFooter />
     </div>
   );
-}
+};

@@ -2,9 +2,15 @@
 // SENTINEL Web — Root Application Component
 // ─────────────────────────────────────────────
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LandingPage } from './pages/LandingPage';
+import { DashboardOverviewPage } from './pages/DashboardOverviewPage';
+import { AppShell } from './components/layout/AppShell';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './components/ui/Card';
+import { Badge } from './components/ui/Badge';
+import { Construction } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,13 +22,109 @@ const queryClient = new QueryClient({
   },
 });
 
+// Clean placeholder component for upcoming phased routes
+const PlaceholderRoute: React.FC<{ title: string; day: string; description: string }> = ({
+  title,
+  day,
+  description,
+}) => (
+  <Card variant="default" className="py-12 text-center max-w-xl mx-auto my-8">
+    <CardHeader>
+      <div className="w-12 h-12 rounded-2xl bg-sentinel-50 text-sentinel-600 flex items-center justify-center mx-auto mb-3">
+        <Construction className="w-6 h-6" />
+      </div>
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <Badge variant="primary" size="sm">
+          {day}
+        </Badge>
+        <span className="text-xs text-slate-400">Scheduled Implementation</span>
+      </div>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription className="max-w-md mx-auto">{description}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-xs text-slate-500">
+        The application shell, navigation routing, and design system tokens are ready.
+      </p>
+    </CardContent>
+  </Card>
+);
+
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* Public High-Impact Landing Page */}
           <Route path="/" element={<LandingPage />} />
-          {/* Additional routes will be added in subsequent phases */}
+
+          {/* Authenticated / Enterprise Platform Shell */}
+          <Route element={<AppShell />}>
+            <Route path="/dashboard" element={<DashboardOverviewPage />} />
+            <Route
+              path="/facilities"
+              element={
+                <PlaceholderRoute
+                  title="Facilities, Floors & Rooms"
+                  day="Day 5"
+                  description="Multi-facility hierarchy, interactive digital twins, and room occupancy maps."
+                />
+              }
+            />
+            <Route
+              path="/sensors"
+              element={
+                <PlaceholderRoute
+                  title="Sensor Catalog & Configuration"
+                  day="Day 6"
+                  description="Sensor catalog, threshold configurations, calibration, and hardware telemetry parameters."
+                />
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <PlaceholderRoute
+                  title="Sensor Fusion & Event Engine"
+                  day="Day 9"
+                  description="Multi-sensor temporal fusion, posture transition state machines, and spatial event stream."
+                />
+              }
+            />
+            <Route
+              path="/automations"
+              element={
+                <PlaceholderRoute
+                  title="Autonomous Policy Engine"
+                  day="Day 10"
+                  description="No-code rule builders, conditional actuators, BACnet/MQTT triggers, and schedule profiles."
+                />
+              }
+            />
+            <Route
+              path="/alerts"
+              element={
+                <PlaceholderRoute
+                  title="Alerts, Escalations & Sound Engine"
+                  day="Day 11"
+                  description="Multi-tier SLA escalation matrices, browser Web Audio beacons, and responsible-person dispatch."
+                />
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <PlaceholderRoute
+                  title="Analytics & ESG Digital Twin"
+                  day="Day 12"
+                  description="Time-series telemetry visualizations, energy setback savings audits, and occupancy distributions."
+                />
+              }
+            />
+          </Route>
+
+          {/* Catch-all Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
