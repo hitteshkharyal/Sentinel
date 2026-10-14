@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Menu,
   Search,
@@ -7,9 +8,11 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ArrowRight,
+  LogOut,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { useAuth } from '../../context/AuthContext';
 
 export interface TopNavProps {
   onOpenMobileSidebar: () => void;
@@ -24,7 +27,18 @@ export const TopNav: React.FC<TopNavProps> = ({
   onOpenSimulator,
   title = 'Operations Center',
 }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const userInitials =
+    user?.displayName
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase() || 'OP';
 
   // Active platform alerts from Prompt #38
   const alerts = [
@@ -188,12 +202,53 @@ export const TopNav: React.FC<TopNavProps> = ({
           )}
         </div>
 
-        {/* ── Profile Chip ── */}
-        <div className="flex items-center gap-2 pl-1 border-l border-slate-200/80">
-          <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-            AV
-          </div>
-          <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400" />
+        {/* ── Profile Chip & Menu ── */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="flex items-center gap-2 pl-1 border-l border-slate-200/80 hover:opacity-85 transition-opacity focus:outline-none"
+            aria-label="User profile menu"
+          >
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.displayName}
+                className="w-8 h-8 rounded-xl object-cover shadow-xs border border-slate-200"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                {userInitials}
+              </div>
+            )}
+            <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400" />
+          </button>
+
+          {userMenuOpen && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={() => setUserMenuOpen(false)} />
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2 z-40 animate-slide-up">
+                <div className="px-3 py-2 border-b border-slate-100">
+                  <p className="text-xs font-bold text-slate-900 truncate">
+                    {user?.displayName || 'Operator'}
+                  </p>
+                  <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setUserMenuOpen(false);
+                    await logout();
+                    navigate('/login');
+                  }}
+                  className="w-full mt-1.5 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>

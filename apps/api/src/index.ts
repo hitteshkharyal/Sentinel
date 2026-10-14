@@ -4,11 +4,11 @@
 
 import { app } from './app.js';
 import { config } from './config.js';
+import { connectDatabase } from './db.js';
 
 async function startServer() {
   try {
-    // MongoDB connection will be added in Day 3+
-    // For Day 1, we start the server without a database connection
+    await connectDatabase();
 
     app.listen(config.port, () => {
       console.warn(`

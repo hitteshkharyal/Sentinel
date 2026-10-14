@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import {
   Shield,
   LayoutDashboard,
@@ -13,8 +13,10 @@ import {
   ChevronRight,
   Lock,
   Building,
+  LogOut,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
+import { useAuth } from '../../context/AuthContext';
 
 export interface SidebarProps {
   isCollapsed: boolean;
@@ -29,6 +31,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mobileOpen = false,
   onCloseMobile,
 }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const userInitials =
+    user?.displayName
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase() || 'OP';
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
   const navItems = [
     {
       to: '/dashboard',
@@ -185,14 +202,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* ── User Footer ── */}
       <div className="p-3 border-t border-slate-100 bg-white">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sentinel-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-            AV
-          </div>
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.displayName}
+              className="w-9 h-9 rounded-xl object-cover shrink-0 shadow-xs border border-slate-200"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sentinel-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              {userInitials}
+            </div>
+          )}
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-slate-800 truncate">Alex Vance</p>
-              <p className="text-[10px] text-slate-400 truncate">Facility Director (Admin)</p>
+              <p className="text-xs font-semibold text-slate-800 truncate">
+                {user?.displayName || 'Facility Operator'}
+              </p>
+              <p className="text-[10px] text-slate-400 truncate">
+                {user?.email || 'Authenticated'}
+              </p>
             </div>
+          )}
+          {!isCollapsed && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           )}
         </div>
       </div>

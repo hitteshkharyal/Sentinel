@@ -11,22 +11,27 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@sentinel/types": "*",
     "@sentinel/shared": "*",
+    "@sentinel/types": "*",
     "@sentinel/validation": "*",
-    "express": "^4.18.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "helmet": "^7.1.0",
     "dotenv": "^16.4.0",
+    "express": "^4.18.0",
+    "google-auth-library": "^11.3.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.2.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.0",
+    "rimraf": "^5.0.5",
     "tsx": "^4.7.0",
-    "typescript": "^5.4.0",
-    "rimraf": "^5.0.5"
+    "typescript": "^5.4.0"
   }
 }

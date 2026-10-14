@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────
 
 import { Router } from 'express';
+import { isDatabaseConnected } from '../db.js';
 
 export const healthRouter = Router();
 
@@ -16,8 +17,8 @@ healthRouter.get('/', (_req, res) => {
       version: '0.1.0',
       services: {
         api: 'running',
-        database: 'not_connected', // Will be updated when MongoDB is configured
-        mqtt: 'not_connected', // Will be updated when MQTT is configured
+        database: isDatabaseConnected() ? 'connected' : 'not_connected',
+        mqtt: 'not_connected', // Will be updated in Day 8
       },
     },
   });
