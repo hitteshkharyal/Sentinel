@@ -3,18 +3,30 @@
 // ─────────────────────────────────────────────
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { User } from '@sentinel/types';
+import type { User, AllowlistEntry, Role, UserStatus } from '@sentinel/types';
+
+export interface AuthError extends Error {
+  code?: string;
+  statusCode?: number;
+}
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
   linkedProviders: string[];
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<{ accountLinked?: boolean }>;
   logout: () => Promise<void>;
+  checkEmailStatus: (email: string) => Promise<{ email: string; status: UserStatus | 'NOT_REQUESTED'; role?: Role }>;
+  getAccessRequests: () => Promise<{ pending: AllowlistEntry[]; approved: AllowlistEntry[]; rejected: AllowlistEntry[] }>;
+  allowlistEmail: (email: string, role: Role, notes?: string) => Promise<AllowlistEntry>;
+  approveAccessRequest: (id: string, role?: Role, notes?: string) => Promise<AllowlistEntry>;
+  rejectAccessRequest: (id: string, notes?: string) => Promise<AllowlistEntry>;
+  revokeAllowlistEntry: (id: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -146,7 +158,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.error?.message || 'Login failed. Please check your credentials.');
+        const error = new Error(json.error?.message || 'Login failed. Please check your credentials.') as AuthError;
+        error.code = json.error?.code;
+        error.statusCode = res.status;
+        throw error;
       }
 
       saveTokens(json.data.token, json.data.refreshToken);
@@ -168,7 +183,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.error?.message || 'Registration failed.');
+        const error = new Error(json.error?.message || 'Registration failed.') as AuthError;
+        error.code = json.error?.code;
+        error.statusCode = res.status;
+        throw error;
       }
 
       saveTokens(json.data.token, json.data.refreshToken);
@@ -190,7 +208,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.error?.message || 'Google authentication failed.');
+        const error = new Error(json.error?.message || 'Google authentication failed.') as AuthError;
+        error.code = json.error?.code;
+        error.statusCode = res.status;
+        throw error;
       }
 
       saveTokens(json.data.token, json.data.refreshToken);
@@ -198,6 +219,96 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { accountLinked: json.data.accountLinked };
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Check email approval status
+  const checkEmailStatus = async (email: string): Promise<{ email: string; status: UserStatus | 'NOT_REQUESTED'; role?: Role }> => {
+    const res = await fetch(`${API_BASE}/auth/check-status?email=${encodeURIComponent(email)}`);
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to check status');
+    }
+    return json.data;
+  };
+
+  // Admin: Get Access Requests
+  const getAccessRequests = async () => {
+    if (!token) throw new Error('Authentication required');
+    const res = await fetch(`${API_BASE}/auth/access-requests`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to fetch access requests');
+    }
+    return json.data;
+  };
+
+  // Admin: Allowlist Email
+  const allowlistEmail = async (email: string, role: Role = 'OPERATOR', notes?: string) => {
+    if (!token) throw new Error('Authentication required');
+    const res = await fetch(`${API_BASE}/auth/allowlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ email, role, notes }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to pre-authorize email');
+    }
+    return json.data;
+  };
+
+  // Admin: Approve Request
+  const approveAccessRequest = async (id: string, role?: Role, notes?: string) => {
+    if (!token) throw new Error('Authentication required');
+    const res = await fetch(`${API_BASE}/auth/access-requests/${id}/approve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ role, notes }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to approve access request');
+    }
+    return json.data;
+  };
+
+  // Admin: Reject Request
+  const rejectAccessRequest = async (id: string, notes?: string) => {
+    if (!token) throw new Error('Authentication required');
+    const res = await fetch(`${API_BASE}/auth/access-requests/${id}/reject`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ notes }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to reject access request');
+    }
+    return json.data;
+  };
+
+  // Admin: Revoke entry
+  const revokeAllowlistEntry = async (id: string) => {
+    if (!token) throw new Error('Authentication required');
+    const res = await fetch(`${API_BASE}/auth/allowlist/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error?.message || 'Failed to revoke entry');
     }
   };
 
@@ -218,6 +329,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearAuth();
   };
 
+  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ORGANIZATION_ADMIN';
+
   return (
     <AuthContext.Provider
       value={{
@@ -225,11 +338,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!user && !!token,
         isLoading,
+        isAdmin,
         linkedProviders,
         login,
         register,
         loginWithGoogle,
         logout,
+        checkEmailStatus,
+        getAccessRequests,
+        allowlistEmail,
+        approveAccessRequest,
+        rejectAccessRequest,
+        revokeAllowlistEntry,
       }}
     >
       {children}

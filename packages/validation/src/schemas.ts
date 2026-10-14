@@ -17,6 +17,37 @@ export const registerSchema = z.object({
   displayName: z.string().min(1, 'Display name is required').max(100),
 });
 
+export const allowlistEmailSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  role: z.enum([
+    'SUPER_ADMIN',
+    'ORGANIZATION_ADMIN',
+    'FACILITY_ADMIN',
+    'MANAGER',
+    'OPERATOR',
+    'SECURITY',
+    'TECHNICIAN',
+    'VIEWER',
+  ]).default('OPERATOR'),
+  notes: z.string().max(500).optional(),
+});
+
+export const reviewAccessRequestSchema = z.object({
+  status: z.enum(['APPROVED', 'REJECTED']),
+  role: z.enum([
+    'SUPER_ADMIN',
+    'ORGANIZATION_ADMIN',
+    'FACILITY_ADMIN',
+    'MANAGER',
+    'OPERATOR',
+    'SECURITY',
+    'TECHNICIAN',
+    'VIEWER',
+  ]).optional(),
+  notes: z.string().max(500).optional(),
+});
+
+
 // ── Organization ──
 
 export const createOrganizationSchema = z.object({

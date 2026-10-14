@@ -37,4 +37,13 @@ export const config = {
   },
 
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+
+  accessControl: {
+    adminEmails: (process.env.ADMIN_EMAILS || 'admin@sentinel.local')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean),
+    requireAdminApproval: process.env.REQUIRE_ADMIN_APPROVAL !== 'false',
+  },
 } as const;
+

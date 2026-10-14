@@ -9,10 +9,12 @@ import {
   ChevronDown,
   ArrowRight,
   LogOut,
+  ShieldAlert,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
+import { AccessApprovalsModal } from '../auth/AccessApprovalsModal';
 
 export interface TopNavProps {
   onOpenMobileSidebar: () => void;
@@ -27,10 +29,12 @@ export const TopNav: React.FC<TopNavProps> = ({
   onOpenSimulator,
   title = 'Operations Center',
 }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [approvalsOpen, setApprovalsOpen] = useState(false);
+
 
   const userInitials =
     user?.displayName
@@ -128,7 +132,27 @@ export const TopNav: React.FC<TopNavProps> = ({
           </Button>
         )}
 
+        {/* ── Admin Access Approvals Modal Trigger ── */}
+        {isAdmin && (
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setApprovalsOpen(true)}
+              leftIcon={<ShieldAlert className="w-3.5 h-3.5 text-amber-600" />}
+              className="hidden md:inline-flex text-xs font-bold border-amber-200/90 bg-amber-50/70 hover:bg-amber-100/80 text-amber-900 shadow-2xs"
+            >
+              Access Approvals
+            </Button>
+            <AccessApprovalsModal
+              isOpen={approvalsOpen}
+              onClose={() => setApprovalsOpen(false)}
+            />
+          </>
+        )}
+
         {/* ── Notification Bell with Flyout ── */}
+
         <div className="relative">
           <button
             type="button"

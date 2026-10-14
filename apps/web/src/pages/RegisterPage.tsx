@@ -45,11 +45,17 @@ export const RegisterPage: React.FC = () => {
       await register(email, password, displayName);
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      setError((err as Error).message);
+      const authErr = err as { message: string; code?: string };
+      if (authErr.code === 'ACCOUNT_PENDING_APPROVAL') {
+        navigate(`/login?pendingApproval=true&email=${encodeURIComponent(email)}`, { replace: true });
+      } else {
+        setError(authErr.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-sentinel-500 selection:text-white radial-grid-bg">
@@ -77,6 +83,14 @@ export const RegisterPage: React.FC = () => {
               {error}
             </Alert>
           )}
+
+          <div className="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
+            <Shield className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>
+              <strong>Hardware Zero-Trust:</strong> Self-registrations require administrator authorization before access to physical sensor automation is activated.
+            </span>
+          </div>
+
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input

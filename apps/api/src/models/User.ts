@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────
 
 import mongoose, { Document, Schema } from 'mongoose';
-import type { User as UserType } from '@sentinel/types';
+import type { User as UserType, UserStatus, Role } from '@sentinel/types';
 
 export interface IUserDocument extends Document {
   email: string;
@@ -11,6 +11,8 @@ export interface IUserDocument extends Document {
   passwordHash?: string;
   avatarUrl?: string;
   emailVerified: boolean;
+  status: UserStatus;
+  role: Role;
   createdAt: Date;
   updatedAt: Date;
   toSafeUser(): UserType;
@@ -44,6 +46,26 @@ const userSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'PENDING_APPROVAL', 'REJECTED', 'SUSPENDED'],
+      default: 'PENDING_APPROVAL',
+      index: true,
+    },
+    role: {
+      type: String,
+      enum: [
+        'SUPER_ADMIN',
+        'ORGANIZATION_ADMIN',
+        'FACILITY_ADMIN',
+        'MANAGER',
+        'OPERATOR',
+        'SECURITY',
+        'TECHNICIAN',
+        'VIEWER',
+      ],
+      default: 'OPERATOR',
+    },
   },
   {
     timestamps: true,
@@ -57,9 +79,12 @@ userSchema.methods.toSafeUser = function (): UserType {
     displayName: this.displayName,
     avatarUrl: this.avatarUrl,
     emailVerified: this.emailVerified,
+    status: this.status || 'ACTIVE',
+    role: this.role || 'OPERATOR',
     createdAt: this.createdAt.toISOString(),
     updatedAt: this.updatedAt.toISOString(),
   };
 };
 
 export const UserModel = mongoose.model<IUserDocument>('User', userSchema);
+

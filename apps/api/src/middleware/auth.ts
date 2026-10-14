@@ -51,3 +51,22 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction): 
 
   next();
 }
+
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  requireAuth(req, res, (err) => {
+    if (err) return next(err);
+    if (!req.user) {
+      return next(new AppError(401, 'Authentication required.'));
+    }
+    if (req.user.role !== 'SUPER_ADMIN' && req.user.role !== 'ORGANIZATION_ADMIN') {
+      return next(
+        new AppError(
+          403,
+          'Access forbidden: Administrator privileges required to manage access controls.'
+        )
+      );
+    }
+    next();
+  });
+}
+

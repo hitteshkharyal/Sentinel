@@ -1,11 +1,16 @@
 // ─────────────────────────────────────────────
-// SENTINEL API — Authentication Routes
+// SENTINEL API — Authentication & Access Control Routes
 // ─────────────────────────────────────────────
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service.js';
-import { requireAuth } from '../middleware/auth.js';
-import { loginSchema, registerSchema } from '@sentinel/validation';
+import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import {
+  loginSchema,
+  registerSchema,
+  allowlistEmailSchema,
+  reviewAccessRequestSchema,
+} from '@sentinel/validation';
 import {
   verifyGoogleCredential,
   getGoogleUserFromCode,
@@ -156,17 +161,57 @@ authRouter.get(
       }
 
       const googleUser = await getGoogleUserFromCode(code);
-      const result = await AuthService.authenticateWithGoogle(googleUser);
 
-      // Redirect back to frontend with tokens in URL parameters for client-side storage
-      const redirectUrl = new URL('/login', config.frontendUrl);
-      redirectUrl.searchParams.set('token', result.token);
-      redirectUrl.searchParams.set('refreshToken', result.refreshToken);
-      if (result.accountLinked) {
-        redirectUrl.searchParams.set('linked', 'true');
+      try {
+        const result = await AuthService.authenticateWithGoogle(googleUser);
+
+        // Redirect back to frontend with tokens in URL parameters for client-side storage
+        const redirectUrl = new URL('/login', config.frontendUrl);
+        redirectUrl.searchParams.set('token', result.token);
+        redirectUrl.searchParams.set('refreshToken', result.refreshToken);
+        if (result.accountLinked) {
+          redirectUrl.searchParams.set('linked', 'true');
+        }
+
+        res.redirect(redirectUrl.toString());
+      } catch (authError) {
+        if (
+          authError instanceof AppError &&
+          authError.code === 'ACCOUNT_PENDING_APPROVAL'
+        ) {
+          const redirectUrl = new URL('/login', config.frontendUrl);
+          redirectUrl.searchParams.set('pendingApproval', 'true');
+          redirectUrl.searchParams.set('email', googleUser.email);
+          res.redirect(redirectUrl.toString());
+          return;
+        }
+        throw authError;
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * GET /api/v1/auth/check-status
+ * Check approval status of an email (public)
+ */
+authRouter.get(
+  '/check-status',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email = req.query.email as string;
+      if (!email) {
+        throw new AppError(400, 'email query parameter is required.');
       }
 
-      res.redirect(redirectUrl.toString());
+      const status = await AuthService.checkEmailStatus(email);
+
+      res.json({
+        success: true,
+        data: status,
+      });
     } catch (error) {
       next(error);
     }
@@ -242,6 +287,156 @@ authRouter.get(
       };
 
       res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// ─────────────────────────────────────────────
+// ADMIN ACCESS CONTROL ENDPOINTS
+// ─────────────────────────────────────────────
+
+/**
+ * GET /api/v1/auth/access-requests
+ * Admin: List pending requests and approved allowlist
+ */
+authRouter.get(
+  '/access-requests',
+  requireAdmin,
+  async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const list = await AuthService.getAccessRequests();
+      res.json({
+        success: true,
+        data: list,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /api/v1/auth/allowlist
+ * Admin: Pre-authorize / whitelist an email
+ */
+authRouter.post(
+  '/allowlist',
+  requireAdmin,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const validation = allowlistEmailSchema.safeParse(req.body);
+      if (!validation.success) {
+        throw new AppError(
+          400,
+          validation.error.errors.map((e) => e.message).join(', ')
+        );
+      }
+
+      const { email, role, notes } = validation.data;
+      const entry = await AuthService.addToAllowlist(
+        email,
+        role,
+        notes,
+        req.user?.userId
+      );
+
+      res.status(201).json({
+        success: true,
+        data: entry,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /api/v1/auth/access-requests/:id/approve
+ * Admin: Approve a pending access request
+ */
+authRouter.post(
+  '/access-requests/:id/approve',
+  requireAdmin,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = req.params.id;
+      if (!id) {
+        throw new AppError(400, 'Request ID is required.');
+      }
+      const validation = reviewAccessRequestSchema.safeParse(req.body);
+      const role = validation.success ? validation.data.role : undefined;
+      const notes = validation.success ? validation.data.notes : undefined;
+
+      const updated = await AuthService.approveAccessRequest(
+        id,
+        role,
+        notes,
+        req.user?.userId
+      );
+
+      res.json({
+        success: true,
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /api/v1/auth/access-requests/:id/reject
+ * Admin: Reject a pending access request
+ */
+authRouter.post(
+  '/access-requests/:id/reject',
+  requireAdmin,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = req.params.id;
+      if (!id) {
+        throw new AppError(400, 'Request ID is required.');
+      }
+      const { notes } = req.body;
+
+      const updated = await AuthService.rejectAccessRequest(
+        id,
+        notes,
+        req.user?.userId
+      );
+
+      res.json({
+        success: true,
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * DELETE /api/v1/auth/allowlist/:id
+ * Admin: Revoke allowlist entry
+ */
+authRouter.delete(
+  '/allowlist/:id',
+  requireAdmin,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = req.params.id;
+      if (!id) {
+        throw new AppError(400, 'Entry ID is required.');
+      }
+      await AuthService.revokeAllowlistEntry(id);
+
+      res.json({
+        success: true,
+        data: { message: 'Access revoked successfully.' },
+      });
+
     } catch (error) {
       next(error);
     }
