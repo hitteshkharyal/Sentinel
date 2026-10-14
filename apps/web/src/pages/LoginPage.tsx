@@ -41,8 +41,9 @@ declare global {
 }
 
 export const LoginPage: React.FC = () => {
-  const { login, register, loginWithGoogle, isAuthenticated, checkEmailStatus } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, checkEmailStatus } = useAuth();
   const navigate = useNavigate();
+
 
   const location = useLocation();
 
@@ -175,21 +176,17 @@ export const LoginPage: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
+      setEmail('admin@sentinel.local');
+      setPassword('SentinelAdmin2026!');
       await login('admin@sentinel.local', 'SentinelAdmin2026!');
       navigate(from, { replace: true });
-    } catch {
-      // If admin account doesn't exist yet, try registering as bootstrap admin
-      try {
-        await register('admin@sentinel.local', 'SentinelAdmin2026!', 'Lead System Director');
-        navigate(from, { replace: true });
-      } catch (regErr) {
-        setError((regErr as Error).message);
-      }
-
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   // Check approval status for pending user
   const handleCheckStatus = async () => {
@@ -355,7 +352,20 @@ export const LoginPage: React.FC = () => {
                 >
                   <span className="mr-2">⚡</span> Quick Demo Login (System Admin)
                 </Button>
+
+                <div
+                  onClick={() => {
+                    setEmail('admin@sentinel.local');
+                    setPassword('SentinelAdmin2026!');
+                  }}
+                  className="text-[11px] text-slate-500 text-center font-mono bg-slate-100/80 hover:bg-slate-200/60 transition-colors py-1.5 px-2 rounded-lg border border-slate-200/60 cursor-pointer select-all"
+                  title="Click to autofill form fields"
+                >
+                  <span className="text-slate-400 font-sans mr-1">Credentials:</span>
+                  <strong>admin@sentinel.local</strong> · <strong>SentinelAdmin2026!</strong>
+                </div>
               </div>
+
 
               {/* ── 2. Divider ── */}
               <div className="relative my-6">
