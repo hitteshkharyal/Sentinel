@@ -37,9 +37,14 @@ export type Role =
   | 'VIEWER';
 
 export type Permission =
+  | 'organization.create'
   | 'organization.read'
   | 'organization.update'
   | 'organization.delete'
+  | 'member.create'
+  | 'member.read'
+  | 'member.update'
+  | 'member.delete'
   | 'facility.create'
   | 'facility.read'
   | 'facility.update'
@@ -75,3 +80,48 @@ export interface Membership {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface OrganizationMember {
+  id: string;
+  userId: string;
+  organizationId: string;
+  role: Role;
+  facilityIds?: string[];
+  user: {
+    id: string;
+    email: string;
+    displayName: string;
+    avatarUrl?: string;
+    status: string;
+  };
+  createdAt: string;
+  invitedBy?: string;
+}
+
+export interface OrganizationWithRole extends Organization {
+  userRole: Role;
+  facilityCount?: number;
+  deviceCount?: number;
+  memberCount?: number;
+}
+
+export interface CreateOrganizationDTO {
+  name: string;
+  industry: IndustryType;
+  description?: string;
+  contactEmail?: string;
+}
+
+export interface UpdateOrganizationDTO {
+  name?: string;
+  industry?: IndustryType;
+  description?: string;
+  contactEmail?: string;
+}
+
+export interface InviteMemberDTO {
+  email: string;
+  role: Role;
+  facilityIds?: string[];
+}
+

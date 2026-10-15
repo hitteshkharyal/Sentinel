@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import { config } from './config.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
+import { organizationRouter } from './routes/organizations.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
@@ -28,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 // ── Routes ──
 app.use('/api/v1/health', healthRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/organizations', organizationRouter);
+
 
 // ── Placeholder route stubs (will be implemented in later phases) ──
 app.get('/api/v1', (_req, res) => {

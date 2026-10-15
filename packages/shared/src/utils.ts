@@ -3,15 +3,32 @@
 // ─────────────────────────────────────────────
 
 import type { Permission, Role } from '@sentinel/types';
-import { ROLE_PERMISSIONS } from './constants.js';
+import { ROLE_PERMISSIONS, ROLE_HIERARCHY } from './constants.js';
 
 /**
  * Check if a role has a specific permission.
  */
 export function hasPermission(role: Role, permission: Permission): boolean {
+  if (role === 'SUPER_ADMIN') return true;
   const perms = ROLE_PERMISSIONS[role];
-  return perms.includes(permission);
+  return perms ? perms.includes(permission) : false;
 }
+
+export function hasAnyPermission(role: Role, permissions: Permission[]): boolean {
+  if (role === 'SUPER_ADMIN') return true;
+  return permissions.some((p) => hasPermission(role, p));
+}
+
+export function hasAllPermissions(role: Role, permissions: Permission[]): boolean {
+  if (role === 'SUPER_ADMIN') return true;
+  return permissions.every((p) => hasPermission(role, p));
+}
+
+export function canManageRole(actorRole: Role, targetRole: Role): boolean {
+  if (actorRole === 'SUPER_ADMIN') return true;
+  return ROLE_HIERARCHY[actorRole] > ROLE_HIERARCHY[targetRole];
+}
+
 
 /**
  * Build an MQTT topic string from a template and parameters.

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import {
   Shield,
@@ -14,9 +14,14 @@ import {
   Lock,
   Building,
   LogOut,
+  Users,
+  ChevronDown,
+  Plus,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { useAuth } from '../../context/AuthContext';
+import { useOrganization } from '../../context/OrganizationContext';
+import { CreateOrganizationModal } from '../organization/CreateOrganizationModal';
 
 export interface SidebarProps {
   isCollapsed: boolean;
@@ -32,6 +37,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const { user, logout } = useAuth();
+  const { currentOrganization, userOrganizations, switchOrganization } = useOrganization();
+  const [orgPickerOpen, setOrgPickerOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const userInitials =
@@ -46,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     await logout();
     navigate('/login');
   };
+
   const navItems = [
     {
       to: '/dashboard',
@@ -53,6 +62,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <LayoutDashboard className="w-5 h-5 shrink-0" />,
       badge: 'Live',
       badgeVariant: 'success' as const,
+    },
+    {
+      to: '/organizations',
+      label: 'Organizations & Team',
+      icon: <Users className="w-5 h-5 shrink-0" />,
     },
     {
       to: '/facilities',
@@ -125,7 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* ── Organization Scope Switcher ── */}
       {!isCollapsed && (
-        <div className="p-3 border-b border-slate-100 bg-slate-50/60">
+        <div className="p-3 border-b border-slate-100 bg-slate-50/60 relative">
           <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
             <span className="font-medium uppercase tracking-wider text-[10px]">Active Scope</span>
             <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -133,15 +147,74 @@ export const Sidebar: React.FC<SidebarProps> = ({
               Connected
             </span>
           </div>
-          <div className="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200/70 shadow-2xs">
-            <div className="w-6 h-6 rounded bg-sentinel-100 text-sentinel-700 flex items-center justify-center shrink-0">
-              <Building className="w-3.5 h-3.5" />
+
+          <button
+            type="button"
+            onClick={() => setOrgPickerOpen(!orgPickerOpen)}
+            className="w-full flex items-center justify-between gap-2 p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs hover:border-sentinel-400 transition-colors text-left"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-sentinel-100 text-sentinel-700 flex items-center justify-center shrink-0">
+                <Building className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-slate-900 truncate">
+                  {currentOrganization?.name || 'Select Organization'}
+                </p>
+                <p className="text-[10px] text-slate-400 truncate uppercase font-medium">
+                  {currentOrganization?.industry || 'Tenant'} · {currentOrganization?.userRole || 'Viewer'}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-slate-800 truncate">Metropolitan District</p>
-              <p className="text-[10px] text-slate-400 truncate">12 Facilities · 421 Sensors</p>
-            </div>
-          </div>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          </button>
+
+          {/* Org Picker Dropdown */}
+          {orgPickerOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-30"
+                onClick={() => setOrgPickerOpen(false)}
+              />
+              <div className="absolute left-3 right-3 top-full mt-1 bg-white rounded-xl shadow-xl border border-slate-200 p-1.5 z-40 max-h-52 overflow-y-auto divide-y divide-slate-100 animate-slide-up">
+                <div className="py-1">
+                  {userOrganizations.map((org) => (
+                    <button
+                      key={org.id}
+                      type="button"
+                      onClick={() => {
+                        switchOrganization(org.id);
+                        setOrgPickerOpen(false);
+                      }}
+                      className={`w-full text-left p-2 rounded-lg flex items-center justify-between gap-2 text-xs transition-colors ${
+                        org.id === currentOrganization?.id
+                          ? 'bg-sentinel-50 text-sentinel-900 font-bold'
+                          : 'hover:bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      <span className="truncate">{org.name}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold shrink-0">
+                        {org.userRole}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <div className="pt-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOrgPickerOpen(false);
+                      setCreateModalOpen(true);
+                    }}
+                    className="w-full text-left p-2 rounded-lg text-xs font-semibold text-sentinel-600 hover:bg-sentinel-50 flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>New Organization</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -256,6 +329,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
       )}
+
+      {/* Create Organization Modal */}
+      <CreateOrganizationModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+      />
     </>
   );
 };

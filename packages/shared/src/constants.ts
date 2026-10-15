@@ -10,9 +10,14 @@ import type { Role, Permission } from '@sentinel/types';
  */
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   SUPER_ADMIN: [
+    'organization.create',
     'organization.read',
     'organization.update',
     'organization.delete',
+    'member.create',
+    'member.read',
+    'member.update',
+    'member.delete',
     'facility.create',
     'facility.read',
     'facility.update',
@@ -42,6 +47,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ORGANIZATION_ADMIN: [
     'organization.read',
     'organization.update',
+    'member.create',
+    'member.read',
+    'member.update',
+    'member.delete',
     'facility.create',
     'facility.read',
     'facility.update',
@@ -70,8 +79,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ],
   FACILITY_ADMIN: [
     'organization.read',
+    'member.read',
     'facility.read',
     'facility.update',
+
     'room.create',
     'room.read',
     'room.update',
@@ -158,6 +169,18 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'analytics.read',
   ],
 };
+
+export const ROLE_HIERARCHY: Record<Role, number> = {
+  SUPER_ADMIN: 100,
+  ORGANIZATION_ADMIN: 90,
+  FACILITY_ADMIN: 70,
+  MANAGER: 50,
+  SECURITY: 40,
+  OPERATOR: 30,
+  TECHNICIAN: 30,
+  VIEWER: 10,
+};
+
 
 /**
  * MQTT topic templates.

@@ -69,6 +69,36 @@ export const createOrganizationSchema = z.object({
   contactEmail: z.string().email().optional(),
 });
 
+export const updateOrganizationSchema = createOrganizationSchema.partial();
+
+export const inviteMemberSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  role: z.enum([
+    'ORGANIZATION_ADMIN',
+    'FACILITY_ADMIN',
+    'MANAGER',
+    'OPERATOR',
+    'SECURITY',
+    'TECHNICIAN',
+    'VIEWER',
+  ]),
+  facilityIds: z.array(z.string()).optional(),
+});
+
+export const updateMemberRoleSchema = z.object({
+  role: z.enum([
+    'ORGANIZATION_ADMIN',
+    'FACILITY_ADMIN',
+    'MANAGER',
+    'OPERATOR',
+    'SECURITY',
+    'TECHNICIAN',
+    'VIEWER',
+  ]),
+  facilityIds: z.array(z.string()).optional(),
+});
+
+
 // ── Facility ──
 
 export const createFacilitySchema = z.object({

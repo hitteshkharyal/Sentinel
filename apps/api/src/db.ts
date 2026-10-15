@@ -40,7 +40,7 @@ async function seedBootstrapAdmin(): Promise<void> {
     const adminEmail = 'admin@sentinel.local';
     const passwordHash = await hashPassword('SentinelAdmin2026!');
 
-    await UserModel.findOneAndUpdate(
+    const adminUser = await UserModel.findOneAndUpdate(
       { email: adminEmail },
       {
         $set: {
@@ -66,10 +66,15 @@ async function seedBootstrapAdmin(): Promise<void> {
       },
       { upsert: true }
     );
+
+    // Seed default multi-tenant organizations for the 8 sectors
+    const { OrganizationService } = await import('./services/organization.service.js');
+    await OrganizationService.seedDefaultOrganizations(adminUser._id.toString());
   } catch (seedErr) {
-    console.error('[Database] Failed to seed bootstrap admin:', seedErr);
+    console.error('[Database] Failed to seed bootstrap admin & organizations:', seedErr);
   }
 }
+
 
 
 export function isDatabaseConnected(): boolean {

@@ -10,10 +10,13 @@ import {
   ArrowRight,
   LogOut,
   ShieldAlert,
+  Building2,
+  Users,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
+import { useOrganization } from '../../context/OrganizationContext';
 import { AccessApprovalsModal } from '../auth/AccessApprovalsModal';
 
 export interface TopNavProps {
@@ -30,6 +33,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   title = 'Operations Center',
 }) => {
   const { user, logout, isAdmin } = useAuth();
+  const { currentOrganization } = useOrganization();
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -94,6 +98,24 @@ export const TopNav: React.FC<TopNavProps> = ({
 
       {/* ── Center / Right: Global Search Trigger & System Health ── */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Active Organization Scope Pill */}
+        {currentOrganization && (
+          <button
+            type="button"
+            onClick={() => navigate('/organizations')}
+            className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200/80 text-xs text-slate-700 transition-colors"
+            title="View Organizations & Access Control (RBAC)"
+          >
+            <Building2 className="w-3.5 h-3.5 text-sentinel-600" />
+            <span className="font-bold text-slate-800 truncate max-w-[130px]">
+              {currentOrganization.name}
+            </span>
+            <span className="text-[9px] uppercase font-bold text-sentinel-700 bg-sentinel-100/80 px-1.5 py-0.5 rounded-md border border-sentinel-200/60">
+              {currentOrganization.userRole}
+            </span>
+          </button>
+        )}
+
         {/* Search Input Bar Trigger */}
         <button
           type="button"
@@ -260,12 +282,23 @@ export const TopNav: React.FC<TopNavProps> = ({
                 </div>
                 <button
                   type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    navigate('/organizations');
+                  }}
+                  className="w-full mt-1 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  <Users className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Organizations & Team</span>
+                </button>
+                <button
+                  type="button"
                   onClick={async () => {
                     setUserMenuOpen(false);
                     await logout();
                     navigate('/login');
                   }}
-                  className="w-full mt-1.5 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+                  className="w-full mt-0.5 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>

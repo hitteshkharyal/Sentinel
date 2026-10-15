@@ -6,11 +6,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
+import { OrganizationProvider } from './context/OrganizationContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardOverviewPage } from './pages/DashboardOverviewPage';
+import { OrganizationsPage } from './pages/OrganizationsPage';
 import { AppShell } from './components/layout/AppShell';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
@@ -58,24 +60,26 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public High-Impact Landing Page */}
-            <Route path="/" element={<LandingPage />} />
+        <OrganizationProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public High-Impact Landing Page */}
+              <Route path="/" element={<LandingPage />} />
 
-            {/* Authentication Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+              {/* Authentication Routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            {/* Authenticated / Enterprise Platform Shell (Protected) */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/dashboard" element={<DashboardOverviewPage />} />
+              {/* Authenticated / Enterprise Platform Shell (Protected) */}
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <AppShell />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/dashboard" element={<DashboardOverviewPage />} />
+                <Route path="/organizations" element={<OrganizationsPage />} />
               <Route
                 path="/facilities"
                 element={
@@ -142,6 +146,7 @@ export function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        </OrganizationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
