@@ -7,12 +7,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { OrganizationProvider } from './context/OrganizationContext';
+import { FacilityProvider } from './context/FacilityContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardOverviewPage } from './pages/DashboardOverviewPage';
 import { OrganizationsPage } from './pages/OrganizationsPage';
+import { FacilitiesPage } from './pages/FacilitiesPage';
 import { AppShell } from './components/layout/AppShell';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
@@ -61,35 +63,27 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <OrganizationProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Public High-Impact Landing Page */}
-              <Route path="/" element={<LandingPage />} />
+          <FacilityProvider>
+            <BrowserRouter>
+              <Routes>
+                {/* Public High-Impact Landing Page */}
+                <Route path="/" element={<LandingPage />} />
 
-              {/* Authentication Routes */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+                {/* Authentication Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-              {/* Authenticated / Enterprise Platform Shell (Protected) */}
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <AppShell />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/dashboard" element={<DashboardOverviewPage />} />
-                <Route path="/organizations" element={<OrganizationsPage />} />
-              <Route
-                path="/facilities"
-                element={
-                  <PlaceholderRoute
-                    title="Facilities, Floors & Rooms"
-                    day="Day 5"
-                    description="Multi-facility hierarchy, interactive digital twins, and room occupancy maps."
-                  />
-                }
-              />
+                {/* Authenticated / Enterprise Platform Shell (Protected) */}
+                <Route
+                  element={
+                    <ProtectedRoute>
+                      <AppShell />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/dashboard" element={<DashboardOverviewPage />} />
+                  <Route path="/organizations" element={<OrganizationsPage />} />
+                  <Route path="/facilities" element={<FacilitiesPage />} />
               <Route
                 path="/sensors"
                 element={
@@ -146,6 +140,7 @@ export function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        </FacilityProvider>
         </OrganizationProvider>
       </AuthProvider>
     </QueryClientProvider>

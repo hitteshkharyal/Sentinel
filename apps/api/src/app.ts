@@ -9,6 +9,8 @@ import { config } from './config.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
 import { organizationRouter } from './routes/organizations.js';
+import { facilityRouter } from './routes/facilities.js';
+import { roomRouter } from './routes/rooms.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
@@ -30,6 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/health', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/organizations', organizationRouter);
+app.use('/api/v1/facilities', facilityRouter);
+app.use('/api/v1/rooms', roomRouter);
 
 
 // ── Placeholder route stubs (will be implemented in later phases) ──

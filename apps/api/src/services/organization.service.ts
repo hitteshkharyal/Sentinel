@@ -9,6 +9,7 @@ import {
   UserModel,
   AllowedEmailModel,
 } from '../models/index.js';
+import { FacilityService } from './facility.service.js';
 import { canManageRole } from '@sentinel/shared';
 import { AppError } from '../middleware/error-handler.js';
 import type {
@@ -507,6 +508,9 @@ export class OrganizationService {
         },
         { upsert: true }
       );
+
+      // Seed default representative facilities and rooms for this sector
+      await FacilityService.seedDefaultFacilities(org._id.toString(), orgData.industry);
     }
   }
 }
