@@ -229,3 +229,142 @@ export const paginationSchema = z.object({
 export const searchSchema = paginationSchema.extend({
   q: z.string().max(200).optional(),
 });
+
+// ── Sensors (Day 6) ──
+
+export const sensorTypeSchema = z.enum([
+  'PIR',
+  'MMWAVE',
+  'CO2',
+  'TEMPERATURE',
+  'HUMIDITY',
+  'SOUND_LEVEL',
+  'DOOR_MAGNETIC',
+  'PRESSURE',
+  'LIGHT',
+  'SMOKE',
+  'GAS',
+  'FLAME',
+  'WATER_LEAK',
+  'VIBRATION',
+  'ULTRASONIC',
+  'CURRENT',
+  'GPS',
+  'RFID',
+]);
+
+export const sensorInterfaceSchema = z.enum([
+  'GPIO',
+  'ADC',
+  'PWM',
+  'I2C',
+  'SPI',
+  'UART',
+  'WIFI',
+  'MQTT',
+]);
+
+export const sensorStatusSchema = z.enum([
+  'ONLINE',
+  'OFFLINE',
+  'CALIBRATING',
+  'ERROR',
+  'UNPROVISIONED',
+]);
+
+export const sensorCategorySchema = z.enum([
+  'PRESENCE_MOTION',
+  'ENVIRONMENTAL',
+  'SAFETY_HAZARD',
+  'STRUCTURAL_POWER',
+  'ACCESS_TELEMETRY',
+]);
+
+export const sensorThresholdSchema = z.object({
+  name: z.string().min(1).max(100),
+  operator: z.enum(['gt', 'gte', 'lt', 'lte', 'eq']),
+  value: z.number(),
+  severity: z.enum(['INFO', 'WARNING', 'HIGH', 'CRITICAL']),
+});
+
+export const sensorDetailedConfigSchema = z.object({
+  gpioPin: z.number().int().min(0).max(48).optional(),
+  i2cAddress: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{2}$/, 'Must be a valid hex address e.g. 0x62')
+    .optional(),
+  baudRate: z.number().int().positive().optional(),
+  samplingIntervalMs: z.number().int().min(50).max(86400000).default(5000),
+  unit: z.string().max(20).optional(),
+  minValue: z.number().optional(),
+  maxValue: z.number().optional(),
+  thresholds: z.array(sensorThresholdSchema).optional(),
+  filterWindowSize: z.number().int().min(1).max(100).optional(),
+  debounceMs: z.number().int().min(0).max(60000).optional(),
+});
+
+export const sensorCalibrationSchema = z.object({
+  offset: z.number().default(0),
+  multiplier: z.number().default(1),
+  baseline: z.number().default(0),
+  noiseFloor: z.number().optional(),
+});
+
+export const createSensorSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  name: z.string().min(1, 'Sensor name is required').max(100),
+  sensorType: sensorTypeSchema,
+  model: z.string().max(100).optional(),
+  manufacturer: z.string().max(100).optional(),
+  interfaceType: sensorInterfaceSchema,
+  configuration: sensorDetailedConfigSchema.partial().optional(),
+  calibration: sensorCalibrationSchema.partial().optional(),
+  enabled: z.boolean().default(true),
+});
+
+export const updateSensorSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  enabled: z.boolean().optional(),
+  status: sensorStatusSchema.optional(),
+});
+
+export const configureSensorSchema = z.object({
+  gpioPin: z.number().int().min(0).max(48).optional(),
+  i2cAddress: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{2}$/, 'Must be a valid hex address e.g. 0x62')
+    .optional(),
+  baudRate: z.number().int().positive().optional(),
+  samplingIntervalMs: z.number().int().min(50).max(86400000).optional(),
+  unit: z.string().max(20).optional(),
+  minValue: z.number().optional(),
+  maxValue: z.number().optional(),
+  thresholds: z.array(sensorThresholdSchema).optional(),
+  filterWindowSize: z.number().int().min(1).max(100).optional(),
+  debounceMs: z.number().int().min(0).max(60000).optional(),
+});
+
+export const calibrateSensorSchema = z.object({
+  offset: z.number().optional(),
+  multiplier: z.number().optional(),
+  baseline: z.number().optional(),
+  noiseFloor: z.number().optional(),
+});
+
+export const sensorFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  sensorType: sensorTypeSchema.optional(),
+  interfaceType: sensorInterfaceSchema.optional(),
+  category: sensorCategorySchema.optional(),
+  enabled: z.coerce.boolean().optional(),
+  status: sensorStatusSchema.optional(),
+  q: z.string().optional(),
+});
+

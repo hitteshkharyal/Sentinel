@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { FacilityModel } from '../models/Facility.js';
 import { FloorModel } from '../models/Floor.js';
 import { RoomModel } from '../models/Room.js';
+import { SensorService } from './sensor.service.js';
 import { AppError } from '../middleware/error-handler.js';
 import type {
   Facility,
@@ -479,7 +480,19 @@ export class FacilityService {
   static async seedDefaultFacilities(orgId: string, industry: string): Promise<void> {
     const orgObjectId = new mongoose.Types.ObjectId(orgId);
     const existing = await FacilityModel.findOne({ organizationId: orgObjectId });
-    if (existing) return; // Already seeded
+    if (existing) {
+      // Facility already seeded; ensure rooms without sensors get their default sensor suites
+      const seededRooms = await RoomModel.find({ organizationId: orgObjectId });
+      for (const room of seededRooms) {
+        await SensorService.seedDefaultSensorsForRoom(
+          orgObjectId.toString(),
+          room.facilityId.toString(),
+          room._id.toString(),
+          room.roomType
+        );
+      }
+      return;
+    }
 
     switch (industry) {
       case 'hospital': {
@@ -811,6 +824,17 @@ export class FacilityService {
         ]);
         break;
       }
+    }
+
+    // Seed default representative sensor nodes for all rooms in this organization
+    const seededRooms = await RoomModel.find({ organizationId: orgObjectId });
+    for (const room of seededRooms) {
+      await SensorService.seedDefaultSensorsForRoom(
+        orgObjectId.toString(),
+        room.facilityId.toString(),
+        room._id.toString(),
+        room.roomType
+      );
     }
   }
 }
