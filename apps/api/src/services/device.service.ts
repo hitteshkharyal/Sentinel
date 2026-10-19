@@ -170,6 +170,20 @@ export class DeviceService {
       ];
     }
 
+    // Reclaim stale devices before executing query
+    const staleThresholdMs = 2 * 60 * 1000; // 2 minutes
+    const cutoff = new Date(Date.now() - staleThresholdMs);
+    await DeviceModel.updateMany(
+      {
+        organizationId: orgObjId,
+        status: 'ONLINE',
+        lastHeartbeatAt: { $lt: cutoff },
+      },
+      {
+        $set: { status: 'OFFLINE' },
+      }
+    );
+
     const total = await DeviceModel.countDocuments(query);
     const skip = (page - 1) * limit;
 
@@ -178,10 +192,6 @@ export class DeviceService {
       .skip(skip)
       .limit(limit);
 
-    // Update real-time counts and check heartbeat freshness
-    const now = Date.now();
-    const staleThresholdMs = 2 * 60 * 1000; // 2 minutes
-
     const devices = await Promise.all(
       docs.map(async (doc) => {
         // Compute count of attached sensors
@@ -189,16 +199,6 @@ export class DeviceService {
           organizationId: orgObjId,
           deviceId: doc.deviceId,
         });
-
-        // If ONLINE but hasn't sent heartbeat in > 2 minutes, mark as OFFLINE
-        if (
-          doc.status === 'ONLINE' &&
-          doc.lastHeartbeatAt &&
-          now - doc.lastHeartbeatAt.getTime() > staleThresholdMs
-        ) {
-          doc.status = 'OFFLINE';
-          await doc.save();
-        }
 
         doc.assignedSensorsCount = sensorCount;
         return doc.toSafeDevice();
@@ -212,6 +212,27 @@ export class DeviceService {
       limit,
       totalPages: Math.ceil(total / limit) || 1,
     };
+  }
+
+  /**
+   * Proactively reap stale devices across an organization or platform.
+   */
+  static async reapStaleDevices(
+    organizationId?: string,
+    staleThresholdMs = 2 * 60 * 1000
+  ): Promise<number> {
+    const cutoff = new Date(Date.now() - staleThresholdMs);
+    const query: Record<string, unknown> = {
+      status: 'ONLINE',
+      lastHeartbeatAt: { $lt: cutoff },
+    };
+    if (organizationId) {
+      query.organizationId = new mongoose.Types.ObjectId(organizationId);
+    }
+    const result = await DeviceModel.updateMany(query, {
+      $set: { status: 'OFFLINE' },
+    });
+    return result.modifiedCount;
   }
 
   /**
