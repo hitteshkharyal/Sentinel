@@ -115,12 +115,12 @@ npm run dev:web
 | Day | Phase                         | Status        |
 | --- | ----------------------------- | ------------- |
 | 1   | Architecture                  | ✅ Complete   |
-| 2   | UI System + Landing Page      | ⬜ Pending    |
-| 3   | Authentication                | ⬜ Pending    |
-| 4   | Organizations + RBAC          | ⬜ Pending    |
-| 5   | Facilities + Floors + Rooms   | ⬜ Pending    |
-| 6   | Sensor Catalog + Config       | ⬜ Pending    |
-| 7   | ESP32 Device Management       | ⬜ Pending    |
+| 2   | UI System + Landing Page      | ✅ Complete   |
+| 3   | Authentication                | ✅ Complete   |
+| 4   | Organizations + RBAC          | ✅ Complete   |
+| 5   | Facilities + Floors + Rooms   | ✅ Complete   |
+| 6   | Sensor Catalog + Config       | ✅ Complete   |
+| 7   | ESP32 Device Management       | ✅ Complete   |
 | 8   | MQTT + Telemetry              | ⬜ Pending    |
 | 9   | Sensor Fusion + Event Engine  | ⬜ Pending    |
 | 10  | Automation Engine             | ⬜ Pending    |
