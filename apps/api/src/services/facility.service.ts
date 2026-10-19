@@ -7,6 +7,7 @@ import { FacilityModel } from '../models/Facility.js';
 import { FloorModel } from '../models/Floor.js';
 import { RoomModel } from '../models/Room.js';
 import { SensorService } from './sensor.service.js';
+import { DeviceService } from './device.service.js';
 import { AppError } from '../middleware/error-handler.js';
 import type {
   Facility,
@@ -481,7 +482,7 @@ export class FacilityService {
     const orgObjectId = new mongoose.Types.ObjectId(orgId);
     const existing = await FacilityModel.findOne({ organizationId: orgObjectId });
     if (existing) {
-      // Facility already seeded; ensure rooms without sensors get their default sensor suites
+      // Facility already seeded; ensure rooms without sensors/devices get their default suites
       const seededRooms = await RoomModel.find({ organizationId: orgObjectId });
       for (const room of seededRooms) {
         await SensorService.seedDefaultSensorsForRoom(
@@ -489,6 +490,13 @@ export class FacilityService {
           room.facilityId.toString(),
           room._id.toString(),
           room.roomType
+        );
+        await DeviceService.seedDefaultDeviceForRoom(
+          orgObjectId,
+          room.facilityId as mongoose.Types.ObjectId,
+          room._id as mongoose.Types.ObjectId,
+          room.name,
+          industry.toUpperCase()
         );
       }
       return;
@@ -826,7 +834,7 @@ export class FacilityService {
       }
     }
 
-    // Seed default representative sensor nodes for all rooms in this organization
+    // Seed default representative sensor nodes and ESP32 microcontrollers for all rooms in this organization
     const seededRooms = await RoomModel.find({ organizationId: orgObjectId });
     for (const room of seededRooms) {
       await SensorService.seedDefaultSensorsForRoom(
@@ -834,6 +842,13 @@ export class FacilityService {
         room.facilityId.toString(),
         room._id.toString(),
         room.roomType
+      );
+      await DeviceService.seedDefaultDeviceForRoom(
+        orgObjectId,
+        room.facilityId as mongoose.Types.ObjectId,
+        room._id as mongoose.Types.ObjectId,
+        room.name,
+        industry.toUpperCase()
       );
     }
   }

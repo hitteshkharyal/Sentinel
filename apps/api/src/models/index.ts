@@ -8,5 +8,5 @@ export * from './Facility.js';
 export * from './Floor.js';
 export * from './Room.js';
 export * from './Sensor.js';
-
-
+export * from './Device.js';
+export * from './DeviceCredential.js';

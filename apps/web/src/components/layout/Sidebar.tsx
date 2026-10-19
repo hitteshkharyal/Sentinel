@@ -17,6 +17,7 @@ import {
   Users,
   ChevronDown,
   Plus,
+  Cpu,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { useAuth } from '../../context/AuthContext';
@@ -74,9 +75,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <Building2 className="w-5 h-5 shrink-0" />,
     },
     {
+      to: '/devices',
+      label: 'ESP32 Devices',
+      icon: <Cpu className="w-5 h-5 shrink-0" />,
+    },
+    {
       to: '/sensors',
       label: 'Sensor Catalog',
       icon: <Radio className="w-5 h-5 shrink-0" />,
+    },
+    {
+      to: '/devices',
+      label: 'ESP32 Microcontrollers',
+      icon: <Cpu className="w-5 h-5 shrink-0" />,
     },
     {
       to: '/events',

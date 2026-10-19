@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import { OrganizationProvider } from './context/OrganizationContext';
 import { FacilityProvider } from './context/FacilityContext';
 import { SensorProvider } from './context/SensorContext';
+import { DeviceProvider } from './context/DeviceContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -17,6 +18,7 @@ import { DashboardOverviewPage } from './pages/DashboardOverviewPage';
 import { OrganizationsPage } from './pages/OrganizationsPage';
 import { FacilitiesPage } from './pages/FacilitiesPage';
 import { SensorsPage } from './pages/SensorsPage';
+import { DevicesPage } from './pages/DevicesPage';
 import { AppShell } from './components/layout/AppShell';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
@@ -67,73 +69,76 @@ export function App() {
         <OrganizationProvider>
           <FacilityProvider>
             <SensorProvider>
-              <BrowserRouter>
-                <Routes>
-                  {/* Public High-Impact Landing Page */}
-                  <Route path="/" element={<LandingPage />} />
+              <DeviceProvider>
+                <BrowserRouter>
+                  <Routes>
+                    {/* Public High-Impact Landing Page */}
+                    <Route path="/" element={<LandingPage />} />
 
-                  {/* Authentication Routes */}
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
+                    {/* Authentication Routes */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
 
-                  {/* Authenticated / Enterprise Platform Shell (Protected) */}
-                  <Route
-                    element={
-                      <ProtectedRoute>
-                        <AppShell />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route path="/dashboard" element={<DashboardOverviewPage />} />
-                    <Route path="/organizations" element={<OrganizationsPage />} />
-                    <Route path="/facilities" element={<FacilitiesPage />} />
-                    <Route path="/sensors" element={<SensorsPage />} />
+                    {/* Authenticated / Enterprise Platform Shell (Protected) */}
                     <Route
-                      path="/events"
                       element={
-                        <PlaceholderRoute
-                          title="Sensor Fusion & Event Engine"
-                          day="Day 9"
-                          description="Multi-sensor temporal fusion, posture transition state machines, and spatial event stream."
-                        />
+                        <ProtectedRoute>
+                          <AppShell />
+                        </ProtectedRoute>
                       }
-                    />
-                    <Route
-                      path="/automations"
-                      element={
-                        <PlaceholderRoute
-                          title="Autonomous Policy Engine"
-                          day="Day 10"
-                          description="No-code rule builders, conditional actuators, BACnet/MQTT triggers, and schedule profiles."
-                        />
-                      }
-                    />
-                    <Route
-                      path="/alerts"
-                      element={
-                        <PlaceholderRoute
-                          title="Alerts, Escalations & Sound Engine"
-                          day="Day 11"
-                          description="Multi-tier SLA escalation matrices, browser Web Audio beacons, and responsible-person dispatch."
-                        />
-                      }
-                    />
-                    <Route
-                      path="/analytics"
-                      element={
-                        <PlaceholderRoute
-                          title="Analytics & ESG Digital Twin"
-                          day="Day 12"
-                          description="Time-series telemetry visualizations, energy setback savings audits, and occupancy distributions."
-                        />
-                      }
-                    />
-                  </Route>
+                    >
+                      <Route path="/dashboard" element={<DashboardOverviewPage />} />
+                      <Route path="/organizations" element={<OrganizationsPage />} />
+                      <Route path="/facilities" element={<FacilitiesPage />} />
+                      <Route path="/devices" element={<DevicesPage />} />
+                      <Route path="/sensors" element={<SensorsPage />} />
+                      <Route
+                        path="/events"
+                        element={
+                          <PlaceholderRoute
+                            title="Sensor Fusion & Event Engine"
+                            day="Day 9"
+                            description="Multi-sensor temporal fusion, posture transition state machines, and spatial event stream."
+                          />
+                        }
+                      />
+                      <Route
+                        path="/automations"
+                        element={
+                          <PlaceholderRoute
+                            title="Autonomous Policy Engine"
+                            day="Day 10"
+                            description="No-code rule builders, conditional actuators, BACnet/MQTT triggers, and schedule profiles."
+                          />
+                        }
+                      />
+                      <Route
+                        path="/alerts"
+                        element={
+                          <PlaceholderRoute
+                            title="Alerts, Escalations & Sound Engine"
+                            day="Day 11"
+                            description="Multi-tier SLA escalation matrices, browser Web Audio beacons, and responsible-person dispatch."
+                          />
+                        }
+                      />
+                      <Route
+                        path="/analytics"
+                        element={
+                          <PlaceholderRoute
+                            title="Analytics & ESG Digital Twin"
+                            day="Day 12"
+                            description="Time-series telemetry visualizations, energy setback savings audits, and occupancy distributions."
+                          />
+                        }
+                      />
+                    </Route>
 
-                  {/* Catch-all Fallback */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </BrowserRouter>
+                    {/* Catch-all Fallback */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </BrowserRouter>
+              </DeviceProvider>
             </SensorProvider>
           </FacilityProvider>
         </OrganizationProvider>

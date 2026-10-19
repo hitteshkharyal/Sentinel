@@ -368,3 +368,90 @@ export const sensorFilterSchema = z.object({
   q: z.string().optional(),
 });
 
+// ── Devices & ESP32 Microcontrollers (Day 7) ──
+
+export const deviceStatusSchema = z.enum([
+  'UNREGISTERED',
+  'PROVISIONING',
+  'ONLINE',
+  'OFFLINE',
+  'ERROR',
+  'UPDATING',
+  'DISABLED',
+]);
+
+export const chipModelSchema = z.enum([
+  'ESP32-WROOM-32D',
+  'ESP32-WROOM-32U',
+  'ESP32-S3-WROOM-1',
+  'ESP32-C3-MINI',
+  'ESP32-CAM',
+  'ESP32-GENERIC',
+]);
+
+export const powerSourceSchema = z.enum(['MAINS', 'BATTERY', 'POE', 'USB']);
+
+export const macAddressSchema = z
+  .string()
+  .regex(
+    /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/,
+    'Must be a valid MAC address (e.g. 24:6F:28:A4:CF:12)'
+  );
+
+export const registerDeviceSchema = z.object({
+  deviceId: z
+    .string()
+    .min(3, 'Device ID must have at least 3 characters')
+    .max(64)
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      'Device ID must contain only alphanumeric characters, underscores, and dashes'
+    ),
+  name: z.string().min(1, 'Device name is required').max(100),
+  macAddress: macAddressSchema,
+  chipModel: chipModelSchema.default('ESP32-WROOM-32D'),
+  hardwareVersion: z.string().min(1).max(30).default('v3.2'),
+  firmwareVersion: z.string().min(1).max(30).default('v1.0.0'),
+  facilityId: z.string().min(1, 'Facility ID is required'),
+  roomId: z.string().optional(),
+  powerSource: powerSourceSchema.default('MAINS'),
+});
+
+export const updateDeviceSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  status: deviceStatusSchema.optional(),
+  firmwareVersion: z.string().max(30).optional(),
+  facilityId: z.string().optional(),
+  roomId: z.string().nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const assignDeviceSchema = z.object({
+  facilityId: z.string().min(1, 'Facility ID is required'),
+  roomId: z.string().nullable().optional(),
+});
+
+export const deviceHeartbeatSchema = z.object({
+  firmwareVersion: z.string().max(30).optional(),
+  ipAddress: z.string().max(45).optional(),
+  wifiRssiDbm: z.number().int().min(-120).max(0).optional(),
+  freeHeapBytes: z.number().int().nonnegative().optional(),
+  uptimeSeconds: z.number().int().nonnegative().optional(),
+  batteryPercent: z.number().int().min(0).max(100).optional(),
+  status: deviceStatusSchema.optional(),
+  error: z.string().max(500).optional(),
+});
+
+export const rotateDeviceSecretSchema = z.object({
+  reason: z.string().max(250).optional(),
+});
+
+export const deviceFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  status: deviceStatusSchema.optional(),
+  chipModel: chipModelSchema.optional(),
+  q: z.string().optional(),
+});
+
+
