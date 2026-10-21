@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Plus,
   Cpu,
+  Activity,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { useAuth } from '../../context/AuthContext';
@@ -85,9 +86,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <Radio className="w-5 h-5 shrink-0" />,
     },
     {
-      to: '/devices',
-      label: 'ESP32 Microcontrollers',
-      icon: <Cpu className="w-5 h-5 shrink-0" />,
+      to: '/telemetry',
+      label: 'Telemetry Pipeline',
+      icon: <Activity className="w-5 h-5 shrink-0" />,
+      badge: 'MQTT',
+      badgeVariant: 'primary' as const,
     },
     {
       to: '/events',

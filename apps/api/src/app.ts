@@ -13,6 +13,7 @@ import { facilityRouter } from './routes/facilities.js';
 import { roomRouter } from './routes/rooms.js';
 import { sensorRouter } from './routes/sensors.js';
 import { deviceRouter } from './routes/devices.js';
+import { telemetryRouter } from './routes/telemetry.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/api/v1/facilities', facilityRouter);
 app.use('/api/v1/rooms', roomRouter);
 app.use('/api/v1/sensors', sensorRouter);
 app.use('/api/v1/devices', deviceRouter);
+app.use('/api/v1/telemetry', telemetryRouter);
 
 
 // ── Placeholder route stubs (will be implemented in later phases) ──

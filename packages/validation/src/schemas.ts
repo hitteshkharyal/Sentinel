@@ -454,4 +454,84 @@ export const deviceFilterSchema = z.object({
   q: z.string().optional(),
 });
 
+// ── Telemetry & MQTT Pipeline (Day 8) ──
+
+export const doorStateSchema = z.enum(['open', 'closed']);
+
+export const mmwaveDataSchema = z.object({
+  presence: z.boolean(),
+  count: z.number().int().min(0).max(100).optional(),
+  distance: z.number().min(0).max(100).optional(),
+  energy: z.number().min(0).max(100).optional(),
+  stationaryConfidence: z.number().min(0).max(100).optional(),
+  movementConfidence: z.number().min(0).max(100).optional(),
+});
+
+export const gpsDataSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  speed: z.number().min(0).optional(),
+  altitude: z.number().optional(),
+  satellites: z.number().int().min(0).optional(),
+});
+
+export const rfidDataSchema = z.object({
+  uid: z.string().min(2).max(64),
+  tagType: z.string().max(50).optional(),
+});
+
+export const telemetrySensorDataSchema = z
+  .object({
+    pir: z.boolean().optional(),
+    mmwave: mmwaveDataSchema.optional(),
+    co2: z.number().min(0).max(50000).optional(),
+    temperature: z.number().min(-60).max(160).optional(),
+    humidity: z.number().min(0).max(100).optional(),
+    soundLevel: z.number().min(0).max(180).optional(),
+    door: doorStateSchema.optional(),
+    pressure: z.number().min(200).max(1500).optional(),
+    light: z.number().min(0).max(250000).optional(),
+    smoke: z.union([z.boolean(), z.number()]).optional(),
+    gas: z.number().min(0).optional(),
+    flame: z.boolean().optional(),
+    waterLeak: z.boolean().optional(),
+    vibration: z.number().min(0).optional(),
+    ultrasonic: z.number().min(0).max(2000).optional(),
+    current: z.number().min(0).optional(),
+    gps: gpsDataSchema.optional(),
+    rfid: rfidDataSchema.optional(),
+  })
+  .passthrough();
+
+export const telemetryMessageSchema = z.object({
+  deviceId: z
+    .string()
+    .min(2, 'Device ID must have at least 2 characters')
+    .max(64),
+  timestamp: z
+    .string()
+    .refine((ts) => !isNaN(Date.parse(ts)), 'Must be a valid ISO-8601 timestamp string'),
+  sensors: telemetrySensorDataSchema,
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const telemetryFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  sensorType: z.string().optional(),
+  validOnly: z.coerce.boolean().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(500).default(50),
+});
+
+export const deviceCommandSchema = z.object({
+  deviceId: z.string().min(2).max(64),
+  command: z.string().min(1).max(50),
+  params: z.record(z.unknown()).optional(),
+});
+
+
 

@@ -10,3 +10,4 @@ export * from './Room.js';
 export * from './Sensor.js';
 export * from './Device.js';
 export * from './DeviceCredential.js';
+export * from './Telemetry.js';

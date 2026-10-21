@@ -13,7 +13,7 @@
     "build:validation": "npm run build --workspace=packages/validation",
     "build:types": "npm run build --workspace=packages/types",
     "build": "npm run build:types && npm run build:shared && npm run build:validation && npm run build:api && npm run build:web",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "lint": "eslint \"packages/*/src/**/*.{ts,tsx}\" \"apps/*/src/**/*.{ts,tsx}\" --max-warnings 0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md,css}\"",

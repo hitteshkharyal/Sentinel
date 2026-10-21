@@ -2,23 +2,38 @@
 // SENTINEL API — Server Entry Point
 // ─────────────────────────────────────────────
 
+import http from 'node:http';
 import { app } from './app.js';
 import { config } from './config.js';
 import { connectDatabase } from './db.js';
+import { MqttService } from './services/mqtt.service.js';
+import { WebSocketService } from './services/websocket.service.js';
 
 async function startServer() {
   try {
     await connectDatabase();
 
-    app.listen(config.port, () => {
+    const server = http.createServer(app);
+
+    // Initialize real-time WebSocket telemetry gateway
+    WebSocketService.init(server);
+
+    // Initialize embedded MQTT broker (falls back gracefully if port is occupied)
+    const mqttPort = Number(process.env.MQTT_PORT) || 1883;
+    await MqttService.startBroker(mqttPort);
+
+    server.listen(config.port, () => {
+      const mqttStatus = MqttService.getStatus();
       console.warn(`
 ╔══════════════════════════════════════════════╗
-║            SENTINEL API SERVER               ║
+║            SENTINEL IOT PLATFORM             ║
 ║──────────────────────────────────────────────║
-║  Status:      RUNNING                        ║
-║  Port:        ${String(config.port).padEnd(30)}║
+║  API Status:  RUNNING                        ║
+║  HTTP Port:   ${String(config.port).padEnd(30)}║
+║  MQTT Broker: ${String(mqttStatus.isRunning ? `ONLINE (port ${mqttStatus.port})` : 'STANDALONE / EXTERNAL').padEnd(30)}║
+║  WebSocket:   ws://localhost:${String(config.port)}/ws/telemetry  ║
 ║  Environment: ${config.env.padEnd(30)}║
-║  API:         /api/v1                        ║
+║  API Base:    /api/v1                        ║
 ║  Health:      /api/v1/health                 ║
 ╚══════════════════════════════════════════════╝
       `);
