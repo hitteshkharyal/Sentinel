@@ -8,7 +8,13 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { telemetryBus } from './telemetry-validator.js';
 import { eventBus } from './event.service.js';
-import type { ValidatedTelemetry, AuthTokenPayload, SentinelEvent } from '@sentinel/types';
+import { automationBus } from './automation.service.js';
+import type {
+  ValidatedTelemetry,
+  AuthTokenPayload,
+  SentinelEvent,
+  AutomationExecution,
+} from '@sentinel/types';
 
 interface AuthenticatedClient extends WebSocket {
   isAlive: boolean;
@@ -107,6 +113,11 @@ export class WebSocketService {
       this.broadcastEvent(event, 'EVENT_STATUS');
     });
 
+    // ── Listen to Automation Execution Bus ──
+    automationBus.on('execution', (execution: AutomationExecution) => {
+      this.broadcastAutomationExecution(execution);
+    });
+
     // Keepalive heartbeat
     this.pingInterval = setInterval(() => {
       if (!this.wss) return;
@@ -188,6 +199,40 @@ export class WebSocketService {
 
       // Spatial room filter
       if (client.subscribedRoomId && event.roomId && client.subscribedRoomId !== event.roomId) {
+        return;
+      }
+
+      client.send(payload);
+    });
+  }
+
+  /**
+   * Broadcast automation execution log to authorized connected clients.
+   */
+  static broadcastAutomationExecution(execution: AutomationExecution): void {
+    if (!this.wss) return;
+
+    const payload = JSON.stringify({
+      type: 'AUTOMATION_EXECUTION',
+      data: execution,
+    });
+
+    this.wss.clients.forEach((ws) => {
+      const client = ws as AuthenticatedClient;
+      if (client.readyState !== WebSocket.OPEN) return;
+
+      // Organization boundary check
+      if (client.organizationId && client.organizationId !== execution.organizationId) {
+        return;
+      }
+
+      // Spatial facility filter
+      if (client.subscribedFacilityId && client.subscribedFacilityId !== execution.facilityId) {
+        return;
+      }
+
+      // Spatial room filter
+      if (client.subscribedRoomId && execution.roomId && client.subscribedRoomId !== execution.roomId) {
         return;
       }
 

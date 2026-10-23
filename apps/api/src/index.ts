@@ -8,6 +8,7 @@ import { config } from './config.js';
 import { connectDatabase } from './db.js';
 import { MqttService } from './services/mqtt.service.js';
 import { WebSocketService } from './services/websocket.service.js';
+import { AutomationService } from './services/automation.service.js';
 
 async function startServer() {
   try {
@@ -15,8 +16,11 @@ async function startServer() {
 
     const server = http.createServer(app);
 
-    // Initialize real-time WebSocket telemetry gateway
+    // Initialize real-time WebSocket telemetry & event gateway
     WebSocketService.init(server);
+
+    // Initialize autonomous policy engine
+    AutomationService.init();
 
     // Initialize embedded MQTT broker (falls back gracefully if port is occupied)
     const mqttPort = Number(process.env.MQTT_PORT) || 1883;

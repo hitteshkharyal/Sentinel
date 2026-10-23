@@ -586,5 +586,98 @@ export const evaluateEventSchema = z.object({
   signals: z.record(z.unknown()),
 });
 
+// ── Automation & Actuators ──
+
+export const automationActionTypeSchema = z.enum([
+  'HVAC_ECO',
+  'HVAC_COMFORT',
+  'LIGHT_ON',
+  'LIGHT_OFF',
+  'VENTILATION_INCREASE',
+  'VENTILATION_NORMAL',
+  'CREATE_ALERT',
+  'SEND_NOTIFICATION',
+  'ESCALATE_ALERT',
+  'BUZZER',
+  'RELAY',
+]);
+
+export const automationConditionSchema = z.object({
+  field: z.string().min(1).max(100),
+  operator: z.enum(['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'in']),
+  value: z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(z.unknown()),
+    z.record(z.unknown()),
+  ]),
+});
+
+export const automationActionSchema = z.object({
+  type: automationActionTypeSchema,
+  params: z.record(z.unknown()).optional(),
+  simulated: z.boolean().default(true),
+  targetDeviceId: z.string().optional(),
+});
+
+export const createAutomationRuleSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  name: z.string().min(1, 'Rule name is required').max(150),
+  description: z.string().max(500).optional(),
+  enabled: z.boolean().default(true),
+  triggerEventType: eventTypeSchema,
+  conditions: z.array(automationConditionSchema).optional().default([]),
+  actions: z.array(automationActionSchema).min(1, 'At least one action is required'),
+  cooldownMs: z.coerce.number().int().min(0).max(86400000).default(60000),
+});
+
+export const updateAutomationRuleSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  name: z.string().min(1).max(150).optional(),
+  description: z.string().max(500).optional(),
+  enabled: z.boolean().optional(),
+  triggerEventType: eventTypeSchema.optional(),
+  conditions: z.array(automationConditionSchema).optional(),
+  actions: z.array(automationActionSchema).min(1).optional(),
+  cooldownMs: z.coerce.number().int().min(0).max(86400000).optional(),
+});
+
+export const automationFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  triggerEventType: eventTypeSchema.optional(),
+  enabled: z.coerce.boolean().optional(),
+  search: z.string().max(100).optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(500).default(50),
+});
+
+export const automationExecutionFilterSchema = z.object({
+  automationId: z.string().optional(),
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  status: z.enum(['SUCCESS', 'PARTIAL', 'FAILED']).optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(500).default(50),
+});
+
+export const testAutomationRuleSchema = z.object({
+  ruleId: z.string().optional(),
+  rule: createAutomationRuleSchema.optional(),
+  syntheticEvent: z.object({
+    eventType: eventTypeSchema,
+    severity: z.string().optional(),
+    roomId: z.string().optional(),
+    facilityId: z.string().optional(),
+    confidence: z.number().optional(),
+    inputSignals: z.record(z.unknown()).optional(),
+  }),
+});
+
 
 
