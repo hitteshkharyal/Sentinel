@@ -533,5 +533,58 @@ export const deviceCommandSchema = z.object({
   params: z.record(z.unknown()).optional(),
 });
 
+// ── Event & Sensor Fusion ──
+
+export const eventStatusSchema = z.enum([
+  'ACTIVE',
+  'ACKNOWLEDGED',
+  'RESOLVED',
+  'EXPIRED',
+  'DISMISSED',
+]);
+
+export const eventTypeSchema = z.enum([
+  'ROOM_OCCUPIED',
+  'ROOM_VACANT',
+  'HIGH_CO2',
+  'HIGH_TEMPERATURE',
+  'LOW_TEMPERATURE',
+  'ABNORMAL_ACTIVITY',
+  'ASSISTANCE_INDICATION',
+  'PROLONGED_INACTIVITY',
+  'AFTER_HOURS_PRESENCE',
+  'OVERCAPACITY',
+  'PERSON_LEFT_BEHIND',
+  'DEVICE_OFFLINE',
+  'SENSOR_ERROR',
+  'ENVIRONMENTAL_ANOMALY',
+]);
+
+export const eventFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  eventType: z.string().optional(),
+  severity: z.string().optional(),
+  status: z.string().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  search: z.string().max(100).optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(500).default(50),
+});
+
+export const updateEventStatusSchema = z.object({
+  status: eventStatusSchema,
+  notes: z.string().max(1000).optional(),
+});
+
+export const evaluateEventSchema = z.object({
+  roomId: z.string().min(1, 'Room ID is required'),
+  deviceId: z.string().optional(),
+  timestamp: z.string().optional(),
+  signals: z.record(z.unknown()),
+});
+
 
 

@@ -15,6 +15,7 @@ import type {
   TelemetrySensorData,
 } from '@sentinel/types';
 import { EventEmitter } from 'node:events';
+import { EventService } from './event.service.js';
 
 export class TelemetryEventBus extends EventEmitter {}
 export const telemetryBus = new TelemetryEventBus();
@@ -402,6 +403,15 @@ export class TelemetryValidator {
     };
 
     telemetryBus.emit('telemetry', validatedResult);
+
+    // ── 9. Trigger Sensor Fusion & Event Engine ──
+    if (isValid && device.roomId) {
+      try {
+        await EventService.evaluateTelemetry(validatedResult);
+      } catch (err) {
+        console.error('[TelemetryValidator] Failed to evaluate event telemetry:', err);
+      }
+    }
 
     return {
       telemetry: validatedResult,

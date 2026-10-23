@@ -7,7 +7,8 @@ import type { Server } from 'node:http';
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { telemetryBus } from './telemetry-validator.js';
-import type { ValidatedTelemetry, AuthTokenPayload } from '@sentinel/types';
+import { eventBus } from './event.service.js';
+import type { ValidatedTelemetry, AuthTokenPayload, SentinelEvent } from '@sentinel/types';
 
 interface AuthenticatedClient extends WebSocket {
   isAlive: boolean;
@@ -97,6 +98,15 @@ export class WebSocketService {
       this.broadcast(telemetry);
     });
 
+    // ── Listen to Event Intelligence Bus ──
+    eventBus.on('event', (event: SentinelEvent) => {
+      this.broadcastEvent(event, 'EVENT');
+    });
+
+    eventBus.on('event:status', (event: SentinelEvent) => {
+      this.broadcastEvent(event, 'EVENT_STATUS');
+    });
+
     // Keepalive heartbeat
     this.pingInterval = setInterval(() => {
       if (!this.wss) return;
@@ -144,6 +154,40 @@ export class WebSocketService {
         telemetry.roomId &&
         client.subscribedRoomId !== telemetry.roomId
       ) {
+        return;
+      }
+
+      client.send(payload);
+    });
+  }
+
+  /**
+   * Broadcast Sentinel event or status update to authorized connected clients.
+   */
+  static broadcastEvent(event: SentinelEvent, type: 'EVENT' | 'EVENT_STATUS' = 'EVENT'): void {
+    if (!this.wss) return;
+
+    const payload = JSON.stringify({
+      type,
+      data: event,
+    });
+
+    this.wss.clients.forEach((ws) => {
+      const client = ws as AuthenticatedClient;
+      if (client.readyState !== WebSocket.OPEN) return;
+
+      // Organization boundary check
+      if (client.organizationId && client.organizationId !== event.organizationId) {
+        return;
+      }
+
+      // Spatial facility filter
+      if (client.subscribedFacilityId && client.subscribedFacilityId !== event.facilityId) {
+        return;
+      }
+
+      // Spatial room filter
+      if (client.subscribedRoomId && event.roomId && client.subscribedRoomId !== event.roomId) {
         return;
       }
 
