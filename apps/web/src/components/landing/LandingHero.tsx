@@ -9,7 +9,7 @@ import { RadarAnimation } from './RadarAnimation';
 
 export const LandingHero: React.FC = () => {
   return (
-    <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-32 overflow-hidden cyber-grid-bg bg-[#02040a]">
+    <section className="relative pt-44 pb-20 lg:pt-48 lg:pb-32 overflow-hidden cyber-grid-bg bg-[#02040a]">
       {/* Ambient Neon Cyan Background Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-20 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
