@@ -4,6 +4,7 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { OrganizationProvider } from './context/OrganizationContext';
 import { FacilityProvider } from './context/FacilityContext';
@@ -45,7 +46,8 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
         <OrganizationProvider>
           <FacilityProvider>
             <SensorProvider>
@@ -101,6 +103,7 @@ export function App() {
           </FacilityProvider>
         </OrganizationProvider>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

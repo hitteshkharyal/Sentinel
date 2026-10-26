@@ -176,14 +176,14 @@ export const SensorFleetShowcase: React.FC = () => {
               </div>
 
               {/* Technical Specifications Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {current.specs.map((sp) => (
                   <div
                     key={sp.label}
-                    className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-cyan-500/30 transition-all flex items-center justify-between"
+                    className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-cyan-500/30 transition-all flex items-center justify-between min-w-0 gap-2"
                   >
-                    <span className="text-xs font-mono text-slate-400">{sp.label}</span>
-                    <span className="text-xs font-mono font-bold text-cyan-400">{sp.value}</span>
+                    <span className="text-xs font-mono text-slate-400 truncate">{sp.label}</span>
+                    <span className="text-xs font-mono font-bold text-cyan-400 shrink-0 text-right">{sp.value}</span>
                   </div>
                 ))}
               </div>

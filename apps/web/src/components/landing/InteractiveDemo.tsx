@@ -192,14 +192,14 @@ export const InteractiveDemo: React.FC = () => {
                 setStepIndex(0);
                 setRunning(false);
               }}
-              className={`p-3.5 rounded-lg text-xs font-mono font-bold border transition-all flex items-center justify-center gap-2 select-none ${
+              className={`p-2.5 sm:p-3.5 rounded-lg text-xs font-mono font-bold border transition-all flex items-center justify-center gap-1.5 sm:gap-2 select-none min-w-0 ${
                 activeScenario === s.id
                   ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)]'
                   : 'bg-[#060e1d]/80 text-slate-400 border-cyan-500/15 hover:border-cyan-500/40 hover:text-cyan-300'
               }`}
             >
-              <span className="text-base">{s.icon}</span>
-              <span>{s.label}</span>
+              <span className="text-sm sm:text-base shrink-0">{s.icon}</span>
+              <span className="truncate">{s.label}</span>
             </button>
           ))}
         </div>
@@ -263,7 +263,7 @@ export const InteractiveDemo: React.FC = () => {
                     )}
                   </div>
                   <span
-                    className={`block mt-2.5 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider ${
+                    className={`block mt-2.5 text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider truncate px-0.5 ${
                       isPastOrCurrent ? 'text-cyan-400' : 'text-slate-600'
                     }`}
                   >
@@ -278,15 +278,15 @@ export const InteractiveDemo: React.FC = () => {
           {(() => {
             const currentStep = current.steps[stepIndex] ?? current.steps[0]!;
             return (
-              <div className="rounded-xl bg-[#030712] border border-cyan-500/25 p-5 sm:p-6 relative">
+              <div className="rounded-xl bg-[#030712] border border-cyan-500/25 p-4 sm:p-6 relative">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 pb-3 border-b border-cyan-500/15 font-mono text-xs">
                   <div className="flex items-center gap-2">
-                    <Terminal className="w-4 h-4 text-cyan-400" />
-                    <span className="text-cyan-300 font-bold uppercase">
+                    <Terminal className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span className="text-cyan-300 font-bold uppercase truncate">
                       ACTIVE STATE: STEP {stepIndex + 1} OF 5 ({currentStep.label})
                     </span>
                   </div>
-                  <span className="text-[11px] text-cyan-400/80">
+                  <span className="text-[11px] text-cyan-400/80 truncate">
                     MQTT TOPIC: <code className="text-cyan-300">sentinel/{activeScenario}/event</code>
                   </span>
                 </div>
@@ -299,7 +299,7 @@ export const InteractiveDemo: React.FC = () => {
                   <span className="text-slate-500 text-[10px] block mb-1 uppercase tracking-widest">
                     Decoded ESP32 Edge Ingestion Record:
                   </span>
-                  <code>{currentStep.payload}</code>
+                  <code className="block break-all whitespace-normal leading-relaxed">{currentStep.payload}</code>
                 </div>
               </div>
             );

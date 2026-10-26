@@ -20,6 +20,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Alert } from '../components/ui/Alert';
+import { ThemeSwitcher } from '../components/ui/ThemeSwitcher';
 
 declare global {
   interface Window {
@@ -208,6 +209,17 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#02040a] text-slate-100 cyber-grid-bg relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-cyan-500 selection:text-black overflow-hidden font-sans">
+      {/* Top Floating Theme & Portal Controls */}
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+        <ThemeSwitcher />
+        <Link
+          to="/"
+          className="text-xs font-mono text-slate-300 hover:text-cyan-400 transition-colors px-2.5 py-1.5 rounded-lg border border-cyan-500/20 bg-slate-950/80 backdrop-blur-md"
+        >
+          Portal
+        </Link>
+      </div>
+
       {/* Ambient Neon Cyan Background Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
 

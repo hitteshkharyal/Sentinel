@@ -79,16 +79,16 @@ export const PrivacyComparison: React.FC = () => {
                 key={row.capability}
                 className="grid grid-cols-1 md:grid-cols-12 p-4 sm:p-6 text-xs sm:text-sm hover:bg-cyan-950/20 transition-colors"
               >
-                <div className="md:col-span-4 font-mono font-bold text-white flex items-center pr-4 mb-2 md:mb-0">
+                <div className="md:col-span-4 font-mono font-bold text-white flex items-center pr-4 mb-2 md:mb-0 min-w-0">
                   {row.capability}
                 </div>
-                <div className="md:col-span-4 text-slate-400 flex items-start gap-2.5 pr-4 mb-2 md:mb-0 leading-relaxed font-light">
+                <div className="md:col-span-4 text-slate-400 flex items-start gap-2.5 pr-4 mb-2 md:mb-0 leading-relaxed font-light min-w-0 break-words">
                   <XCircle className="w-4 h-4 text-rose-500/80 shrink-0 mt-0.5" />
-                  <span>{row.camera}</span>
+                  <span className="min-w-0">{row.camera}</span>
                 </div>
-                <div className="md:col-span-4 text-cyan-300 font-mono flex items-start gap-2.5 leading-relaxed">
+                <div className="md:col-span-4 text-cyan-300 font-mono flex items-start gap-2.5 leading-relaxed min-w-0 break-words">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span className="font-semibold text-cyan-200">{row.sentinel}</span>
+                  <span className="font-semibold text-cyan-200 min-w-0">{row.sentinel}</span>
                 </div>
               </div>
             ))}

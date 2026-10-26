@@ -285,7 +285,7 @@ export const IndustryShowcase: React.FC = () => {
                   </span>
                   <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                 </div>
-                <div className="text-3xl sm:text-4xl font-mono font-black text-cyan-300 tracking-tight">
+                <div className="text-2xl sm:text-3xl font-mono font-black text-cyan-300 tracking-tight break-words">
                   {current.stat}
                 </div>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed font-light">

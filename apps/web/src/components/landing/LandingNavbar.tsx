@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, ArrowRight, Menu, X, Lock, PhoneCall } from 'lucide-react';
+import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 
 export const LandingNavbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -57,7 +58,10 @@ export const LandingNavbar: React.FC = () => {
         </div>
 
         {/* ── CTA Buttons ── */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-3">
+          {/* Tactical Multi-Theme Switcher (White, Green, Orange, Cyan) */}
+          <ThemeSwitcher />
+
           <div className="hidden xl:flex items-center gap-1.5 text-xs font-mono text-slate-400">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             <PhoneCall className="w-3 h-3 text-cyan-400" />
@@ -70,15 +74,26 @@ export const LandingNavbar: React.FC = () => {
           </div>
 
           <Link to="/dashboard">
-            <button className="btn-chamfer btn-cyan-glow px-5 py-2.5 text-xs font-mono tracking-wider uppercase flex items-center gap-2 cursor-pointer">
+            <button className="btn-chamfer btn-cyan-glow px-4 sm:px-5 py-2.5 text-xs font-mono tracking-wider uppercase flex items-center gap-2 cursor-pointer">
               <span>ENTER CONSOLE</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </Link>
         </div>
 
-        {/* ── Mobile Hamburger ── */}
-        <div className="flex lg:hidden">
+        {/* ── Mobile Hamburger & Quick Switcher ── */}
+        <div className="flex sm:hidden items-center gap-2">
+          <ThemeSwitcher />
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-slate-300 hover:text-cyan-400 rounded-lg border border-slate-800 bg-slate-900/80"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+        <div className="hidden sm:flex lg:hidden items-center gap-2">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -135,6 +150,10 @@ export const LandingNavbar: React.FC = () => {
           >
             LIVE SANDBOX
           </a>
+          <div className="pt-2 flex items-center justify-between px-3 py-2 border-t border-slate-800">
+            <span className="text-[11px] text-slate-400">ACTIVE THEME</span>
+            <ThemeSwitcher showLabels={true} />
+          </div>
           <div className="pt-2">
             <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="w-full block">
               <button className="w-full btn-chamfer btn-cyan-glow py-3 text-xs font-mono uppercase tracking-wider justify-center flex items-center gap-2">

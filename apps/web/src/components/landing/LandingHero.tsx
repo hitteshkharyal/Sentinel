@@ -19,9 +19,9 @@ export const LandingHero: React.FC = () => {
           {/* ── Left Column: Headline & Value Proposition ── */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             {/* Tactical Sector Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-cyan-950/60 text-cyan-300 text-xs font-mono font-semibold tracking-wider border border-cyan-500/30 shadow-xs shadow-cyan-500/10">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span>{'SECTOR_A // ZERO-OPTICAL PRIVACY PERIMETER'}</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-cyan-950/60 text-cyan-300 text-xs font-mono font-semibold tracking-wider border border-cyan-500/30 shadow-xs shadow-cyan-500/10 max-w-full">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+              <span className="truncate">{'SECTOR_A // ZERO-OPTICAL PRIVACY PERIMETER'}</span>
             </div>
 
             {/* Core Master Prompt Headline (GuardianEye Style) */}
@@ -84,41 +84,41 @@ export const LandingHero: React.FC = () => {
         </div>
 
         {/* ── High-Impact Metrics Ribbon (GuardianEye Stat Bar) ── */}
-        <div className="mt-16 pt-8 border-t border-cyan-500/20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Decision Latency</span>
+        <div className="mt-16 pt-8 border-t border-cyan-500/20 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+          <div className="hud-bracket p-3.5 sm:p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md min-w-0 overflow-hidden flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block truncate">Decision Latency</span>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-3xl font-black text-cyan-400 tracking-tight">&lt;12</span>
+              <span className="text-2xl sm:text-3xl font-black text-cyan-400 tracking-tight">&lt;12</span>
               <span className="text-xs font-mono text-cyan-300 font-bold">ms</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono mt-1">Edge BACnet & relay actuation</p>
+            <p className="text-[10px] text-slate-500 font-mono mt-1 line-clamp-1 sm:line-clamp-none">Edge BACnet & relay actuation</p>
           </div>
 
-          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Sensor Fleet Uptime</span>
+          <div className="hud-bracket p-3.5 sm:p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md min-w-0 overflow-hidden flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block truncate">Fleet Uptime</span>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-3xl font-black text-white tracking-tight">99.9</span>
+              <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">99.9</span>
               <span className="text-xs font-mono text-cyan-400 font-bold">%</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono mt-1">Industrial watchdog & reconnect</p>
+            <p className="text-[10px] text-slate-500 font-mono mt-1 line-clamp-1 sm:line-clamp-none">Industrial watchdog reconnect</p>
           </div>
 
-          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Optical Lenses Used</span>
+          <div className="hud-bracket p-3.5 sm:p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md min-w-0 overflow-hidden flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block truncate">Optical Lenses</span>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-3xl font-black text-cyan-400 tracking-tight">0</span>
+              <span className="text-2xl sm:text-3xl font-black text-cyan-400 tracking-tight">0</span>
               <span className="text-xs font-mono text-slate-400 font-bold">Lenses</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono mt-1">100% Zero-Knowledge privacy</p>
+            <p className="text-[10px] text-slate-500 font-mono mt-1 line-clamp-1 sm:line-clamp-none">100% Zero-Knowledge privacy</p>
           </div>
 
-          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Energy Conserved</span>
+          <div className="hud-bracket p-3.5 sm:p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md min-w-0 overflow-hidden flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block truncate">Energy Saved</span>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-3xl font-black text-white tracking-tight">38</span>
+              <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">38</span>
               <span className="text-xs font-mono text-emerald-400 font-bold">% Avg</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono mt-1">Autonomous setback twin verified</p>
+            <p className="text-[10px] text-slate-500 font-mono mt-1 line-clamp-1 sm:line-clamp-none">Autonomous setback verified</p>
           </div>
         </div>
       </div>

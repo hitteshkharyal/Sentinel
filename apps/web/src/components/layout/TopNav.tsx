@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import { useAuth } from '../../context/AuthContext';
 import { useOrganization } from '../../context/OrganizationContext';
 import { AccessApprovalsModal } from '../auth/AccessApprovalsModal';
@@ -171,6 +172,9 @@ export const TopNav: React.FC<TopNavProps> = ({
             />
           </>
         )}
+
+        {/* ── Visual Theme Switcher (White, Green, Orange, Cyan) ── */}
+        <ThemeSwitcher className="shrink-0" />
 
         {/* ── Notification Bell with Flyout ── */}
         <div className="relative">
