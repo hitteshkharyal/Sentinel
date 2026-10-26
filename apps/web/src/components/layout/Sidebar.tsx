@@ -19,6 +19,7 @@ import {
   Plus,
   Cpu,
   Activity,
+  BrainCircuit,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { useAuth } from '../../context/AuthContext';
@@ -113,6 +114,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       to: '/analytics',
       label: 'Analytics & ESG',
       icon: <BarChart3 className="w-5 h-5 shrink-0" />,
+    },
+    {
+      to: '/predictions',
+      label: 'Predictions & AI',
+      icon: <BrainCircuit className="w-5 h-5 shrink-0" />,
+      badge: 'ML',
+      badgeVariant: 'primary' as const,
     },
   ];
 

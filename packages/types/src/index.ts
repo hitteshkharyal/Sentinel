@@ -12,4 +12,5 @@ export * from './event.js';
 export * from './alert.js';
 export * from './automation.js';
 export * from './analytics.js';
+export * from './prediction.js';
 export * from './api.js';

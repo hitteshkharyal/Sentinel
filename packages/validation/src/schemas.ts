@@ -748,6 +748,15 @@ export const analyticsFilterSchema = z.object({
   interval: analyticsIntervalSchema.optional(),
 });
 
+// ── Prediction & Anomaly Detection (Day 13) ──
 
+export const predictionHorizonSchema = z.coerce.number().int().min(1).max(72).default(24);
 
+export const predictionInputWindowSchema = z.enum(['1h', '6h', '24h', '7d', '30d']).default('24h');
 
+export const predictionQuerySchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  horizonHours: predictionHorizonSchema.optional(),
+  inputWindow: predictionInputWindowSchema.optional(),
+});
