@@ -189,23 +189,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-2xl bg-[#060e1d]/95 rounded-2xl shadow-2xl border border-cyan-500/30 overflow-hidden z-10 animate-slide-up text-slate-100">
+      <div className="relative w-full max-w-2xl bg-[var(--theme-surface-card)] rounded-2xl shadow-2xl border border-[var(--theme-border)] overflow-hidden z-10 animate-slide-up text-[var(--theme-text)]">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-cyan-500/20 gap-3 bg-[#030712]/70">
-          <Search className="w-4 h-4 text-cyan-400 shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-[var(--theme-border)] gap-3 bg-[var(--theme-surface)]">
+          <Search className="w-4 h-4 text-[var(--theme-primary)] shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search rooms, facilities, sensors, device IDs..."
-            className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 outline-none font-mono"
+            className="w-full bg-transparent text-sm text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] outline-none font-mono font-medium"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-cyan-400 p-1.5 rounded-md"
+              className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] p-1.5 rounded-md"
               title="Clear text"
             >
               <X className="w-4 h-4" />
@@ -214,16 +214,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-cyan-950/40 transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-badge-bg)] transition-colors shrink-0"
             aria-label="Close search"
             title="Close"
           >
-            <X className="w-5 h-5 text-slate-300 hover:text-white" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-cyan-500/15 bg-[#040914] overflow-x-auto text-xs">
+        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--theme-border)] bg-[var(--theme-surface)] overflow-x-auto text-xs">
           {[
             { id: 'all', label: 'All Results' },
             { id: 'room', label: 'Rooms' },
@@ -237,8 +237,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               onClick={() => setFilterType(cat.id)}
               className={`px-2.5 py-1 rounded-lg font-mono text-xs transition-colors whitespace-nowrap border ${
                 filterType === cat.id
-                  ? 'bg-cyan-500 text-black border-cyan-400 font-bold'
-                  : 'text-slate-400 border-transparent hover:text-cyan-300 hover:bg-cyan-950/30'
+                  ? 'btn-cyan-glow font-bold'
+                  : 'text-[var(--theme-text-muted)] border-transparent hover:text-[var(--theme-text)] hover:bg-[var(--theme-badge-bg)]'
               }`}
             >
               {cat.label}
@@ -247,12 +247,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Results List */}
-        <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto p-2 divide-y divide-cyan-500/10 overscroll-contain">
+        <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto p-2 divide-y divide-[var(--theme-border)] overscroll-contain">
           {filteredResults.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-sm">
-              <Search className="w-8 h-8 text-cyan-500/40 mx-auto mb-2" />
-              <p className="font-bold text-white">No matching spaces or devices found</p>
-              <p className="text-xs text-slate-400 mt-1">
+            <div className="py-12 text-center text-[var(--theme-text-muted)] text-sm">
+              <Search className="w-8 h-8 text-[var(--theme-primary)] mx-auto mb-2 opacity-60" />
+              <p className="font-bold text-[var(--theme-text)]">No matching spaces or devices found</p>
+              <p className="text-xs text-[var(--theme-text-muted)] mt-1 font-normal">
                 {'Try searching for "Room 204", "Bus 12", "Hospital", or "mmWave"'}
               </p>
             </div>
@@ -268,18 +268,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   }}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
-                    isSelected ? 'bg-cyan-500/15 text-white border border-cyan-500/30' : 'hover:bg-cyan-950/20 text-slate-300 border border-transparent'
+                    isSelected ? 'bg-[var(--theme-badge-bg)] text-[var(--theme-text)] border border-[var(--theme-badge-border)]' : 'hover:bg-[var(--theme-badge-bg)] text-[var(--theme-text)] border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#030712] border border-cyan-500/30 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--theme-surface)] border border-[var(--theme-border)] flex items-center justify-center shrink-0">
                       {getTypeIcon(item.type)}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold truncate text-white">{item.title}</span>
+                        <span className="text-xs font-mono font-bold truncate text-[var(--theme-text)]">{item.title}</span>
                       </div>
-                      <p className="text-[11px] text-slate-400 truncate mt-0.5 font-light">{item.subtitle}</p>
+                      <p className="text-[11px] text-[var(--theme-text-muted)] truncate mt-0.5 font-normal">{item.subtitle}</p>
                     </div>
                   </div>
 
@@ -289,7 +289,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                         {item.badge}
                       </Badge>
                     )}
-                    <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-0.5 text-cyan-400' : 'text-slate-600'}`} />
+                    <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-0.5 text-[var(--theme-primary)]' : 'text-[var(--theme-text-muted)]'}`} />
                   </div>
                 </div>
               );
@@ -298,16 +298,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Footer Shortcut Helper */}
-        <div className="px-4 py-2.5 bg-[#030712] border-t border-cyan-500/20 flex items-center justify-between text-[10px] text-slate-500">
+        <div className="px-4 py-2.5 bg-[var(--theme-surface)] border-t border-[var(--theme-border)] flex items-center justify-between text-[10px] text-[var(--theme-text-muted)]">
           <div className="flex items-center gap-3">
             <span>
-              <kbd className="px-1.5 py-0.5 bg-[#060e1d] border border-cyan-500/30 rounded text-cyan-400">↑↓</kbd> Navigate
+              <kbd className="px-1.5 py-0.5 bg-[var(--theme-badge-bg)] border border-[var(--theme-badge-border)] rounded text-[var(--theme-primary)] font-bold">↑↓</kbd> Navigate
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 bg-[#060e1d] border border-cyan-500/30 rounded text-cyan-400">↵</kbd> Select
+              <kbd className="px-1.5 py-0.5 bg-[var(--theme-badge-bg)] border border-[var(--theme-badge-border)] rounded text-[var(--theme-primary)] font-bold">↵</kbd> Select
             </span>
           </div>
-          <span className="text-cyan-400/80 font-mono">SENTINEL Global Mesh Index</span>
+          <span className="text-[var(--theme-primary)] font-mono font-semibold">SENTINEL Global Mesh Index</span>
         </div>
       </div>
     </div>

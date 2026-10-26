@@ -22,23 +22,23 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   const variantStyles = {
-    default: 'bg-[#060e1d] text-slate-300 border-cyan-500/20',
-    primary: 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40',
-    info: 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40',
-    success: 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40',
-    warning: 'bg-amber-950/60 text-amber-300 border-amber-500/40',
-    danger: 'bg-rose-950/60 text-rose-300 border-rose-500/40',
-    neutral: 'bg-[#040814] text-slate-400 border-slate-800',
+    default: 'bg-[var(--theme-badge-bg)] text-[var(--theme-text)] border-[var(--theme-border)] font-bold',
+    primary: 'bg-[var(--theme-badge-bg)] text-[var(--theme-primary)] border-[var(--theme-badge-border)] font-bold',
+    info: 'bg-[var(--theme-badge-bg)] text-[var(--theme-primary)] border-[var(--theme-badge-border)] font-bold',
+    success: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border-emerald-500/35 font-bold',
+    warning: 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border-amber-500/35 font-bold',
+    danger: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/35 font-bold',
+    neutral: 'bg-[var(--theme-surface-card)] text-[var(--theme-text-muted)] border-[var(--theme-border)] font-bold',
   };
 
   const dotColors = {
-    default: 'bg-slate-400',
-    primary: 'bg-cyan-400',
-    info: 'bg-cyan-400',
+    default: 'bg-[var(--theme-text-muted)]',
+    primary: 'bg-[var(--theme-primary)]',
+    info: 'bg-[var(--theme-primary)]',
     success: 'bg-emerald-400',
     warning: 'bg-amber-400',
     danger: 'bg-rose-400',
-    neutral: 'bg-slate-500',
+    neutral: 'bg-[var(--theme-text-dim)]',
   };
 
   return (

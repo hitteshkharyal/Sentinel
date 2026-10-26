@@ -36,17 +36,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        'btn-chamfer btn-cyan-glow bg-cyan-500 text-black hover:bg-cyan-400 active:bg-cyan-600 font-bold border border-cyan-400 focus:ring-cyan-400',
+        'bg-[var(--theme-primary)] text-[var(--theme-btn-text)] hover:opacity-90 active:opacity-80 font-bold border border-transparent shadow-md focus:ring-[var(--theme-primary)]',
       secondary:
-        'bg-cyan-950/60 text-cyan-300 hover:bg-cyan-900/60 active:bg-cyan-950 border border-cyan-500/30 focus:ring-cyan-500',
+        'bg-[var(--theme-badge-bg)] text-[var(--theme-text)] hover:bg-[var(--theme-border)] active:opacity-75 border border-[var(--theme-badge-border)] focus:ring-[var(--theme-primary)]',
       outline:
-        'bg-[#060e1d]/80 text-slate-200 hover:text-white hover:bg-[#0c1a33] border border-cyan-500/25 active:bg-[#071124] focus:ring-cyan-400',
+        'bg-[var(--theme-surface)] text-[var(--theme-text)] hover:bg-[var(--theme-badge-bg)] border border-[var(--theme-border)] active:opacity-85 focus:ring-[var(--theme-primary)] shadow-xs',
       ghost:
-        'bg-transparent text-slate-400 hover:text-cyan-300 hover:bg-cyan-950/30 focus:ring-cyan-500',
+        'bg-transparent text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] hover:bg-[var(--theme-badge-bg)] focus:ring-[var(--theme-primary)]',
       danger:
-        'bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700 shadow-sm shadow-rose-600/30 focus:ring-rose-500 border border-rose-500/40',
+        'bg-rose-600 text-white hover:bg-rose-500 active:bg-rose-700 shadow-sm shadow-rose-600/30 focus:ring-rose-500 border border-rose-500/40 font-bold',
       success:
-        'bg-emerald-600/90 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-sm shadow-emerald-600/30 focus:ring-emerald-500 border border-emerald-500/40',
+        'bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-sm shadow-emerald-600/30 focus:ring-emerald-500 border border-emerald-500/40 font-bold',
     };
 
     return (

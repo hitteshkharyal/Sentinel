@@ -8,9 +8,9 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className = '', variant = 'default', hoverable = false, children, ...props }, ref) => {
     const variantStyles = {
-      default: 'bg-[#060e1d]/85 backdrop-blur-md border border-cyan-500/20 shadow-xl text-slate-100',
-      glass: 'glass-card text-slate-100',
-      subtle: 'bg-[#030814]/80 border border-cyan-500/15 text-slate-200',
+      default: 'glass-card text-[var(--theme-text)]',
+      glass: 'glass-card text-[var(--theme-text)]',
+      subtle: 'glass-subtle text-[var(--theme-text)]',
     };
 
     const hoverStyle = hoverable ? 'glass-card-hover cursor-pointer' : '';
@@ -41,7 +41,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttribut
   ({ className = '', children, ...props }, ref) => (
     <h3
       ref={ref}
-      className={`text-lg font-bold text-white tracking-tight leading-snug ${className}`}
+      className={`text-lg font-bold text-[var(--theme-text)] tracking-tight leading-snug ${className}`}
       {...props}
     >
       {children}
@@ -52,7 +52,7 @@ CardTitle.displayName = 'CardTitle';
 
 export const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className = '', children, ...props }, ref) => (
-    <p ref={ref} className={`text-sm text-slate-400 mt-1 leading-relaxed ${className}`} {...props}>
+    <p ref={ref} className={`text-sm text-[var(--theme-text-muted)] mt-1 leading-relaxed ${className}`} {...props}>
       {children}
     </p>
   )
@@ -72,7 +72,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
   ({ className = '', children, ...props }, ref) => (
     <div
       ref={ref}
-      className={`px-6 pt-3 pb-6 flex items-center border-t border-cyan-500/15 mt-2 ${className}`}
+      className={`px-6 pt-3 pb-6 flex items-center border-t border-[var(--theme-border)] mt-2 ${className}`}
       {...props}
     >
       {children}
