@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────
+// SENTINEL Web — Operations Center Overview
+// GuardianEye Inspired Obsidian Glassmorphism
+// ─────────────────────────────────────────────
+
 import React, { useState } from 'react';
 import {
   Building2,
@@ -102,81 +107,81 @@ export const DashboardOverviewPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* ── Top Metric KPI Counters (Prompt #38 Specification) ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+    <div className="space-y-6 text-slate-100 font-sans">
+      {/* ── Top Metric KPI Counters ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 font-mono">
         {/* Facilities */}
-        <Card variant="default" className="p-4 sm:p-5">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Facilities</span>
-            <Building2 className="w-4 h-4 text-slate-400" />
+        <div className="glass-card hud-bracket p-4 sm:p-5 relative">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-xs uppercase tracking-wider">Facilities</span>
+            <Building2 className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">12</span>
-            <span className="text-xs text-slate-500 font-medium">Active sites</span>
+            <span className="text-2xl sm:text-3xl font-bold text-white">12</span>
+            <span className="text-[11px] text-cyan-400/80">Active sites</span>
           </div>
-        </Card>
+        </div>
 
         {/* Monitored Rooms */}
-        <Card variant="default" className="p-4 sm:p-5">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Rooms</span>
-            <DoorClosed className="w-4 h-4 text-slate-400" />
+        <div className="glass-card hud-bracket p-4 sm:p-5 relative">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-xs uppercase tracking-wider">Rooms</span>
+            <DoorClosed className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">184</span>
-            <span className="text-xs text-slate-500 font-medium">Digital twins</span>
+            <span className="text-2xl sm:text-3xl font-bold text-white">184</span>
+            <span className="text-[11px] text-cyan-400/80">Digital twins</span>
           </div>
-        </Card>
+        </div>
 
         {/* Total Sensors */}
-        <Card variant="default" className="p-4 sm:p-5">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Sensors</span>
-            <Radio className="w-4 h-4 text-slate-400" />
+        <div className="glass-card hud-bracket p-4 sm:p-5 relative">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-xs uppercase tracking-wider">Sensors</span>
+            <Radio className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-slate-900">421</span>
-            <span className="text-xs text-slate-500 font-medium">Deployed</span>
+            <span className="text-2xl sm:text-3xl font-bold text-white">421</span>
+            <span className="text-[11px] text-cyan-400/80">Deployed</span>
           </div>
-        </Card>
+        </div>
 
         {/* Online Devices */}
-        <Card variant="default" className="p-4 sm:p-5">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Online</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+        <div className="glass-card hud-bracket p-4 sm:p-5 relative">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-xs uppercase tracking-wider">Online Mesh</span>
+            <CheckCircle2 className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-emerald-600">397</span>
-            <span className="text-xs text-emerald-700 font-medium">94.3% mesh</span>
+            <span className="text-2xl sm:text-3xl font-bold text-cyan-300">397</span>
+            <span className="text-[11px] text-emerald-400">94.3% mesh</span>
           </div>
-        </Card>
+        </div>
 
         {/* Active Alerts */}
-        <Card variant="default" className="p-4 sm:p-5 border-rose-200/90 bg-rose-50/40 col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-rose-700 mb-2">
+        <div className="glass-card hud-bracket p-4 sm:p-5 relative border-rose-500/40 bg-rose-950/20 col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-rose-400 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">Active Alerts</span>
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
+            <AlertTriangle className="w-4 h-4 text-rose-400 animate-pulse" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-rose-600">3</span>
-            <span className="text-xs text-rose-700 font-bold">Require action</span>
+            <span className="text-2xl sm:text-3xl font-black text-rose-400">3</span>
+            <span className="text-[11px] text-rose-400 font-bold">Require action</span>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* ── ACTION REQUIRED Priority Queue (Prompt #38 Specification) ── */}
-      <div className="space-y-3">
+      {/* ── ACTION REQUIRED Priority Queue ── */}
+      <div className="space-y-3 font-mono">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping-slow" />
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              ACTION REQUIRED
+            <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+            <h2 className="text-sm sm:text-base font-bold text-white tracking-wider uppercase flex items-center gap-2">
+              Action Required // Escalation Queue
             </h2>
           </div>
-          <span className="text-xs font-semibold text-slate-500">
-            Ordered by Life Safety & Escalation SLA
+          <span className="text-[11px] text-cyan-400/80">
+            Ordered by Life Safety &amp; Escalation SLA
           </span>
         </div>
 
@@ -185,22 +190,22 @@ export const DashboardOverviewPage: React.FC = () => {
             const isAck = acknowledgedAlerts[item.id];
             const severityStyles = {
               critical: {
-                border: 'border-rose-300 bg-white shadow-sm shadow-rose-950/5',
+                border: 'border-rose-500/40 bg-gradient-to-r from-rose-950/25 to-[#060e1d]/90',
                 badge: 'danger' as const,
                 badgeLabel: '🚨 CRITICAL ESCALATION',
-                icon: <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />,
+                icon: <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0" />,
               },
               high: {
-                border: 'border-amber-300 bg-white shadow-sm shadow-amber-950/5',
+                border: 'border-amber-500/40 bg-gradient-to-r from-amber-950/25 to-[#060e1d]/90',
                 badge: 'warning' as const,
                 badgeLabel: '⚠️ URGENT ASSISTANCE',
-                icon: <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />,
+                icon: <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />,
               },
               warning: {
-                border: 'border-sky-300 bg-white shadow-sm shadow-sky-950/5',
+                border: 'border-cyan-500/40 bg-gradient-to-r from-cyan-950/25 to-[#060e1d]/90',
                 badge: 'info' as const,
                 badgeLabel: '💨 CO₂ MITIGATION ACTIVE',
-                icon: <Wind className="w-5 h-5 text-sky-600 shrink-0" />,
+                icon: <Wind className="w-5 h-5 text-cyan-400 shrink-0" />,
               },
             };
 
@@ -209,39 +214,39 @@ export const DashboardOverviewPage: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className={`rounded-2xl border p-5 transition-all ${style.border} ${isAck ? 'opacity-65' : ''}`}
+                className={`hud-bracket glass-card p-5 transition-all ${style.border} ${isAck ? 'opacity-60' : ''}`}
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   {/* Left Column: Details */}
                   <div className="flex items-start gap-3.5 min-w-0">
-                    <div className="mt-0.5 p-2 rounded-xl bg-slate-100/90">{style.icon}</div>
+                    <div className="mt-0.5 p-2 rounded-xl bg-[#030712] border border-cyan-500/20">{style.icon}</div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <Badge variant={style.badge} size="sm" dot pulsing={!isAck}>
                           {style.badgeLabel}
                         </Badge>
-                        <span className="text-xs font-semibold text-slate-700">{item.facility}</span>
-                        <span className="text-xs text-slate-400">·</span>
-                        <span className="text-xs font-semibold text-sentinel-700">{item.location}</span>
-                        <span className="text-xs text-slate-400">·</span>
+                        <span className="text-xs font-bold text-slate-300">{item.facility}</span>
+                        <span className="text-xs text-slate-600">·</span>
+                        <span className="text-xs font-semibold text-cyan-400">{item.location}</span>
+                        <span className="text-xs text-slate-600">·</span>
                         <span className="text-xs text-slate-400">{item.time}</span>
                       </div>
 
-                      <h3 className="text-base font-bold text-slate-900 tracking-tight leading-snug">
+                      <h3 className="text-base font-bold text-white tracking-tight leading-snug font-sans">
                         {item.title}
                       </h3>
 
-                      <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      <p className="text-xs text-slate-300 mt-1.5 leading-relaxed font-sans font-light">
                         {item.context}
                       </p>
 
                       <div className="mt-3 flex flex-wrap items-center gap-y-1 gap-x-4 text-xs">
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                          <Radio className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <Radio className="w-3.5 h-3.5 text-cyan-400" />
                           <span className="font-mono text-[11px]">{item.sensor}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                          <Zap className="w-3 h-3 text-emerald-600" />
+                        <div className="flex items-center gap-1.5 font-mono text-[11px] text-cyan-300 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
+                          <Zap className="w-3 h-3 text-cyan-400" />
                           <span>{item.actionTaken}</span>
                         </div>
                       </div>
@@ -249,14 +254,14 @@ export const DashboardOverviewPage: React.FC = () => {
                   </div>
 
                   {/* Right Column: Responsible Action Buttons */}
-                  <div className="flex md:flex-col items-end justify-between md:justify-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                    <span className="text-[11px] font-bold text-rose-600 text-right">
+                  <div className="flex md:flex-col items-end justify-between md:justify-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-cyan-500/15">
+                    <span className="text-[11px] font-mono font-bold text-rose-400 text-right">
                       {item.sla}
                     </span>
                     <div className="flex items-center gap-2">
                       {isAck ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-semibold">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-semibold">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
                           Acknowledged
                         </span>
                       ) : (
@@ -266,7 +271,7 @@ export const DashboardOverviewPage: React.FC = () => {
                           onClick={() => handleAcknowledge(item.id)}
                           className="text-xs whitespace-nowrap"
                         >
-                          Acknowledge & Act
+                          Acknowledge &amp; Act
                         </Button>
                       )}
                       <Button
@@ -296,28 +301,28 @@ export const DashboardOverviewPage: React.FC = () => {
                 <CardTitle>Autonomous Sensor Stream</CardTitle>
                 <CardDescription>Live edge signals decoded and routed without raw camera feeds</CardDescription>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                MQTT Ingestion Active
+              <div className="flex items-center gap-1.5 text-xs text-cyan-300 font-mono font-semibold bg-cyan-950/50 px-2.5 py-1 rounded-full border border-cyan-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                MQTT Active
               </div>
             </div>
           </CardHeader>
-          <CardContent className="divide-y divide-slate-100">
+          <CardContent className="divide-y divide-cyan-500/10">
             {recentTelemetryStream.map((item) => (
-              <div key={item.id} className="py-3 flex items-center justify-between gap-4 text-xs">
+              <div key={item.id} className="py-3 flex items-center justify-between gap-4 text-xs font-mono">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-900">{item.room}</span>
+                    <span className="font-bold text-white">{item.room}</span>
                     <Badge variant="primary" size="sm">
                       {item.type}
                     </Badge>
                   </div>
-                  <p className="text-slate-600 font-mono text-[11px] mt-0.5">{item.val}</p>
-                  <p className="text-emerald-700 font-medium text-[11px] mt-0.5 flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-emerald-600" /> {item.action}
+                  <p className="text-cyan-400/90 text-[11px] mt-0.5">{item.val}</p>
+                  <p className="text-emerald-400 font-medium text-[11px] mt-0.5 flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-emerald-400" /> {item.action}
                   </p>
                 </div>
-                <span className="text-[11px] text-slate-400 shrink-0 font-medium">{item.time}</span>
+                <span className="text-[11px] text-slate-500 shrink-0">{item.time}</span>
               </div>
             ))}
           </CardContent>
@@ -327,34 +332,34 @@ export const DashboardOverviewPage: React.FC = () => {
         <Card variant="glass" className="flex flex-col justify-between">
           <div>
             <CardHeader>
-              <div className="flex items-center gap-2 text-sentinel-700 font-semibold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-sentinel-600" />
+              <div className="flex items-center gap-2 text-cyan-400 font-mono font-semibold text-xs uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
                 <span>Autonomous Efficiency</span>
               </div>
-              <CardTitle className="mt-1">Energy & Privacy Impact</CardTitle>
+              <CardTitle className="mt-1">Energy &amp; Privacy Impact</CardTitle>
               <CardDescription>Metrics verified across 184 monitored zones today</CardDescription>
             </CardHeader>
 
-            <CardContent className="space-y-4 pt-1">
-              <div className="p-3.5 rounded-xl bg-sentinel-50/70 border border-sentinel-100">
+            <CardContent className="space-y-4 pt-1 font-mono">
+              <div className="p-3.5 rounded-xl bg-[#030814] border border-cyan-500/20">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-600 font-medium">HVAC Setback Savings</span>
-                  <span className="text-xs font-bold text-sentinel-700">142.8 kWh</span>
+                  <span className="text-xs text-slate-400">HVAC Setback Savings</span>
+                  <span className="text-xs font-bold text-cyan-300">142.8 kWh</span>
                 </div>
-                <div className="w-full bg-sentinel-200/60 h-2 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-sentinel-600 h-full rounded-full w-[68%]" />
+                <div className="w-full bg-[#071329] h-2 rounded-full mt-2 overflow-hidden border border-cyan-500/20">
+                  <div className="bg-cyan-500 h-full rounded-full w-[68%]" />
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1.5">
+                <p className="text-[10px] text-slate-400 mt-1.5 font-light">
                   68 unoccupied rooms set to standby temperature.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100">
+              <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-600 font-medium">Privacy Compliance</span>
-                  <span className="text-xs font-bold text-emerald-700">100% HIPAA/GDPR</span>
+                  <span className="text-xs text-slate-400">Privacy Compliance</span>
+                  <span className="text-xs font-bold text-emerald-300">100% HIPAA/GDPR</span>
                 </div>
-                <p className="text-[11px] text-slate-600 mt-1.5 leading-relaxed">
+                <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed font-light">
                   Zero biometric images stored or captured. mmWave points are processed on edge microcontrollers.
                 </p>
               </div>

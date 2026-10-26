@@ -18,17 +18,17 @@ export const Alert: React.FC<AlertProps> = ({
   ...props
 }) => {
   const variantStyles = {
-    info: 'bg-blue-50/80 border-blue-200 text-blue-900',
-    success: 'bg-emerald-50/80 border-emerald-200 text-emerald-900',
-    warning: 'bg-amber-50/80 border-amber-200 text-amber-900',
-    danger: 'bg-rose-50/80 border-rose-200 text-rose-900',
+    info: 'bg-cyan-950/40 border-cyan-500/30 text-cyan-200 backdrop-blur-md',
+    success: 'bg-emerald-950/40 border-emerald-500/30 text-emerald-200 backdrop-blur-md',
+    warning: 'bg-amber-950/40 border-amber-500/30 text-amber-200 backdrop-blur-md',
+    danger: 'bg-rose-950/40 border-rose-500/30 text-rose-200 backdrop-blur-md',
   };
 
   const defaultIcons = {
-    info: <Info className="w-5 h-5 text-blue-600 shrink-0" />,
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />,
-    warning: <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />,
-    danger: <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />,
+    info: <Info className="w-5 h-5 text-cyan-400 shrink-0" />,
+    success: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />,
+    warning: <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />,
+    danger: <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />,
   };
 
   return (
@@ -38,15 +38,15 @@ export const Alert: React.FC<AlertProps> = ({
       {...props}
     >
       <div className="mt-0.5">{icon || defaultIcons[variant]}</div>
-      <div className="flex-1 text-sm">
-        {title && <h5 className="font-semibold leading-tight mb-1">{title}</h5>}
+      <div className="flex-1 text-xs sm:text-sm font-mono">
+        {title && <h5 className="font-bold leading-tight mb-1 text-white">{title}</h5>}
         <div className="leading-relaxed opacity-90">{children}</div>
       </div>
       {onDismiss && (
         <button
           type="button"
           onClick={onDismiss}
-          className="p-1 rounded-lg hover:bg-black/5 opacity-70 hover:opacity-100 transition-opacity focus:outline-none"
+          className="p-1 rounded-lg hover:bg-white/10 opacity-70 hover:opacity-100 transition-opacity focus:outline-none"
           aria-label="Dismiss alert"
         >
           <X className="w-4 h-4" />

@@ -1,5 +1,6 @@
 // ─────────────────────────────────────────────
 // SENTINEL Web — Enterprise Login Page
+// GuardianEye Inspired Obsidian Glassmorphism
 // ─────────────────────────────────────────────
 
 import React, { useState, useEffect } from 'react';
@@ -43,8 +44,6 @@ declare global {
 export const LoginPage: React.FC = () => {
   const { login, loginWithGoogle, isAuthenticated, checkEmailStatus } = useAuth();
   const navigate = useNavigate();
-
-
   const location = useLocation();
 
   const [email, setEmail] = useState('');
@@ -135,7 +134,7 @@ export const LoginPage: React.FC = () => {
         if (targetDiv) {
           targetDiv.innerHTML = '';
           window.google.accounts.id.renderButton(targetDiv, {
-            theme: 'outline',
+            theme: 'filled_black',
             size: 'large',
             width: 380,
             text: 'continue_with',
@@ -171,7 +170,7 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  // Development convenience demo login (uses bootstrap admin credentials)
+  // Development convenience demo login
   const handleDemoLogin = async () => {
     try {
       setIsSubmitting(true);
@@ -186,7 +185,6 @@ export const LoginPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-
 
   // Check approval status for pending user
   const handleCheckStatus = async () => {
@@ -209,44 +207,49 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-sentinel-500 selection:text-white radial-grid-bg">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        {/* Brand Logo Header */}
+    <div className="min-h-screen bg-[#02040a] text-slate-100 cyber-grid-bg relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-cyan-500 selection:text-black overflow-hidden font-sans">
+      {/* Ambient Neon Cyan Background Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Brand Header */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <Link to="/" className="inline-flex items-center gap-3 group mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sentinel-600 to-sentinel-800 flex items-center justify-center text-white shadow-lg shadow-sentinel-600/25 group-hover:scale-105 transition-transform">
-            <Shield className="w-7 h-7" />
+          {/* GuardianEye 45° Diamond Emblem */}
+          <div className="relative w-11 h-11 flex items-center justify-center">
+            <div className="absolute inset-0 bg-cyan-500/20 border border-cyan-400 rotate-45 rounded-sm shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-105 transition-transform" />
+            <Shield className="w-5 h-5 text-cyan-300 relative z-10" />
           </div>
-          <span className="font-black text-2xl tracking-tight text-slate-900">
-            SENTINEL
+          <span className="font-mono font-black text-2xl tracking-wider text-white">
+            SENTINEL<span className="text-cyan-400">.AI</span>
           </span>
         </Link>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-          Sign in to Operations Console
+        <h2 className="text-2xl font-black font-mono tracking-tight text-white uppercase">
+          OPERATIONS CONSOLE
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
-          Privacy-preserving autonomous physical space intelligence
+        <p className="text-xs text-cyan-400/80 mt-1 font-mono">
+          {'// ZERO-OPTICAL AUTONOMOUS SPATIAL INTELLIGENCE'}
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl shadow-xl border border-slate-200/90 relative overflow-hidden">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 relative z-10">
+        <div className="glass-card hud-bracket p-6 sm:p-10 relative">
           {/* ── PENDING APPROVAL STATE CARD ── */}
           {pendingEmail ? (
-            <div className="space-y-5 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 mx-auto flex items-center justify-center shadow-inner">
+            <div className="space-y-5 text-center font-mono">
+              <div className="w-14 h-14 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center shadow-lg">
                 <Clock className="w-7 h-7 animate-pulse" />
               </div>
 
               <div>
-                <span className="inline-block px-2.5 py-1 rounded-full text-[11px] font-black tracking-wider uppercase bg-amber-100 text-amber-800 mb-2">
+                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-bold tracking-widest uppercase bg-amber-950 text-amber-400 border border-amber-500/30 mb-2">
                   Access Restricted · Hardware Perimeter
                 </span>
-                <h3 className="text-lg font-bold text-slate-900">
-                  Registration Awaiting Admin Approval
+                <h3 className="text-lg font-bold text-white uppercase">
+                  Awaiting Administrator Approval
                 </h3>
-                <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
-                  Sentinel controls physical IoT radar sensors and automation actuators. To prevent unauthorized facility access, your account{' '}
-                  <strong className="text-slate-800">({pendingEmail})</strong> requires explicit approval by an administrator.
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-sans font-light">
+                  Sentinel governs physical IoT radar sensors and automation actuators. Your account{' '}
+                  <strong className="text-cyan-300 font-mono">({pendingEmail})</strong> requires explicit approval before access is enabled.
                 </p>
               </div>
 
@@ -259,21 +262,21 @@ export const LoginPage: React.FC = () => {
                 </Alert>
               )}
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2 text-xs">
+              <div className="p-4 rounded-xl bg-[#020612] border border-cyan-500/20 text-left space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 font-semibold uppercase text-[10px]">Account:</span>
-                  <span className="font-bold text-slate-800">{pendingEmail}</span>
+                  <span className="text-slate-500 uppercase text-[10px]">Account:</span>
+                  <span className="font-bold text-cyan-300 truncate max-w-[200px]">{pendingEmail}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 font-semibold uppercase text-[10px]">Status:</span>
-                  <span className="inline-flex items-center gap-1 font-bold text-amber-600">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  <span className="text-slate-500 uppercase text-[10px]">Status:</span>
+                  <span className="inline-flex items-center gap-1 font-bold text-amber-400">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
                     Pending Authorization
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400 font-semibold uppercase text-[10px]">Perimeter:</span>
-                  <span className="text-slate-600">Zero-Trust Protected</span>
+                  <span className="text-slate-500 uppercase text-[10px]">Perimeter:</span>
+                  <span className="text-slate-400">Zero-Trust Protected</span>
                 </div>
               </div>
 
@@ -298,7 +301,7 @@ export const LoginPage: React.FC = () => {
                     setPendingEmail(null);
                     setStatusFeedback(null);
                   }}
-                  className="w-full justify-center text-xs text-slate-500 hover:text-slate-800"
+                  className="w-full justify-center text-xs text-slate-400 hover:text-cyan-300"
                 >
                   Sign in with a different account
                 </Button>
@@ -308,11 +311,11 @@ export const LoginPage: React.FC = () => {
             <>
               {/* Account Linked Success Banner */}
               {linkedMessage && (
-                <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="mb-5 p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-200 flex items-start gap-2.5 font-mono">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold">Google Account Linked</span>
-                    <p className="text-emerald-700 mt-0.5">
+                    <span className="font-bold uppercase tracking-wider">Google Account Linked</span>
+                    <p className="text-emerald-400/80 mt-0.5 font-sans font-light">
                       Your Google identity was automatically linked to your existing profile.
                     </p>
                   </div>
@@ -330,25 +333,25 @@ export const LoginPage: React.FC = () => {
               )}
 
               {/* Hardware Security Notice Banner */}
-              <div className="mb-5 p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-sentinel-600 shrink-0 mt-0.5" />
+              <div className="mb-5 p-3 rounded-xl bg-[#040e21] border border-cyan-500/25 text-[11px] text-slate-300 flex items-start gap-2.5 font-mono">
+                <AlertTriangle className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Hardware IoT Perimeter:</strong> Only administrator-allowed emails or pre-authorized accounts can access portal controls.
+                  <strong className="text-cyan-300">HARDWARE PERIMETER:</strong> Authorized facility operators and pre-approved accounts only.
                 </span>
               </div>
 
-              {/* ── 1. Google OAuth Button Section ── */}
+              {/* ── 1. Google OAuth & Quick Demo ── */}
               <div className="space-y-3">
                 <div id="google-btn-container" className="flex justify-center min-h-[44px]" />
 
-                {/* Quick Demo Operator Login (when testing without Google popup) */}
+                {/* Quick Demo Operator Login */}
                 <Button
                   type="button"
                   variant="outline"
                   size="md"
                   onClick={handleDemoLogin}
                   disabled={isSubmitting}
-                  className="w-full justify-center text-xs border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5"
+                  className="w-full justify-center text-xs font-mono font-bold py-2.5 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
                 >
                   <span className="mr-2">⚡</span> Quick Demo Login (System Admin)
                 </Button>
@@ -358,22 +361,23 @@ export const LoginPage: React.FC = () => {
                     setEmail('admin@sentinel.local');
                     setPassword('SentinelAdmin2026!');
                   }}
-                  className="text-[11px] text-slate-500 text-center font-mono bg-slate-100/80 hover:bg-slate-200/60 transition-colors py-1.5 px-2 rounded-lg border border-slate-200/60 cursor-pointer select-all"
+                  className="text-[10px] text-cyan-400/80 text-center font-mono bg-[#020612] hover:bg-[#061226] transition-colors py-2 px-3 rounded-lg border border-cyan-500/20 cursor-pointer select-all"
                   title="Click to autofill form fields"
                 >
-                  <span className="text-slate-400 font-sans mr-1">Credentials:</span>
-                  <strong>admin@sentinel.local</strong> · <strong>SentinelAdmin2026!</strong>
+                  <span className="text-slate-500 uppercase mr-1">Pre-filled:</span>
+                  <strong className="text-cyan-300">admin@sentinel.local</strong> · <strong className="text-cyan-300">SentinelAdmin2026!</strong>
                 </div>
               </div>
-
 
               {/* ── 2. Divider ── */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200" />
+                  <div className="w-full border-t border-cyan-500/15" />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                  <span className="bg-white px-3 text-slate-400 font-semibold">Or with credentials</span>
+                <div className="relative flex justify-center text-[10px] font-mono uppercase tracking-widest">
+                  <span className="bg-[#060e1d] px-3 text-slate-400 font-semibold border border-cyan-500/20 rounded">
+                    Or with credentials
+                  </span>
                 </div>
               </div>
 
@@ -390,11 +394,11 @@ export const LoginPage: React.FC = () => {
                 />
 
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                  <div className="flex items-center justify-between mb-1.5 font-mono">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                       Password
                     </label>
-                    <span className="text-[11px] text-slate-400">Argon2 / bcrypt protected</span>
+                    <span className="text-[10px] text-cyan-400/70">Argon2 / bcrypt protected</span>
                   </div>
                   <div className="relative">
                     <input
@@ -404,12 +408,12 @@ export const LoginPage: React.FC = () => {
                       placeholder="••••••••"
                       required
                       disabled={isSubmitting}
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sentinel-500 focus:ring-2 focus:ring-sentinel-500/20 outline-none pr-10"
+                      className="w-full rounded-xl border border-cyan-500/25 bg-[#030712]/90 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 font-mono focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 outline-none pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 focus:outline-none"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -424,23 +428,23 @@ export const LoginPage: React.FC = () => {
                     size="md"
                     isLoading={isSubmitting}
                     rightIcon={<ArrowRight className="w-4 h-4" />}
-                    className="w-full justify-center font-bold shadow-md shadow-sentinel-600/20 py-2.5"
+                    className="w-full justify-center font-bold text-xs uppercase tracking-wider py-2.5"
                   >
-                    Sign In to Platform
+                    Sign In to Console
                   </Button>
                 </div>
               </form>
 
               {/* ── 4. Privacy Footer Guarantee ── */}
-              <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-                <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 font-medium mb-3">
-                  <Lock className="w-3.5 h-3.5 text-sentinel-600" />
-                  <span>Encrypted Session · Zero Camera Feeds</span>
+              <div className="mt-6 pt-4 border-t border-cyan-500/15 text-center font-mono">
+                <div className="flex items-center justify-center gap-1.5 text-[11px] text-cyan-400/80 mb-3">
+                  <Lock className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>ENCRYPTED SESSION · ZERO CAMERA FEEDS</span>
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400 font-sans">
                   Don&apos;t have an account?{' '}
-                  <Link to="/register" className="font-bold text-sentinel-600 hover:text-sentinel-700 hover:underline">
-                    Register space
+                  <Link to="/register" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
+                    Register facility space
                   </Link>
                 </p>
               </div>

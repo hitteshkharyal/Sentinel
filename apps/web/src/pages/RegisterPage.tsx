@@ -1,5 +1,6 @@
 // ─────────────────────────────────────────────
 // SENTINEL Web — Enterprise Registration Page
+// GuardianEye Inspired Obsidian Glassmorphism
 // ─────────────────────────────────────────────
 
 import React, { useState } from 'react';
@@ -56,41 +57,45 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-sentinel-500 selection:text-white radial-grid-bg">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+    <div className="min-h-screen bg-[#02040a] text-slate-100 cyber-grid-bg relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-cyan-500 selection:text-black overflow-hidden font-sans">
+      {/* Ambient Neon Cyan Background Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Brand Header */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         <Link to="/" className="inline-flex items-center gap-3 group mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sentinel-600 to-sentinel-800 flex items-center justify-center text-white shadow-lg shadow-sentinel-600/25 group-hover:scale-105 transition-transform">
-            <Shield className="w-7 h-7" />
+          {/* GuardianEye 45° Diamond Emblem */}
+          <div className="relative w-11 h-11 flex items-center justify-center">
+            <div className="absolute inset-0 bg-cyan-500/20 border border-cyan-400 rotate-45 rounded-sm shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-105 transition-transform" />
+            <Shield className="w-5 h-5 text-cyan-300 relative z-10" />
           </div>
-          <span className="font-black text-2xl tracking-tight text-slate-900">
-            SENTINEL
+          <span className="font-mono font-black text-2xl tracking-wider text-white">
+            SENTINEL<span className="text-cyan-400">.AI</span>
           </span>
         </Link>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-          Create Facility Operator Account
+        <h2 className="text-2xl font-black font-mono tracking-tight text-white uppercase">
+          OPERATOR REGISTRATION
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
-          Deploy privacy-preserving autonomous intelligence across your spaces
+        <p className="text-xs text-cyan-400/80 mt-1 font-mono">
+          {'// ZERO-OPTICAL AUTONOMOUS INTELLIGENCE ONBOARDING'}
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl shadow-xl border border-slate-200/90 relative overflow-hidden">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 relative z-10">
+        <div className="glass-card hud-bracket p-6 sm:p-10 relative">
           {error && (
             <Alert variant="danger" className="mb-5 text-xs" onDismiss={() => setError(null)}>
               {error}
             </Alert>
           )}
 
-          <div className="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
-            <Shield className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="mb-5 p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-[11px] text-amber-200 flex items-start gap-2.5 font-mono">
+            <Shield className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <span>
-              <strong>Hardware Zero-Trust:</strong> Self-registrations require administrator authorization before access to physical sensor automation is activated.
+              <strong className="text-amber-300">HARDWARE ZERO-TRUST:</strong> Self-registrations require administrator authorization before access to physical sensor automation is activated.
             </span>
           </div>
-
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
@@ -114,7 +119,7 @@ export const RegisterPage: React.FC = () => {
             />
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Password (min. 8 characters)
               </label>
               <div className="relative">
@@ -125,12 +130,12 @@ export const RegisterPage: React.FC = () => {
                   placeholder="••••••••"
                   required
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sentinel-500 focus:ring-2 focus:ring-sentinel-500/20 outline-none pr-10"
+                  className="w-full rounded-xl border border-cyan-500/25 bg-[#030712]/90 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 font-mono focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 outline-none pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 focus:outline-none"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -139,7 +144,7 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 font-mono">
                 Confirm Password
               </label>
               <input
@@ -149,7 +154,7 @@ export const RegisterPage: React.FC = () => {
                 placeholder="••••••••"
                 required
                 disabled={isSubmitting}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sentinel-500 focus:ring-2 focus:ring-sentinel-500/20 outline-none"
+                className="w-full rounded-xl border border-cyan-500/25 bg-[#030712]/90 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 font-mono focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 outline-none"
               />
             </div>
 
@@ -160,22 +165,22 @@ export const RegisterPage: React.FC = () => {
                 size="md"
                 isLoading={isSubmitting}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="w-full justify-center font-bold shadow-md shadow-sentinel-600/20 py-2.5"
+                className="w-full justify-center font-bold text-xs uppercase tracking-wider py-2.5"
               >
                 Register & Initialize Platform
               </Button>
             </div>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 font-medium mb-3">
-              <Lock className="w-3.5 h-3.5 text-sentinel-600" />
-              <span>Argon2 / bcrypt password protection</span>
+          <div className="mt-6 pt-4 border-t border-cyan-500/15 text-center font-mono">
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-cyan-400/80 mb-3">
+              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+              <span>ARGON2 / BCRYPT PASSWORD PROTECTION</span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400 font-sans">
               Already have an account?{' '}
-              <Link to="/login" className="font-bold text-sentinel-600 hover:text-sentinel-700 hover:underline">
-                Sign in
+              <Link to="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
+                Sign in to console
               </Link>
             </p>
           </div>

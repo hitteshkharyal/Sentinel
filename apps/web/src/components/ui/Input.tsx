@@ -30,18 +30,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full">
+      <div className="w-full font-mono">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5"
           >
             {label}
           </label>
         )}
         <div className="relative flex items-center">
           {leftIcon && (
-            <div className="absolute left-3.5 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute left-3.5 flex items-center pointer-events-none text-cyan-400">
               {leftIcon}
             </div>
           )}
@@ -50,15 +50,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             value={value}
             disabled={disabled}
-            className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-150 outline-none
+            className={`w-full rounded-xl border bg-[#030712]/90 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 transition-all duration-150 outline-none
               ${leftIcon ? 'pl-10' : ''}
               ${rightIcon || onClear ? 'pr-10' : ''}
               ${
                 error
-                  ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-                  : 'border-slate-300 hover:border-slate-400 focus:border-sentinel-500 focus:ring-2 focus:ring-sentinel-500/20'
+                  ? 'border-rose-500/80 focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20'
+                  : 'border-cyan-500/25 hover:border-cyan-500/40 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20'
               }
-              ${disabled ? 'bg-slate-50 text-slate-400 cursor-not-allowed border-slate-200' : ''}
+              ${disabled ? 'bg-[#02050c] text-slate-600 cursor-not-allowed border-cyan-500/10' : ''}
               ${className}
             `}
             {...props}
@@ -67,7 +67,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={onClear}
-              className="absolute right-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+              className="absolute right-3.5 text-slate-400 hover:text-cyan-400 focus:outline-none"
               aria-label="Clear input"
             >
               <X className="w-4 h-4" />
@@ -79,8 +79,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
         </div>
-        {error && <p className="mt-1.5 text-xs text-rose-600 font-medium">{error}</p>}
-        {!error && helperText && <p className="mt-1.5 text-xs text-slate-500">{helperText}</p>}
+        {error && <p className="text-xs text-rose-400 mt-1 font-mono">{error}</p>}
+        {helperText && !error && (
+          <p className="text-xs text-slate-400 mt-1 font-mono font-light">{helperText}</p>
+        )}
       </div>
     );
   }

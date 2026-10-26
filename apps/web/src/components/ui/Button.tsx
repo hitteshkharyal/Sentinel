@@ -26,27 +26,27 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+      'inline-flex items-center justify-center font-mono font-semibold rounded-xl transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
 
     const sizeStyles = {
       sm: 'text-xs px-3 py-1.5 gap-1.5',
-      md: 'text-sm px-4 py-2 gap-2',
-      lg: 'text-base px-5 py-2.5 gap-2.5',
+      md: 'text-xs sm:text-sm px-4 py-2 gap-2',
+      lg: 'text-sm sm:text-base px-5 py-2.5 gap-2.5',
     };
 
     const variantStyles = {
       primary:
-        'bg-sentinel-600 text-white hover:bg-sentinel-700 active:bg-sentinel-800 shadow-sm shadow-sentinel-600/20 focus:ring-sentinel-500 border border-transparent',
+        'btn-chamfer btn-cyan-glow bg-cyan-500 text-black hover:bg-cyan-400 active:bg-cyan-600 font-bold border border-cyan-400 focus:ring-cyan-400',
       secondary:
-        'bg-sentinel-50 text-sentinel-700 hover:bg-sentinel-100 active:bg-sentinel-200 border border-sentinel-200/80 focus:ring-sentinel-500',
+        'bg-cyan-950/60 text-cyan-300 hover:bg-cyan-900/60 active:bg-cyan-950 border border-cyan-500/30 focus:ring-cyan-500',
       outline:
-        'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-300 active:bg-slate-100 focus:ring-slate-400 shadow-xs',
+        'bg-[#060e1d]/80 text-slate-200 hover:text-white hover:bg-[#0c1a33] border border-cyan-500/25 active:bg-[#071124] focus:ring-cyan-400',
       ghost:
-        'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-300',
+        'bg-transparent text-slate-400 hover:text-cyan-300 hover:bg-cyan-950/30 focus:ring-cyan-500',
       danger:
-        'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-sm shadow-rose-600/20 focus:ring-rose-500 border border-transparent',
+        'bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700 shadow-sm shadow-rose-600/30 focus:ring-rose-500 border border-rose-500/40',
       success:
-        'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm shadow-emerald-600/20 focus:ring-emerald-500 border border-transparent',
+        'bg-emerald-600/90 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-sm shadow-emerald-600/30 focus:ring-emerald-500 border border-emerald-500/40',
     };
 
     return (
