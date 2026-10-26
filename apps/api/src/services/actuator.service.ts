@@ -2,13 +2,16 @@
 // SENTINEL API — Actuator Dispatch & Control Service
 // ─────────────────────────────────────────────
 
-import { RoomModel, DeviceModel } from '../models/index.js';
+import mongoose from 'mongoose';
+import { RoomModel, DeviceModel, AlertModel } from '../models/index.js';
 import { MqttService } from './mqtt.service.js';
+import { AlertService } from './alert.service.js';
 import type {
   AutomationAction,
   ExecutedAction,
   AutomationActionType,
   HvacState,
+  AlertSeverity,
 } from '@sentinel/types';
 
 export class ActuatorService {
@@ -30,6 +33,38 @@ export class ActuatorService {
     let error: string | undefined;
 
     try {
+      // ── 0. Alert & Escalation Actions ──
+      if (type === 'CREATE_ALERT') {
+        const severity = (action.params?.severity as AlertSeverity) || 'HIGH';
+        const title = (action.params?.title as string) || 'Automated Policy Alert';
+        const description = (action.params?.description as string) || 'Alert triggered by automation rule.';
+
+        await AlertService.createAlert(context.organizationId, {
+          facilityId: context.facilityId || '',
+          roomId: context.roomId,
+          title,
+          description,
+          severity,
+          sensorEvidence: action.params || {},
+        });
+        feedback = `Incident alert "${title}" created via AlertEngine.`;
+      } else if (type === 'ESCALATE_ALERT' && context.roomId) {
+        const activeAlert = await AlertModel.findOne({
+          organizationId: new mongoose.Types.ObjectId(context.organizationId),
+          roomId: new mongoose.Types.ObjectId(context.roomId),
+          status: { $in: ['CREATED', 'ACKNOWLEDGED', 'ASSIGNED', 'IN_PROGRESS'] },
+        });
+        if (activeAlert) {
+          await AlertService.escalateAlert(
+            context.organizationId,
+            activeAlert._id.toString(),
+            undefined,
+            'Automated policy escalation rule triggered.'
+          );
+          feedback = `Active incident escalated to Tier ${(activeAlert.escalationLevel || 0) + 1}.`;
+        }
+      }
+
       // ── 1. Digital Twin & HVAC State Automation ──
       if (context.roomId) {
         let newHvacState: HvacState | null = null;
@@ -78,15 +113,16 @@ export class ActuatorService {
 
         if (type === 'LIGHT_ON') {
           mqttCommand = 'SET_LIGHT';
-          mqttParams.state = 'ON';
+          mqttParams.state = true;
         } else if (type === 'LIGHT_OFF') {
           mqttCommand = 'SET_LIGHT';
-          mqttParams.state = 'OFF';
+          mqttParams.state = false;
         } else if (type === 'BUZZER') {
-          mqttCommand = 'TRIGGER_BUZZER';
-          mqttParams.durationMs = action.params?.durationMs || 3000;
+          mqttCommand = 'BEEP';
+          mqttParams.durationMs = action.params?.durationMs ?? 3000;
         } else if (type === 'RELAY') {
           mqttCommand = 'SET_RELAY';
+          mqttParams.pin = action.params?.relayPin ?? 12;
           mqttParams.state = action.params?.state ?? true;
         }
 

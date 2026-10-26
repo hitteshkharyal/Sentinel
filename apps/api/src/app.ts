@@ -16,6 +16,7 @@ import { deviceRouter } from './routes/devices.js';
 import { telemetryRouter } from './routes/telemetry.js';
 import { eventRouter } from './routes/events.js';
 import { automationRouter } from './routes/automations.js';
+import { alertRouter } from './routes/alerts.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/v1/devices', deviceRouter);
 app.use('/api/v1/telemetry', telemetryRouter);
 app.use('/api/v1/events', eventRouter);
 app.use('/api/v1/automations', automationRouter);
+app.use('/api/v1/alerts', alertRouter);
 
 
 // ── Placeholder route stubs (will be implemented in later phases) ──

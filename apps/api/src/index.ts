@@ -9,6 +9,7 @@ import { connectDatabase } from './db.js';
 import { MqttService } from './services/mqtt.service.js';
 import { WebSocketService } from './services/websocket.service.js';
 import { AutomationService } from './services/automation.service.js';
+import { AlertService } from './services/alert.service.js';
 
 async function startServer() {
   try {
@@ -21,6 +22,9 @@ async function startServer() {
 
     // Initialize autonomous policy engine
     AutomationService.init();
+
+    // Initialize alert and escalation matrix engine
+    AlertService.init();
 
     // Initialize embedded MQTT broker (falls back gracefully if port is occupied)
     const mqttPort = Number(process.env.MQTT_PORT) || 1883;

@@ -14,3 +14,4 @@ export * from './Telemetry.js';
 export * from './Event.js';
 export * from './AutomationRule.js';
 export * from './AutomationExecution.js';
+export * from './Alert.js';

@@ -679,5 +679,59 @@ export const testAutomationRuleSchema = z.object({
   }),
 });
 
+// ── Alerts & Escalations ──
+
+export const alertSeveritySchema = z.enum(['INFO', 'WARNING', 'HIGH', 'CRITICAL']);
+
+export const alertStatusSchema = z.enum([
+  'CREATED',
+  'ACKNOWLEDGED',
+  'ASSIGNED',
+  'IN_PROGRESS',
+  'RESOLVED',
+  'DISMISSED',
+]);
+
+export const createAlertSchema = z.object({
+  facilityId: z.string().min(1, 'Facility ID is required'),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  eventId: z.string().optional(),
+  title: z.string().min(1, 'Title is required').max(200),
+  description: z.string().min(1, 'Description is required').max(1000),
+  severity: alertSeveritySchema.optional().default('WARNING'),
+  confidence: z.coerce.number().min(0).max(100).optional().default(90),
+  sensorEvidence: z.record(z.unknown()).optional().default({}),
+  recommendedAction: z.string().max(500).optional(),
+  assignedTo: z.string().optional(),
+});
+
+export const updateAlertStatusSchema = z.object({
+  status: alertStatusSchema,
+  note: z.string().max(1000).optional(),
+  assignedTo: z.string().optional(),
+  resolutionNotes: z.string().max(1000).optional(),
+});
+
+export const escalateAlertSchema = z.object({
+  reason: z.string().max(500).optional(),
+  targetRole: z.string().optional(),
+});
+
+export const alertFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  deviceId: z.string().optional(),
+  severity: alertSeveritySchema.optional(),
+  status: alertStatusSchema.optional(),
+  assignedTo: z.string().optional(),
+  isEscalated: z.coerce.boolean().optional(),
+  search: z.string().max(100).optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(500).default(50),
+});
+
 
 

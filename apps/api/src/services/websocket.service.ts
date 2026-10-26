@@ -9,11 +9,13 @@ import { config } from '../config.js';
 import { telemetryBus } from './telemetry-validator.js';
 import { eventBus } from './event.service.js';
 import { automationBus } from './automation.service.js';
+import { alertBus } from './alert.service.js';
 import type {
   ValidatedTelemetry,
   AuthTokenPayload,
   SentinelEvent,
   AutomationExecution,
+  Alert,
 } from '@sentinel/types';
 
 interface AuthenticatedClient extends WebSocket {
@@ -29,82 +31,91 @@ export class WebSocketService {
   private static pingInterval: NodeJS.Timeout | null = null;
 
   /**
-   * Attach WebSocket server to existing HTTP server.
+   * Initialize WebSocket server mounted on the shared HTTP server.
    */
   static init(server: Server): void {
-    if (this.wss) return;
-
-    const wss = new WebSocketServer({
+    this.wss = new WebSocketServer({
       server,
       path: '/ws/telemetry',
     });
-    this.wss = wss;
 
-    wss.on('connection', (ws: WebSocket, req) => {
+    this.wss.on('connection', (ws: WebSocket, req) => {
       const client = ws as AuthenticatedClient;
       client.isAlive = true;
 
-      // Extract auth token from URL query string ?token=...
+      // Parse and verify token from URL query params
       const url = new URL(req.url || '', `http://${req.headers.host || 'localhost'}`);
       const token = url.searchParams.get('token');
-      const orgIdParam = url.searchParams.get('organizationId');
+      const requestedOrgId = url.searchParams.get('organizationId');
 
-      if (token) {
+      if (!token) {
+        client.close(4001, 'Unauthorized: Missing auth token');
+        return;
+      }
+
+      try {
+        const decoded = jwt.verify(token, config.jwt.secret) as AuthTokenPayload;
+        client.userId = decoded.userId;
+        client.organizationId = requestedOrgId || undefined;
+      } catch {
+        client.close(4002, 'Unauthorized: Invalid token');
+        return;
+      }
+
+      // Handle spatial channel subscriptions and client pings
+      client.on('message', (message: string) => {
         try {
-          const decoded = jwt.verify(token, config.jwt.secret) as AuthTokenPayload;
-          client.userId = decoded.userId;
-          if (orgIdParam) {
-            client.organizationId = orgIdParam;
+          const payload = JSON.parse(message.toString());
+
+          if (payload.type === 'SUBSCRIBE') {
+            if (payload.facilityId) client.subscribedFacilityId = payload.facilityId;
+            if (payload.roomId) client.subscribedRoomId = payload.roomId;
+            client.send(
+              JSON.stringify({
+                type: 'SUBSCRIPTION_ACK',
+                facilityId: client.subscribedFacilityId,
+                roomId: client.subscribedRoomId,
+              })
+            );
+          }
+
+          if (payload.type === 'UNSUBSCRIBE') {
+            client.subscribedFacilityId = undefined;
+            client.subscribedRoomId = undefined;
+          }
+
+          if (payload.type === 'PING') {
+            client.send(JSON.stringify({ type: 'PONG' }));
           }
         } catch {
-          // Token invalid; client remains unauthenticated until auth message
+          // Ignore malformed payloads
         }
-      }
+      });
 
       client.on('pong', () => {
         client.isAlive = true;
       });
 
-      client.on('message', (messageBuffer: Buffer) => {
-        try {
-          const msg = JSON.parse(messageBuffer.toString('utf-8'));
-          if (msg.type === 'AUTH') {
-            if (msg.token) {
-              const decoded = jwt.verify(msg.token, config.jwt.secret) as AuthTokenPayload;
-              client.userId = decoded.userId;
-              if (msg.organizationId) {
-                client.organizationId = msg.organizationId;
-              }
-              client.send(
-                JSON.stringify({
-                  type: 'AUTH_SUCCESS',
-                  organizationId: client.organizationId,
-                })
-              );
-            }
-          } else if (msg.type === 'SUBSCRIBE') {
-            client.subscribedFacilityId = msg.facilityId;
-            client.subscribedRoomId = msg.roomId;
-            client.send(
-              JSON.stringify({
-                type: 'SUBSCRIBED',
-                facilityId: msg.facilityId,
-                roomId: msg.roomId,
-              })
-            );
-          }
-        } catch {
-          // Ignore malformed control frames
-        }
+      client.on('error', (err) => {
+        console.error('[WebSocket] Client connection error:', err);
       });
+
+      // Welcome handshake with connected user metadata
+      client.send(
+        JSON.stringify({
+          type: 'CONNECTED',
+          message: 'Connected to SENTINEL Real-time Streaming Gateway',
+          userId: client.userId,
+        })
+      );
     });
 
-    // ── Listen to Telemetry Validation Event Bus ──
+    // ── Listen to Telemetry Bus ──
     telemetryBus.on('telemetry', (telemetry: ValidatedTelemetry) => {
       this.broadcast(telemetry);
     });
 
-    // ── Listen to Event Intelligence Bus ──
+    // ── Listen to Event Bus ──
     eventBus.on('event', (event: SentinelEvent) => {
       this.broadcastEvent(event, 'EVENT');
     });
@@ -116,6 +127,23 @@ export class WebSocketService {
     // ── Listen to Automation Execution Bus ──
     automationBus.on('execution', (execution: AutomationExecution) => {
       this.broadcastAutomationExecution(execution);
+    });
+
+    // ── Listen to Alert & Escalation Bus ──
+    alertBus.on('alert:created', (alert: Alert) => {
+      this.broadcastAlert(alert, 'ALERT_CREATED');
+    });
+
+    alertBus.on('alert:updated', (alert: Alert) => {
+      this.broadcastAlert(alert, 'ALERT_UPDATED');
+    });
+
+    alertBus.on('alert:escalated', (alert: Alert) => {
+      this.broadcastAlert(alert, 'ALERT_ESCALATED');
+    });
+
+    alertBus.on('alert:resolved', (alert: Alert) => {
+      this.broadcastAlert(alert, 'ALERT_RESOLVED');
     });
 
     // Keepalive heartbeat
@@ -173,13 +201,13 @@ export class WebSocketService {
   }
 
   /**
-   * Broadcast Sentinel event or status update to authorized connected clients.
+   * Broadcast event packet to authorized connected clients.
    */
-  static broadcastEvent(event: SentinelEvent, type: 'EVENT' | 'EVENT_STATUS' = 'EVENT'): void {
+  static broadcastEvent(event: SentinelEvent, messageType: string = 'EVENT'): void {
     if (!this.wss) return;
 
     const payload = JSON.stringify({
-      type,
+      type: messageType,
       data: event,
     });
 
@@ -233,6 +261,40 @@ export class WebSocketService {
 
       // Spatial room filter
       if (client.subscribedRoomId && execution.roomId && client.subscribedRoomId !== execution.roomId) {
+        return;
+      }
+
+      client.send(payload);
+    });
+  }
+
+  /**
+   * Broadcast alert incident packet to authorized connected clients.
+   */
+  static broadcastAlert(alert: Alert, messageType: string = 'ALERT'): void {
+    if (!this.wss) return;
+
+    const payload = JSON.stringify({
+      type: messageType,
+      data: alert,
+    });
+
+    this.wss.clients.forEach((ws) => {
+      const client = ws as AuthenticatedClient;
+      if (client.readyState !== WebSocket.OPEN) return;
+
+      // Organization boundary check
+      if (client.organizationId && client.organizationId !== alert.organizationId) {
+        return;
+      }
+
+      // Spatial facility filter
+      if (client.subscribedFacilityId && client.subscribedFacilityId !== alert.facilityId) {
+        return;
+      }
+
+      // Spatial room filter
+      if (client.subscribedRoomId && alert.roomId && client.subscribedRoomId !== alert.roomId) {
         return;
       }
 
