@@ -733,5 +733,21 @@ export const alertFilterSchema = z.object({
   limit: z.coerce.number().int().positive().max(500).default(50),
 });
 
+// ── Analytics (Day 12) ──
+
+export const analyticsTimeframeSchema = z.enum(['1h', '24h', '7d', '30d', 'custom']);
+
+export const analyticsIntervalSchema = z.enum(['15m', '1h', '1d']);
+
+export const analyticsFilterSchema = z.object({
+  facilityId: z.string().optional(),
+  roomId: z.string().optional(),
+  timeframe: analyticsTimeframeSchema.optional().default('24h'),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  interval: analyticsIntervalSchema.optional(),
+});
+
+
 
 
