@@ -60,7 +60,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -68,26 +68,26 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Dialog */}
       <div
         ref={modalRef}
-        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-white rounded-2xl shadow-2xl border border-slate-200/80 z-10 overflow-hidden transform animate-slide-up`}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-[#060e1d]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-500/30 z-10 overflow-hidden transform animate-slide-up text-slate-100`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="px-6 py-4.5 border-b border-slate-100 flex items-start justify-between gap-4">
+          <div className="px-6 py-4.5 border-b border-cyan-500/20 flex items-start justify-between gap-4">
             <div>
               {title && (
-                <h3 className="text-lg font-semibold text-slate-900 tracking-tight">
+                <h3 className="text-lg font-bold text-white tracking-tight">
                   {title}
                 </h3>
               )}
               {description && (
-                <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+                <p className="text-xs text-slate-400 mt-0.5 font-light">{description}</p>
               )}
             </div>
             {showCloseButton && (
               <button
                 type="button"
                 onClick={onClose}
-                className="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-100 transition-colors focus:outline-none"
+                className="text-slate-400 hover:text-cyan-400 rounded-lg p-1 hover:bg-cyan-950/40 transition-colors focus:outline-none"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -101,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 bg-slate-50/60 border-t border-slate-100 flex items-center justify-end gap-3">
+          <div className="px-6 py-4 bg-[#030712]/80 border-t border-cyan-500/20 flex items-center justify-end gap-3">
             {footer}
           </div>
         )}

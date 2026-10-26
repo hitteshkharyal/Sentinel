@@ -42,7 +42,7 @@ export const AppShell: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex bg-[#02040a] text-slate-100 cyber-grid-bg relative selection:bg-cyan-500 selection:text-black">
       {/* ── Left Navigation Sidebar ── */}
       <Sidebar
         isCollapsed={sidebarCollapsed}
@@ -59,7 +59,7 @@ export const AppShell: React.FC = () => {
           onOpenSimulator={() => setSimulatorOpen(true)}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in relative z-10">
           <Outlet />
         </main>
       </div>
@@ -76,27 +76,27 @@ export const AppShell: React.FC = () => {
         isOpen={simulatorOpen}
         onClose={() => setSimulatorOpen(false)}
         title={
-          <div className="flex items-center gap-2">
-            <Radio className="w-5 h-5 text-sentinel-600" />
-            <span>Simulate Hardware Sensor Signal</span>
+          <div className="flex items-center gap-2 font-mono text-cyan-400">
+            <Radio className="w-4 h-4 text-cyan-400" />
+            <span className="uppercase tracking-wider text-sm">Simulate Hardware Sensor Signal</span>
           </div>
         }
         description="Trigger real-time telemetry events to test autonomous decision loops and instant actuators."
         maxWidth="lg"
       >
         {simulationTriggered ? (
-          <div className="py-6 text-center animate-fade-in">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3 animate-bounce" />
-            <h4 className="text-base font-semibold text-slate-900">Telemetry Ingested</h4>
-            <p className="text-sm text-slate-500 mt-1">
-              Event <span className="font-semibold text-sentinel-700">{simulationTriggered}</span> broadcast over MQTT.
+          <div className="py-6 text-center animate-fade-in font-mono">
+            <CheckCircle2 className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" />
+            <h4 className="text-base font-bold text-white uppercase">Telemetry Ingested</h4>
+            <p className="text-xs text-slate-400 mt-1">
+              Event <span className="font-semibold text-cyan-300">{simulationTriggered}</span> broadcast over MQTT.
               Decision engine evaluated in 14ms.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            <Alert variant="info" icon={<Shield className="w-4 h-4 text-blue-600 shrink-0" />}>
-              Simulated telemetry adheres strictly to SENTINEL privacy boundaries — no camera frames are synthesized.
+            <Alert variant="info" icon={<Shield className="w-4 h-4 text-cyan-400 shrink-0" />}>
+              Simulated telemetry adheres strictly to SENTINEL privacy boundaries — zero camera frames synthesized.
             </Alert>
 
             <div className="space-y-2.5">
@@ -137,29 +137,29 @@ export const AppShell: React.FC = () => {
                 <div
                   key={sim.id}
                   onClick={() => handleSimulateEvent(sim.title)}
-                  className="p-3.5 rounded-xl border border-slate-200/80 hover:border-sentinel-300 hover:bg-sentinel-50/50 cursor-pointer transition-all flex items-center justify-between group"
+                  className="p-3.5 rounded-xl border border-cyan-500/20 bg-[#060e1d]/90 hover:border-cyan-500/50 hover:bg-[#09152b] cursor-pointer transition-all flex items-center justify-between group"
                 >
                   <div className="min-w-0 pr-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-900 group-hover:text-sentinel-700">
+                      <span className="text-xs font-mono font-bold text-white group-hover:text-cyan-300">
                         {sim.title}
                       </span>
                       <Badge variant={sim.variant} size="sm">
                         {sim.badge}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">{sim.desc}</p>
+                    <p className="text-xs text-slate-400 mt-1 font-sans">{sim.desc}</p>
                   </div>
-                  <Button size="sm" variant="outline" className="shrink-0 text-xs">
+                  <Button size="sm" variant="outline" className="shrink-0 text-xs font-mono border-cyan-500/30 text-cyan-300 hover:bg-cyan-500 hover:text-black">
                     Trigger
                   </Button>
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-between pt-2 text-xs text-slate-400">
+            <div className="flex items-center justify-between pt-2 text-xs font-mono text-slate-400">
               <span className="flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-sentinel-600" />
+                <Activity className="w-3.5 h-3.5 text-cyan-400" />
                 Hardware simulation conforms to ESP32 HAL schema
               </span>
             </div>

@@ -102,7 +102,11 @@ export interface SearchModalProps {
   onSelectResult?: (item: SearchResultItem) => void;
 }
 
-export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectResult }) => {
+export const SearchModal: React.FC<SearchModalProps> = ({
+  isOpen,
+  onClose,
+  onSelectResult,
+}) => {
   const [query, setQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -110,42 +114,44 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
 
   useEffect(() => {
     if (isOpen) {
-      setQuery('');
-      setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
+      setSelectedIndex(0);
+    } else {
+      setQuery('');
+      setFilterType('all');
     }
   }, [isOpen]);
 
   const filteredResults = useMemo(() => {
-    return MOCK_SEARCH_DATA.filter((item) => {
-      const matchesFilter = filterType === 'all' || item.type === filterType;
-      const q = query.toLowerCase().trim();
-      if (!q) return matchesFilter;
+    let results = MOCK_SEARCH_DATA;
 
-      const matchesQuery =
-        item.title.toLowerCase().includes(q) ||
-        item.subtitle.toLowerCase().includes(q) ||
-        item.id.toLowerCase().includes(q);
+    if (filterType !== 'all') {
+      results = results.filter((item) => item.type === filterType);
+    }
 
-      return matchesFilter && matchesQuery;
-    });
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      results = results.filter(
+        (item) =>
+          item.title.toLowerCase().includes(q) ||
+          item.subtitle.toLowerCase().includes(q) ||
+          item.badge?.toLowerCase().includes(q)
+      );
+    }
+
+    return results;
   }, [query, filterType]);
 
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [query, filterType]);
-
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev < filteredResults.length - 1 ? prev + 1 : 0));
+        setSelectedIndex((prev) => (prev < filteredResults.length - 1 ? prev + 1 : prev));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredResults.length - 1));
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
       } else if (e.key === 'Enter' && filteredResults[selectedIndex]) {
         e.preventDefault();
         onSelectResult?.(filteredResults[selectedIndex]);
@@ -164,53 +170,53 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
   const getTypeIcon = (type: SearchResultItem['type']) => {
     switch (type) {
       case 'room':
-        return <MapPin className="w-4 h-4 text-blue-600" />;
+        return <MapPin className="w-4 h-4 text-cyan-400" />;
       case 'facility':
-        return <Building className="w-4 h-4 text-emerald-600" />;
+        return <Building className="w-4 h-4 text-emerald-400" />;
       case 'device':
-        return <Cpu className="w-4 h-4 text-purple-600" />;
+        return <Cpu className="w-4 h-4 text-purple-400" />;
       case 'sensor':
-        return <Radio className="w-4 h-4 text-cyan-600" />;
+        return <Radio className="w-4 h-4 text-cyan-300" />;
       case 'alert':
-        return <AlertTriangle className="w-4 h-4 text-rose-600" />;
+        return <AlertTriangle className="w-4 h-4 text-rose-400" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4" role="dialog">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 font-mono" role="dialog">
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden z-10 animate-slide-up">
+      <div className="relative w-full max-w-2xl bg-[#060e1d]/95 rounded-2xl shadow-2xl border border-cyan-500/30 overflow-hidden z-10 animate-slide-up text-slate-100">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-100 gap-3 bg-slate-50/50">
-          <Search className="w-5 h-5 text-slate-400 shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-cyan-500/20 gap-3 bg-[#030712]/70">
+          <Search className="w-4 h-4 text-cyan-400 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search rooms, facilities, sensors, device IDs, or alerts..."
-            className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none"
+            className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 outline-none font-mono"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
+              className="text-slate-400 hover:text-cyan-400 p-1 rounded-md"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-semibold text-slate-400 bg-slate-200/60 rounded border border-slate-300/60">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[9px] font-mono text-cyan-400 bg-cyan-950/60 rounded border border-cyan-500/30">
             ESC
           </kbd>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-slate-100 bg-white overflow-x-auto text-xs">
+        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-cyan-500/15 bg-[#040914] overflow-x-auto text-xs">
           {[
             { id: 'all', label: 'All Results' },
             { id: 'room', label: 'Rooms' },
@@ -222,10 +228,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
             <button
               key={cat.id}
               onClick={() => setFilterType(cat.id)}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-colors whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded-lg font-mono text-xs transition-colors whitespace-nowrap border ${
                 filterType === cat.id
-                  ? 'bg-sentinel-50 text-sentinel-700 font-semibold'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'bg-cyan-500 text-black border-cyan-400 font-bold'
+                  : 'text-slate-400 border-transparent hover:text-cyan-300 hover:bg-cyan-950/30'
               }`}
             >
               {cat.label}
@@ -234,11 +240,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
         </div>
 
         {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-slate-50">
+        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-cyan-500/10">
           {filteredResults.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 text-sm">
-              <Search className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="font-medium text-slate-600">No matching spaces or devices found</p>
+            <div className="py-12 text-center text-slate-500 text-sm">
+              <Search className="w-8 h-8 text-cyan-500/40 mx-auto mb-2" />
+              <p className="font-bold text-white">No matching spaces or devices found</p>
               <p className="text-xs text-slate-400 mt-1">
                 {'Try searching for "Room 204", "Bus 12", "Hospital", or "mmWave"'}
               </p>
@@ -255,18 +261,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
                   }}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
-                    isSelected ? 'bg-sentinel-50/80 text-sentinel-950' : 'hover:bg-slate-50/70 text-slate-800'
+                    isSelected ? 'bg-cyan-500/15 text-white border border-cyan-500/30' : 'hover:bg-cyan-950/20 text-slate-300 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-2">
-                    <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="w-8 h-8 rounded-lg bg-[#030712] border border-cyan-500/30 flex items-center justify-center shrink-0">
                       {getTypeIcon(item.type)}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold truncate text-slate-900">{item.title}</span>
+                        <span className="text-xs font-mono font-bold truncate text-white">{item.title}</span>
                       </div>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">{item.subtitle}</p>
+                      <p className="text-[11px] text-slate-400 truncate mt-0.5 font-light">{item.subtitle}</p>
                     </div>
                   </div>
 
@@ -276,7 +282,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
                         {item.badge}
                       </Badge>
                     )}
-                    <ArrowRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-0.5 text-sentinel-600' : 'text-slate-300'}`} />
+                    <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-0.5 text-cyan-400' : 'text-slate-600'}`} />
                   </div>
                 </div>
               );
@@ -285,16 +291,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
         </div>
 
         {/* Footer Shortcut Helper */}
-        <div className="px-4 py-2.5 bg-slate-50/75 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="px-4 py-2.5 bg-[#030712] border-t border-cyan-500/20 flex items-center justify-between text-[10px] text-slate-500">
           <div className="flex items-center gap-3">
             <span>
-              <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-semibold text-slate-600">↑↓</kbd> Navigate
+              <kbd className="px-1.5 py-0.5 bg-[#060e1d] border border-cyan-500/30 rounded text-cyan-400">↑↓</kbd> Navigate
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-semibold text-slate-600">↵</kbd> Select
+              <kbd className="px-1.5 py-0.5 bg-[#060e1d] border border-cyan-500/30 rounded text-cyan-400">↵</kbd> Select
             </span>
           </div>
-          <span>SENTINEL Global Fleet Index</span>
+          <span className="text-cyan-400/80 font-mono">SENTINEL Global Mesh Index</span>
         </div>
       </div>
     </div>

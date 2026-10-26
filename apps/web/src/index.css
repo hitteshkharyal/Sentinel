@@ -3,24 +3,25 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────
-   SENTINEL — Design System & Global Styles
-   White + Vibrant Blue + Subtle Glassmorphism
+   SENTINEL — GuardianEye Obsidian & Neon Cyan Theme
+   Deep Space Black + Electric Cyan + Tactical Glassmorphism
+   Inspired by guardaineyesecurity.netlify.app
    ───────────────────────────────────────────── */
 
 :root {
-  --sentinel-primary: #2563eb;
-  --sentinel-primary-hover: #1d4ed8;
-  --sentinel-primary-light: #eff6ff;
-  --sentinel-bg: #f8fafc;
-  --sentinel-surface: #ffffff;
-  --sentinel-border: #e2e8f0;
-  --sentinel-border-focus: #3b82f6;
-  --sentinel-text: #0f172a;
-  --sentinel-text-muted: #64748b;
-  --sentinel-text-light: #94a3b8;
-  --glass-bg: rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(226, 232, 240, 0.7);
-  --glass-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  --sentinel-bg: #02040a;
+  --sentinel-surface: rgba(6, 13, 26, 0.75);
+  --sentinel-surface-card: rgba(8, 18, 36, 0.75);
+  --sentinel-border: rgba(0, 240, 255, 0.16);
+  --sentinel-border-glow: rgba(0, 240, 255, 0.4);
+  --sentinel-cyan: #00f0ff;
+  --sentinel-cyan-dark: #0284c7;
+  --sentinel-text: #f1f5f9;
+  --sentinel-text-muted: #94a3b8;
+  --sentinel-text-dim: #64748b;
+  --glass-bg: rgba(6, 13, 26, 0.75);
+  --glass-border: rgba(0, 240, 255, 0.16);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 1px 1px rgba(0, 240, 255, 0.08);
 }
 
 * {
@@ -31,83 +32,193 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #02040a;
+  color-scheme: dark;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--sentinel-bg);
-  color: var(--sentinel-text);
+  background-color: #02040a;
+  color: #f1f5f9;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ── Glassmorphism & Surface Utilities ── */
+/* ── Glassmorphism & Tactical HUD Utilities ── */
 @layer utilities {
   .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    background: rgba(6, 13, 26, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 240, 255, 0.16);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 1px 1px rgba(0, 240, 255, 0.08);
   }
 
   .glass-card-hover {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .glass-card-hover:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
-    border-color: rgba(147, 197, 253, 0.6);
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow: 0 12px 40px -4px rgba(0, 240, 255, 0.15), inset 0 0 1px 1px rgba(0, 240, 255, 0.2);
   }
 
   .glass-subtle {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(241, 245, 249, 0.9);
+    background: rgba(8, 18, 36, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-navbar {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    background: rgba(2, 4, 10, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
   }
 
-  .radial-grid-bg {
-    background-image: radial-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px);
-    background-size: 24px 24px;
+  /* GuardianEye HUD Corner Reticles (Top-Left & Bottom-Right brackets) */
+  .hud-bracket {
+    position: relative;
+  }
+  .hud-bracket::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #00f0ff;
+    border-left: 2px solid #00f0ff;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .hud-bracket::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 12px;
+    height: 12px;
+    border-bottom: 2px solid #00f0ff;
+    border-right: 2px solid #00f0ff;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* All 4 Corners HUD Bracket variant */
+  .hud-bracket-all {
+    position: relative;
+  }
+  .hud-bracket-all::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid #00f0ff;
+    border-left: 2px solid #00f0ff;
+    pointer-events: none;
+  }
+  .hud-bracket-all::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    border-bottom: 2px solid #00f0ff;
+    border-right: 2px solid #00f0ff;
+    pointer-events: none;
+  }
+
+  /* GuardianEye Signature Chamfered Cut-Corner Button */
+  .btn-chamfer {
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+
+  .btn-cyan-glow {
+    background: #00f0ff;
+    color: #020617;
+    font-weight: 700;
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.45);
+    transition: all 0.25s ease;
+  }
+  .btn-cyan-glow:hover {
+    background: #38bdf8;
+    box-shadow: 0 0 36px rgba(0, 240, 255, 0.75);
+    transform: translateY(-1px);
+  }
+
+  .btn-cyan-outline {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: #00f0ff;
+    font-weight: 600;
+    transition: all 0.25s ease;
+  }
+  .btn-cyan-outline:hover {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  }
+
+  /* GuardianEye Diamond Badge Container */
+  .diamond-container {
+    transform: rotate(45deg);
+  }
+  .diamond-container > * {
+    transform: rotate(-45deg);
+  }
+
+  /* Cyber Grid Background with Radial Neon Glow */
+  .cyber-grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .radial-glow-cyan {
+    background: radial-gradient(circle at 50% 30%, rgba(0, 240, 255, 0.15) 0%, rgba(2, 6, 23, 0) 70%);
+  }
+
+  .gradient-text-cyan {
+    background: linear-gradient(135deg, #ffffff 0%, #00f0ff 65%, #0284c7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .gradient-text-sentinel {
-    background: linear-gradient(135deg, #0f172a 0%, #1e40af 60%, #2563eb 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #00f0ff 65%, #38bdf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 }
 
-/* ── Custom Scrollbar ── */
+/* ── Custom Dark Cyber Scrollbar ── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #02040a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(0, 240, 255, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(0, 240, 255, 0.5);
 }
 
-/* ── Animations ── */
+/* ── Conic Radar Sweep Animation ── */
 @keyframes radarSweepConic {
   from {
     transform: rotate(0deg);
@@ -120,10 +231,10 @@ body {
 .radar-sweep-effect {
   background: conic-gradient(
     from 0deg at 50% 50%,
-    rgba(37, 99, 235, 0) 0deg,
-    rgba(37, 99, 235, 0.02) 270deg,
-    rgba(37, 99, 235, 0.28) 360deg
+    rgba(0, 240, 255, 0) 0deg,
+    rgba(0, 240, 255, 0.02) 270deg,
+    rgba(0, 240, 255, 0.35) 360deg
   );
-  animation: radarSweepConic 4s linear infinite;
+  animation: radarSweepConic 3.5s linear infinite;
   transform-origin: center center;
 }

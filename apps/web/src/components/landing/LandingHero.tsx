@@ -1,128 +1,124 @@
+// ─────────────────────────────────────────────
+// SENTINEL Web — 
+// ─────────────────────────────────────────────
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Lock, Radio, CheckCircle2 } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { ArrowRight, ShieldCheck, Activity, Cpu } from 'lucide-react';
 import { RadarAnimation } from './RadarAnimation';
 
 export const LandingHero: React.FC = () => {
   return (
-    <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden radial-grid-bg">
-      {/* Decorative ambient gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-sentinel-400/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-20 right-10 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl pointer-events-none" />
+    <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-32 overflow-hidden cyber-grid-bg bg-[#02040a]">
+      {/* Ambient Neon Cyan Background Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* ── Left Column: Headline & Value Proposition ── */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            {/* Mission Category Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sentinel-100/90 text-sentinel-800 text-xs font-bold uppercase tracking-wider border border-sentinel-200/80 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-sentinel-600 animate-pulse" />
-              <span>Autonomous IoT Without Optical Cameras</span>
+            {/* Tactical Sector Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-cyan-950/60 text-cyan-300 text-xs font-mono font-semibold tracking-wider border border-cyan-500/30 shadow-xs shadow-cyan-500/10">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span>{'SECTOR_A // ZERO-OPTICAL PRIVACY PERIMETER'}</span>
             </div>
 
-            {/* Core Master Prompt Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-950 leading-[1.08]">
-              Sense.{' '}
-              <span className="text-sentinel-600 block sm:inline">Understand.</span>{' '}
-              <span className="gradient-text-sentinel block">Act.</span>
+            {/* Core Master Prompt Headline (GuardianEye Style) */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.06]">
+              See Everything.{' '}
+              <span className="gradient-text-cyan block mt-1">Without Cameras.</span>
             </h1>
 
-            {/* Core Master Prompt Subtitle */}
-            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              Privacy-preserving autonomous intelligence for physical spaces. Converts raw radio frequency and environmental signals into context-aware events, instant physical actuations, and responsible-person alerts.
+            {/* Core Subtitle */}
+            <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              An autonomous spatial intelligence ecosystem that thinks, learns, and actuates in real time. Fuses 60GHz mmWave radar, NDIR air quality, and thermal acoustic telemetry into instant physical actions — zero video recordings, zero facial recognition, zero blind spots.
             </p>
 
-            {/* Key Advantages Checklist */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs sm:text-sm font-semibold text-slate-700">
+            {/* Tactical Advantages Checklist */}
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-6 text-xs sm:text-sm font-mono text-slate-300">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>100% Optical-Camera Free</span>
+                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>100% Camera-Free</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Edge BACnet / Relays</span>
+                <Cpu className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Sub-12ms Edge BACnet</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Responsible Human Escalation</span>
+                <Activity className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Sub-Millimeter Vitals</span>
               </div>
             </div>
 
             {/* CTA Actions */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link to="/dashboard" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  variant="primary"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
-                  className="w-full sm:w-auto shadow-lg shadow-sentinel-600/25 text-sm sm:text-base font-bold py-3.5 px-6"
-                >
-                  Get Started — Enter Console
-                </Button>
+                <button className="w-full sm:w-auto btn-chamfer btn-cyan-glow py-3.5 px-7 text-xs sm:text-sm font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer">
+                  <span>ENTER COMMAND CONSOLE</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </Link>
 
-              <a href="#radar-demo" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  leftIcon={<Radio className="w-4 h-4 text-sentinel-600" />}
-                  className="w-full sm:w-auto text-sm sm:text-base font-semibold py-3.5 px-6"
-                >
-                  Explore Radar Perception
-                </Button>
+              <a href="#sensors" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto btn-chamfer btn-cyan-outline py-3.5 px-7 text-xs sm:text-sm font-mono tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer">
+                  <span>EXPLORE SENSOR FLEET</span>
+                </button>
               </a>
             </div>
 
-            {/* Trust and Compliance Endorsement */}
-            <div className="pt-4 flex items-center justify-center lg:justify-start gap-4 text-xs text-slate-400">
-              <span className="flex items-center gap-1.5 font-medium">
-                <Lock className="w-3.5 h-3.5 text-sentinel-600" />
-                Zero biometric facial data stored
-              </span>
-              <span>·</span>
-              <span className="font-mono text-slate-500">HIPAA & GDPR Art. 9 Ready</span>
+            {/* Trust Badges */}
+            <div className="pt-2 text-xs font-mono text-slate-400 flex items-center justify-center lg:justify-start gap-3">
+              <span>COMPLIANCE:</span>
+              <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">HIPAA</span>
+              <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">GDPR</span>
+              <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">ISO 27001</span>
+              <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">NDAA</span>
             </div>
           </div>
 
-          {/* ── Right Column: Interactive Radar Perception Unit ── */}
-          <div id="radar-demo" className="lg:col-span-5 relative">
+          {/* ── Right Column: Interactive 60GHz mmWave Radar Canvas ── */}
+          <div className="lg:col-span-5 relative">
             <RadarAnimation />
           </div>
         </div>
 
-        {/* ── Key Metrics Bar ── */}
-        <div className="mt-16 lg:mt-24 pt-8 border-t border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="space-y-1">
-            <div className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">0</div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Cameras Required
-            </p>
-            <p className="text-[11px] text-slate-400">100% Anonymous Perception</p>
+        {/* ── High-Impact Metrics Ribbon (GuardianEye Stat Bar) ── */}
+        <div className="mt-16 pt-8 border-t border-cyan-500/20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Decision Latency</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-3xl font-black text-cyan-400 tracking-tight">&lt;12</span>
+              <span className="text-xs font-mono text-cyan-300 font-bold">ms</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono mt-1">Edge BACnet & relay actuation</p>
           </div>
 
-          <div className="space-y-1">
-            <div className="text-3xl sm:text-4xl font-black text-sentinel-600 tracking-tight">&lt;15ms</div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Decision Loop Latency
-            </p>
-            <p className="text-[11px] text-slate-400">Deterministic Edge Rule Engine</p>
+          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Sensor Fleet Uptime</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-3xl font-black text-white tracking-tight">99.9</span>
+              <span className="text-xs font-mono text-cyan-400 font-bold">%</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono mt-1">Industrial watchdog & reconnect</p>
           </div>
 
-          <div className="space-y-1">
-            <div className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">99.4%</div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              False Alarm Reduction
-            </p>
-            <p className="text-[11px] text-slate-400">Normal Sleep Filtered Correctly</p>
+          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Optical Lenses Used</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-3xl font-black text-cyan-400 tracking-tight">0</span>
+              <span className="text-xs font-mono text-slate-400 font-bold">Lenses</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono mt-1">100% Zero-Knowledge privacy</p>
           </div>
 
-          <div className="space-y-1">
-            <div className="text-3xl sm:text-4xl font-black text-emerald-600 tracking-tight">100%</div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Actuator Automation
-            </p>
-            <p className="text-[11px] text-slate-400">Direct HVAC, DALI & Relay Control</p>
+          <div className="hud-bracket p-4 rounded-xl bg-slate-950/70 border border-cyan-500/20 backdrop-blur-md">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Energy Conserved</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-3xl font-black text-white tracking-tight">38</span>
+              <span className="text-xs font-mono text-emerald-400 font-bold">% Avg</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono mt-1">Autonomous setback twin verified</p>
           </div>
         </div>
       </div>

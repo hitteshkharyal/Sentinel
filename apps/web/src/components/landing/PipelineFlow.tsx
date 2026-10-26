@@ -1,234 +1,162 @@
-import React, { useState } from 'react';
-import {
-  Radio,
-  Cpu,
-  Sliders,
-  Zap,
-  BellRing,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Wind,
-  Lightbulb,
-  Heart,
-} from 'lucide-react';
-import { Badge } from '../ui/Badge';
+// ─────────────────────────────────────────────
+// SENTINEL Web — GuardianEye Theme Core Capability Matrix
+// 6 Tactical Glassmorphic Cards with Corner Reticles & Stat Badges
+// ─────────────────────────────────────────────
+
+import React from 'react';
+import { Radio, Wind, Cpu, Zap, Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const PipelineFlow: React.FC = () => {
-  const [activeStep, setActiveStep] = useState<number>(0);
-
-  const steps = [
+  const capabilities = [
     {
-      step: '01',
-      title: 'Sense',
-      subtitle: 'Raw Physical Signals',
-      icon: <Radio className="w-6 h-6 text-sentinel-600" />,
-      color: 'border-sentinel-300 bg-sentinel-50/50',
-      badge: 'Edge Ingestion',
-      badgeVariant: 'primary' as const,
-      hardware: ['60GHz mmWave Radar', 'Photoacoustic NDIR CO₂', 'Acoustic SPL Sensor', 'PIR Pyroelectric'],
+      id: '01',
+      title: '60GHz mmWave Spatial Radar',
+      subtitle: 'Sub-Millimeter Non-Optical Precision',
+      icon: <Radio className="w-5 h-5 text-cyan-400" />,
       description:
-        'Continuous ambient RF waveforms, micro-vibrations, sound pressure decibels, and gas ppm captured locally without optical lenses or camera sensors.',
-      payloadExample: '{"type": "mmwave", "doppler_hz": 42.1, "breathing_bpm": 18, "co2_ppm": 1420}',
+        'Continuous Doppler point-cloud sensing capable of tracking micro-motion, stationary chest-wall displacement, and occupant count without camera lenses or optical feeds.',
+      stat: '0.0mm',
+      statLabel: 'Detection Sensitivity',
     },
     {
-      step: '02',
-      title: 'Understand',
-      subtitle: 'Edge Sensor Fusion',
-      icon: <Cpu className="w-6 h-6 text-purple-600" />,
-      color: 'border-purple-300 bg-purple-50/50',
-      badge: 'Spatial State Machine',
-      badgeVariant: 'info' as const,
-      hardware: ['ESP32 Dual-Core Filter', 'Doppler FFT Spectral Analysis', 'Occupancy Confidence Fusion'],
+      id: '02',
+      title: 'NDIR Environmental & Air Quality',
+      subtitle: 'Instant Indoor Hazard Detection',
+      icon: <Wind className="w-5 h-5 text-cyan-400" />,
       description:
-        'Distinguishes true human presence from drapery oscillations, ceiling fan noise, or pets. Normal sleep is verified and never misclassified as an alert.',
-      payloadExample: '{"state": "OCCUPIED_STATIONARY", "confidence": 0.992, "privacy_hash": "a4f8...b9"}',
+        'Continuous photoacoustic NDIR carbon dioxide, relative humidity, temperature, and acoustic sound-level surveillance identifying ventilation deficits and hazards before discomfort occurs.',
+      stat: '<1s',
+      statLabel: 'Sensor Response Time',
     },
     {
-      step: '03',
-      title: 'Decide',
-      subtitle: 'Autonomous Policy Evaluation',
-      icon: <Sliders className="w-6 h-6 text-emerald-600" />,
-      color: 'border-emerald-300 bg-emerald-50/50',
-      badge: '<15ms Engine',
-      badgeVariant: 'success' as const,
-      hardware: ['Multi-condition Rules', 'Time-of-Day Profiles', 'Facility Safety Thresholds'],
+      id: '03',
+      title: 'Bayesian Sensor Fusion Engine',
+      subtitle: 'Zero-False-Positive Decision Logic',
+      icon: <Cpu className="w-5 h-5 text-cyan-400" />,
       description:
-        'Evaluates environmental comfort limits, occupancy schedules, and risk tiers instantly at the edge and central broker.',
-      payloadExample: '{"rule_id": "rule_co2_fresh_air", "action": "SET_DAMPER_100", "urgency": "AUTO"}',
+        'Cross-correlates multi-sensor evidence across radar point clouds, PIR pyroelectrics, and thermal acoustics. Distinguishes normal stationary sleep from distress or vacant zones.',
+      stat: '99.8%',
+      statLabel: 'Classification Accuracy',
     },
     {
-      step: '04',
-      title: 'Act',
-      subtitle: 'Instant Physical Automation',
-      icon: <Zap className="w-6 h-6 text-amber-600" />,
-      color: 'border-amber-300 bg-amber-50/50',
-      badge: 'Zero Human Delay',
-      badgeVariant: 'warning' as const,
-      hardware: ['BACnet / Modbus HVAC', 'DALI / 0-10V Lighting', 'Dry Contact Solenoids'],
+      id: '04',
+      title: 'Autonomous Edge Actuation',
+      subtitle: 'Direct BACnet & Relay Overrides',
+      icon: <Zap className="w-5 h-5 text-cyan-400" />,
       description:
-        'Immediate mechanical response: fresh air ventilation cycles on, unoccupied room thermostats set back, lighting scenes adjust automatically.',
-      payloadExample: '{"actuator": "damper_vav_08", "target_pct": 100, "status": "EXEC_CONFIRMED"}',
+        'Executes deterministic room setbacks (HVAC_ECO, LIGHT_OFF) and ventilation boosts over industrial BACnet, Modbus, and dry-contact relays without cloud round-trip delay.',
+      stat: '<12ms',
+      statLabel: 'Actuation Latency',
     },
     {
-      step: '05',
-      title: 'Escalate',
-      subtitle: 'Only When Unresolved',
-      icon: <BellRing className="w-6 h-6 text-rose-600" />,
-      color: 'border-rose-300 bg-rose-50/50',
-      badge: 'Responsible Alerting',
-      badgeVariant: 'danger' as const,
-      hardware: ['Multi-tier SLA Dispatch', 'Browser Audio Beacons', 'Responsible-person Routing'],
+      id: '05',
+      title: 'Zero-Knowledge Privacy Paradigm',
+      subtitle: 'Mathematical Point-Cloud Defense',
+      icon: <Lock className="w-5 h-5 text-cyan-400" />,
       description:
-        'Zero alert fatigue. Operators are only pinged when autonomous physical actions cannot resolve the condition or life safety requires intervention.',
-      payloadExample: '{"alert": "BUS_TRAPPED_PASSENGER", "sla_seconds": 180, "target": "DISPATCH_LEAD"}',
+        'Engineered to be physically blind to identity. Zero optical sensors, zero video recording, zero biometric storage. Fully compliant with HIPAA, GDPR, ISO 27001, and NDAA standards.',
+      stat: '100%',
+      statLabel: 'Camera-Free Architecture',
+    },
+    {
+      id: '06',
+      title: 'Predictive AI & ESG Digital Twin',
+      subtitle: 'Forward Forecasting & Impact Tracking',
+      icon: <Sparkles className="w-5 h-5 text-cyan-400" />,
+      description:
+        'Mass-balance CO₂ accumulation modeling, circadian occupancy surge forecasting, and automated ESG digital twins calculating verified kWh saved, cost reduction, and carbon offset.',
+      stat: '24h',
+      statLabel: 'Forward Predictive Horizon',
     },
   ];
 
   return (
-    <section id="pipeline" className="py-20 lg:py-28 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
+    <section id="pipeline" className="relative py-24 bg-[#02040a] cyber-grid-bg text-white border-t border-cyan-500/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sentinel-100 text-sentinel-800 text-xs font-bold uppercase tracking-wider mb-4">
-            <ShieldCheck className="w-4 h-4 text-sentinel-600" />
-            <span>The SENTINEL Operational Paradigm</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Sense → Understand → Decide → Act
+          <span className="text-xs font-mono font-bold tracking-widest uppercase text-cyan-400 px-3 py-1 rounded bg-cyan-950/60 border border-cyan-500/30">
+            PERCEPTION & ACTUATION ECOSYSTEM
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mt-4">
+            Intelligence That Thinks,{' '}
+            <span className="gradient-text-cyan block sm:inline">Acts, and Protects.</span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 mt-4 leading-relaxed">
-            SENTINEL does not just plot lines on graphs. It autonomously transforms raw physical RF pulses into intelligent mechanical decisions — escalating to humans only when necessary.
+          <p className="text-sm sm:text-base text-slate-400 mt-3 font-normal leading-relaxed">
+            A high-speed sensory intelligence platform engineered to sense physical environments, make autonomous decisions at the edge, and quantify real-world impact.
           </p>
         </div>
 
-        {/* Five-Stage Interactive Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5 relative">
-          {steps.map((item, index) => {
-            const isSelected = activeStep === index;
-            return (
-              <div
-                key={item.step}
-                onClick={() => setActiveStep(index)}
-                className={`rounded-2xl border p-5 cursor-pointer transition-all duration-200 relative group flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-white border-sentinel-500 shadow-lg shadow-sentinel-500/10 scale-[1.02]'
-                    : 'bg-white/80 border-slate-200/90 hover:border-slate-300 hover:bg-white'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-black text-slate-300 font-mono group-hover:text-sentinel-500 transition-colors">
-                      {item.step}
-                    </span>
-                    <Badge variant={item.badgeVariant} size="sm">
-                      {item.badge}
-                    </Badge>
+        {/* 6 GuardianEye Glassmorphism Cards with HUD Corner Reticles */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {capabilities.map((cap) => (
+            <div
+              key={cap.id}
+              className="hud-bracket glass-card glass-card-hover p-6 rounded-2xl relative flex flex-col justify-between overflow-hidden group"
+            >
+              {/* Background Hover Glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl group-hover:bg-cyan-500/15 transition-all pointer-events-none" />
+
+              <div>
+                {/* Card Header: Diamond Emblem + ID */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="relative w-9 h-9 flex items-center justify-center">
+                    <div className="absolute inset-0 border border-cyan-400/80 rotate-45 bg-cyan-950/40 group-hover:border-cyan-300 transition-all shadow-sm shadow-cyan-400/20" />
+                    <div className="relative z-10">{cap.icon}</div>
                   </div>
 
-                  <div className="mb-3">{item.icon}</div>
-                  <h3 className="text-lg font-bold text-slate-900 leading-tight">{item.title}</h3>
-                  <p className="text-xs font-semibold text-slate-500 mt-0.5">{item.subtitle}</p>
-
-                  <p className="text-xs text-slate-600 mt-3 leading-relaxed line-clamp-3">
-                    {item.description}
-                  </p>
+                  <span className="text-xs font-mono font-bold text-slate-500 group-hover:text-cyan-400 transition-colors">
+                    {cap.id}
+                  </span>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sentinel-600">
-                  <span>Inspect telemetry</span>
-                  <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'translate-x-1' : ''}`} />
-                </div>
+                {/* Card Title & Subtitle */}
+                <h3 className="text-base font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
+                  {cap.title}
+                </h3>
+                <span className="text-xs font-mono text-cyan-400 block mt-0.5 mb-3">
+                  {cap.subtitle}
+                </span>
+
+                {/* Description */}
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                  {cap.description}
+                </p>
               </div>
-            );
-          })}
+
+              {/* Bottom Stat Badge */}
+              <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-baseline justify-between">
+                <div>
+                  <span className="text-2xl font-black font-mono text-cyan-400 tracking-tight">
+                    {cap.stat}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400 block uppercase">
+                    {cap.statLabel}
+                  </span>
+                </div>
+
+                <div className="w-2 h-2 rounded-full bg-cyan-400 opacity-60 group-hover:opacity-100 group-hover:animate-ping" />
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Selected Stage Detail Inspector */}
-        {(() => {
-          const currentStep = steps[activeStep] ?? steps[0]!;
-          return (
-            <div className="mt-8 rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-xl border border-slate-800 animate-fade-in">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-                <div className="lg:col-span-2 space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Badge variant={currentStep.badgeVariant} size="md">
-                      Stage {currentStep.step} · {currentStep.title}
-                    </Badge>
-                    <span className="text-sm text-slate-400 font-mono">
-                      {currentStep.subtitle}
-                    </span>
-                  </div>
-
-                  <h4 className="text-xl font-bold tracking-tight text-white">
-                    {currentStep.description}
-                  </h4>
-
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {currentStep.hardware.map((tech) => (
-                      <span
-                        key={tech}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Simulated JSON Payload */}
-                <div className="rounded-2xl bg-slate-950 p-4 border border-slate-800/90 font-mono text-xs">
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] text-slate-400 uppercase tracking-wider">
-                    <span>Edge Payload Sample</span>
-                    <span className="text-emerald-400">Validated Schema</span>
-                  </div>
-                  <pre className="text-emerald-400 overflow-x-auto whitespace-pre-wrap leading-relaxed">
-                    {currentStep.payloadExample}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Triple Product Outcome Banner: Safety + Comfort + Efficiency */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-              <Heart className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-slate-900 text-sm">Life Safety Guaranteed</h5>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Zero students trapped on school buses · Bathroom fall detection without cameras.
-              </p>
-            </div>
+        {/* Bottom Callout Bar */}
+        <div className="mt-12 p-6 rounded-2xl bg-slate-950/80 border border-cyan-500/25 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-xl">
+          <div className="flex items-center gap-3 text-xs font-mono text-slate-300">
+            <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+              SECURITY STANDARDS
+            </span>
+            <span className="hidden md:inline">ISO 27001 · SOC 2 TYPE II · HIPAA READY · NDAA COMPLIANT</span>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
-              <Wind className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-slate-900 text-sm">Occupant Comfort & Air</h5>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Automated fresh air ventilation when CO₂ rises · Hotel room auto-climatization.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-              <Lightbulb className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-slate-900 text-sm">Autonomous Energy Savings</h5>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Eco-setback temperature ramps & lighting sleep modes when rooms are vacant.
-              </p>
-            </div>
-          </div>
+          <Link to="/dashboard">
+            <button className="btn-chamfer btn-cyan-glow py-2.5 px-6 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer">
+              <span>EXPLORE PLATFORM ARCHITECTURE</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </Link>
         </div>
       </div>
     </section>

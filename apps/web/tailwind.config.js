@@ -17,6 +17,13 @@ export default {
           900: '#1e3a8a',
           950: '#0f172a',
         },
+        cyber: {
+          bg: '#02040a',
+          card: 'rgba(6, 13, 26, 0.75)',
+          border: 'rgba(0, 240, 255, 0.16)',
+          cyan: '#00f0ff',
+          blue: '#0284c7',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

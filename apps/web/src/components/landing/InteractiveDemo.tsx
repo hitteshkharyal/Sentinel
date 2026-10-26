@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Play, CheckCircle2, Activity } from 'lucide-react';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { Play, CheckCircle2, Activity, Terminal } from 'lucide-react';
 
 export const InteractiveDemo: React.FC = () => {
   const [activeScenario, setActiveScenario] = useState<'bus' | 'fall' | 'co2' | 'hotel'>('bus');
@@ -17,7 +15,7 @@ export const InteractiveDemo: React.FC = () => {
         {
           label: 'SENSE',
           text: 'Ignition turns OFF. Doors shut. Ceiling 60GHz mmWave radar initiates a 180s cabin frequency sweep.',
-          payload: 'IGNITION_STATE: OFF · SWEEP_HZ: 60.25 GHz · DOPPLER_RESOLUTION: 0.05 m/s',
+          payload: 'IGNITION_STATE: OFF · SWEEP_HZ: 60.25 GHz · DOPPLER_RES: 0.05 m/s · SAMPLES: 2048',
         },
         {
           label: 'UNDERSTAND',
@@ -158,17 +156,21 @@ export const InteractiveDemo: React.FC = () => {
   };
 
   return (
-    <section id="simulation" className="py-20 lg:py-28 bg-slate-900 text-white relative overflow-hidden">
+    <section id="simulation" className="py-24 relative bg-[#02040a] border-b border-cyan-500/15 overflow-hidden">
+      {/* Background cyber radial glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <Badge variant="primary" size="md" className="mb-3 !bg-sentinel-500/20 !text-sentinel-300 !border-sentinel-500/40">
-            Interactive Testbed
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Experience the Autonomous Loop Live
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-400 font-mono text-[11px] uppercase tracking-widest mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Interactive Autonomous Testbed</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase">
+            Experience The <span className="gradient-text-cyan">Autonomous Loop Live</span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-400 mt-4 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed font-light">
             Select a physical event and watch the pipeline sense the signal, evaluate the policy, actuate physical hardware, and determine whether escalation is warranted.
           </p>
         </div>
@@ -190,69 +192,79 @@ export const InteractiveDemo: React.FC = () => {
                 setStepIndex(0);
                 setRunning(false);
               }}
-              className={`p-3.5 rounded-2xl text-xs sm:text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
+              className={`p-3.5 rounded-lg text-xs font-mono font-bold border transition-all flex items-center justify-center gap-2 select-none ${
                 activeScenario === s.id
-                  ? 'bg-sentinel-600 text-white border-sentinel-400 shadow-lg shadow-sentinel-600/30'
-                  : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)]'
+                  : 'bg-[#060e1d]/80 text-slate-400 border-cyan-500/15 hover:border-cyan-500/40 hover:text-cyan-300'
               }`}
             >
-              <span className="text-lg">{s.icon}</span>
+              <span className="text-base">{s.icon}</span>
               <span>{s.label}</span>
             </button>
           ))}
         </div>
 
         {/* Simulation Control Card */}
-        <div className="rounded-3xl bg-slate-950 border border-slate-800 p-6 sm:p-10 shadow-2xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+        <div className="glass-card hud-bracket p-6 sm:p-10 relative">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-cyan-500/20">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{current.icon}</span>
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight uppercase">
                   {current.title}
                 </h3>
               </div>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">{current.subtitle}</p>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1 font-mono">{current.subtitle}</p>
             </div>
 
-            <Button
-              variant="primary"
-              size="md"
+            <button
               onClick={handleStartRun}
               disabled={running}
-              leftIcon={running ? <Activity className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-              className="text-xs shadow-md shadow-sentinel-600/30"
+              className="btn-cyan-glow btn-chamfer px-6 py-2.5 font-mono font-bold text-xs uppercase flex items-center gap-2 text-black cursor-pointer disabled:opacity-50"
             >
-              {running ? 'Executing Pipeline...' : 'Run Simulation'}
-            </Button>
+              {running ? (
+                <>
+                  <Activity className="w-4 h-4 animate-spin" />
+                  <span>Executing Loop...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-black" />
+                  <span>Execute Simulation</span>
+                </>
+              )}
+            </button>
           </div>
 
           {/* 5-Step Pipeline Progress Flow */}
-          <div className="my-8 grid grid-cols-5 gap-2 sm:gap-4 text-center">
+          <div className="my-10 grid grid-cols-5 gap-2 sm:gap-4 text-center relative">
+            {/* Background connection bar */}
+            <div className="absolute top-4 sm:top-5 left-10 right-10 h-[2px] bg-cyan-500/20 z-0" />
+
             {current.steps.map((st, i) => {
               const isPastOrCurrent = i <= stepIndex;
               const isCurrent = i === stepIndex;
 
               return (
-                <div key={st.label} className="relative">
+                <div key={st.label} className="relative z-10">
                   <div
-                    className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-lg font-mono font-bold text-xs sm:text-sm transition-all flex items-center justify-center border ${
                       isCurrent && running
-                        ? 'bg-sentinel-500 text-white ring-4 ring-sentinel-500/30 animate-pulse'
+                        ? 'bg-cyan-500 text-black border-cyan-300 shadow-[0_0_20px_rgba(0,240,255,0.8)] scale-110 animate-pulse'
                         : isPastOrCurrent
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-slate-800 text-slate-500'
+                        ? 'bg-cyan-950 text-cyan-300 border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.3)]'
+                        : 'bg-[#030814] text-slate-600 border-cyan-500/15'
                     }`}
                   >
                     {isPastOrCurrent && !isCurrent ? (
-                      <CheckCircle2 className="w-5 h-5" />
+                      <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     ) : (
                       i + 1
                     )}
                   </div>
                   <span
-                    className={`block mt-2 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider ${
-                      isPastOrCurrent ? 'text-white' : 'text-slate-500'
+                    className={`block mt-2.5 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider ${
+                      isPastOrCurrent ? 'text-cyan-400' : 'text-slate-600'
                     }`}
                   >
                     {st.label}
@@ -266,22 +278,27 @@ export const InteractiveDemo: React.FC = () => {
           {(() => {
             const currentStep = current.steps[stepIndex] ?? current.steps[0]!;
             return (
-              <div className="rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 animate-fade-in">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <Badge variant="primary" size="sm" className="!bg-sentinel-500/20 !text-sentinel-300">
-                    Active State: Step {stepIndex + 1} of 5 ({currentStep.label})
-                  </Badge>
-                  <span className="text-[11px] font-mono text-emerald-400">
-                    MQTT Topic: sentinel/{activeScenario}/event
+              <div className="rounded-xl bg-[#030712] border border-cyan-500/25 p-5 sm:p-6 relative">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 pb-3 border-b border-cyan-500/15 font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-cyan-400" />
+                    <span className="text-cyan-300 font-bold uppercase">
+                      ACTIVE STATE: STEP {stepIndex + 1} OF 5 ({currentStep.label})
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-cyan-400/80">
+                    MQTT TOPIC: <code className="text-cyan-300">sentinel/{activeScenario}/event</code>
                   </span>
                 </div>
 
-                <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed mt-2">
+                <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed font-sans">
                   {currentStep.text}
                 </p>
 
-                <div className="mt-4 p-3 rounded-xl bg-slate-950 border border-slate-800/90 font-mono text-xs text-emerald-400 overflow-x-auto">
-                  <span className="text-slate-500 text-[10px] block mb-1">Decoded ESP32 Edge Ingestion Record:</span>
+                <div className="mt-4 p-3 rounded-lg bg-[#010307] border border-cyan-500/20 font-mono text-xs text-cyan-300 overflow-x-auto">
+                  <span className="text-slate-500 text-[10px] block mb-1 uppercase tracking-widest">
+                    Decoded ESP32 Edge Ingestion Record:
+                  </span>
                   <code>{currentStep.payload}</code>
                 </div>
               </div>
