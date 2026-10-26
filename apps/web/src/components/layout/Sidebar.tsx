@@ -20,6 +20,7 @@ import {
   Cpu,
   Activity,
   BrainCircuit,
+  X,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { useAuth } from '../../context/AuthContext';
@@ -159,6 +160,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
+
+        {/* Mobile Close Button */}
+        {onCloseMobile && (
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            className="lg:hidden flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-cyan-950/40 border border-slate-800 transition-colors shrink-0"
+            title="Close sidebar"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5 text-slate-300 hover:text-white" />
+          </button>
+        )}
       </div>
 
       {/* ── Organization Scope Switcher ── */}

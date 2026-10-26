@@ -12,6 +12,7 @@ import {
   ShieldAlert,
   Building2,
   Users,
+  X,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -74,23 +75,23 @@ export const TopNav: React.FC<TopNavProps> = ({
   ];
 
   return (
-    <header className="h-16 px-4 sm:px-6 bg-[#030712]/90 backdrop-blur-xl border-b border-cyan-500/15 flex items-center justify-between gap-4 sticky top-0 z-20 text-slate-100">
+    <header className="min-h-[4.5rem] sm:min-h-[5rem] px-4 sm:px-6 lg:px-8 py-3 bg-[#030712]/95 backdrop-blur-xl border-b border-cyan-500/20 flex items-center justify-between gap-3 sm:gap-4 sticky top-0 z-20 text-slate-100">
       {/* ── Left: Mobile Toggle & Page Title ── */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <button
           type="button"
           onClick={onOpenMobileSidebar}
-          className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-950/40 focus:outline-none"
+          className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-cyan-950/40 focus:outline-none min-w-[38px] min-h-[38px] flex items-center justify-center border border-slate-800"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div>
-          <h1 className="text-base sm:text-lg font-mono font-bold text-white tracking-wide leading-tight">
+        <div className="min-w-0">
+          <h1 className="text-sm sm:text-lg font-mono font-bold text-white tracking-wide leading-tight truncate max-w-[130px] sm:max-w-none">
             {title}
           </h1>
-          <p className="hidden sm:block text-[10px] text-cyan-400/80 font-mono">
+          <p className="hidden sm:block text-[10px] text-cyan-400/80 font-mono truncate">
             Autonomous Sense → Understand → Decide → Act Loop: ACTIVE
           </p>
         </div>
@@ -198,7 +199,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 className="fixed inset-0 z-30"
                 onClick={() => setNotificationsOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#060e1d] rounded-xl shadow-2xl border border-cyan-500/30 p-4 z-40 animate-slide-up font-mono">
+              <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-sm bg-[#060e1d] rounded-2xl shadow-2xl border border-cyan-500/30 p-4 z-40 animate-slide-up font-mono">
                 <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-xs text-white uppercase tracking-wider">
@@ -211,9 +212,11 @@ export const TopNav: React.FC<TopNavProps> = ({
                   <button
                     type="button"
                     onClick={() => setNotificationsOpen(false)}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                    className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    aria-label="Close alerts"
+                    title="Close"
                   >
-                    Close
+                    <X className="w-4 h-4 text-slate-300 hover:text-white" />
                   </button>
                 </div>
 

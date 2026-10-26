@@ -198,21 +198,28 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search rooms, facilities, sensors, device IDs, or alerts..."
+            placeholder="Search rooms, facilities, sensors, device IDs..."
             className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 outline-none font-mono"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-cyan-400 p-1 rounded-md"
+              className="text-slate-400 hover:text-cyan-400 p-1.5 rounded-md"
+              title="Clear text"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[9px] font-mono text-cyan-400 bg-cyan-950/60 rounded border border-cyan-500/30">
-            ESC
-          </kbd>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-cyan-950/40 transition-colors shrink-0"
+            aria-label="Close search"
+            title="Close"
+          >
+            <X className="w-5 h-5 text-slate-300 hover:text-white" />
+          </button>
         </div>
 
         {/* Category Filter Pills */}
@@ -240,7 +247,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-cyan-500/10">
+        <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto p-2 divide-y divide-cyan-500/10 overscroll-contain">
           {filteredResults.length === 0 ? (
             <div className="py-12 text-center text-slate-500 text-sm">
               <Search className="w-8 h-8 text-cyan-500/40 mx-auto mb-2" />

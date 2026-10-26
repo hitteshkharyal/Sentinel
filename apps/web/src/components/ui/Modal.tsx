@@ -68,40 +68,43 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Dialog */}
       <div
         ref={modalRef}
-        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-[#060e1d]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-500/30 z-10 overflow-hidden transform animate-slide-up text-slate-100`}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} max-h-[90vh] sm:max-h-[85vh] flex flex-col bg-[#060e1d]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-500/30 z-10 overflow-hidden transform animate-slide-up text-slate-100 my-auto`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="px-6 py-4.5 border-b border-cyan-500/20 flex items-start justify-between gap-4">
-            <div>
+          <div className="shrink-0 px-5 sm:px-6 py-4 border-b border-cyan-500/20 flex items-center justify-between gap-4 bg-[#030712]/60">
+            <div className="min-w-0 flex-1">
               {title && (
-                <h3 className="text-lg font-bold text-white tracking-tight">
+                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
                   {title}
                 </h3>
               )}
               {description && (
-                <p className="text-xs text-slate-400 mt-0.5 font-light">{description}</p>
+                <p className="text-xs text-slate-400 mt-0.5 font-light truncate">{description}</p>
               )}
             </div>
             {showCloseButton && (
               <button
                 type="button"
                 onClick={onClose}
-                className="text-slate-400 hover:text-cyan-400 rounded-lg p-1 hover:bg-cyan-950/40 transition-colors focus:outline-none"
+                className="shrink-0 text-slate-300 hover:text-white rounded-xl p-2 hover:bg-cyan-950/50 transition-colors focus:outline-none cursor-pointer border border-transparent hover:border-cyan-500/30 min-w-[36px] min-h-[36px] flex items-center justify-center"
                 aria-label="Close dialog"
+                title="Close"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-slate-300 hover:text-white" />
               </button>
             )}
           </div>
         )}
 
-        {/* Body Content */}
-        <div className="p-6">{children}</div>
+        {/* Body Content with Native Scrolling */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
+          {children}
+        </div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 bg-[#030712]/80 border-t border-cyan-500/20 flex items-center justify-end gap-3">
+          <div className="shrink-0 px-5 sm:px-6 py-3.5 bg-[#030712]/80 border-t border-cyan-500/20 flex items-center justify-end gap-3">
             {footer}
           </div>
         )}
