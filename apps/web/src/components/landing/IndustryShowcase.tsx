@@ -187,23 +187,25 @@ export const IndustryShowcase: React.FC = () => {
         </div>
 
         {/* Industry Pill Selector Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-10 justify-start lg:justify-center scrollbar-none">
-          {industries.map((ind) => (
-            <button
-              key={ind.id}
-              onClick={() => setSelectedIndustry(ind.id)}
-              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap select-none border ${
-                selectedIndustry === ind.id
-                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)] font-bold scale-[1.02]'
-                  : 'bg-[#060e1d]/80 text-slate-400 border-cyan-500/15 hover:border-cyan-500/40 hover:text-cyan-300 hover:bg-[#09152b]'
-              }`}
-            >
-              <span className={selectedIndustry === ind.id ? 'text-black' : 'text-cyan-400'}>
-                {ind.icon}
-              </span>
-              <span>{ind.name}</span>
-            </button>
-          ))}
+        <div className="w-full overflow-x-auto pb-4 mb-10 px-1 scroll-smooth">
+          <div className="flex items-center gap-2.5 min-w-max mx-auto px-4 justify-start sm:justify-center">
+            {industries.map((ind) => (
+              <button
+                key={ind.id}
+                onClick={() => setSelectedIndustry(ind.id)}
+                className={`shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap select-none border cursor-pointer ${
+                  selectedIndustry === ind.id
+                    ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)] font-bold scale-[1.02]'
+                    : 'bg-[#060e1d]/80 text-slate-400 border-cyan-500/15 hover:border-cyan-500/40 hover:text-cyan-300 hover:bg-[#09152b]'
+                }`}
+              >
+                <span className={selectedIndustry === ind.id ? 'text-black' : 'text-cyan-400'}>
+                  {ind.icon}
+                </span>
+                <span>{ind.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Active Industry Deep-Dive Card */}

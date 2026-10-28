@@ -129,19 +129,19 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="lg">
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 Configure {sensor.name}
-                <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 font-mono">
                   {sensor.model}
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 Hardware bus, sampling frequency, filtering, and alert thresholds.
               </p>
             </div>
@@ -156,15 +156,15 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Hardware Bus & Pin Mapping */}
-          <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
-            <span className="text-[11px] font-bold uppercase text-cyan-400 tracking-wider flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5 space-y-3">
+            <span className="text-[11px] font-bold uppercase text-cyan-600 dark:text-cyan-400 tracking-wider flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5" />
               Microcontroller Pin Mapping & Protocol ({sensor.interfaceType})
             </span>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">GPIO Pin (0-48)</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">GPIO Pin (0-48)</label>
                 <input
                   type="number"
                   min="0"
@@ -172,44 +172,44 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                   value={gpioPin}
                   onChange={(e) => setGpioPin(e.target.value)}
                   placeholder="e.g. 18, 21, 34"
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-white/10 rounded-lg text-xs text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">I2C Hex Address</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">I2C Hex Address</label>
                 <input
                   type="text"
                   value={i2cAddress}
                   onChange={(e) => setI2cAddress(e.target.value)}
                   placeholder="e.g. 0x62"
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-white/10 rounded-lg text-xs text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">UART Baud Rate</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">UART Baud Rate</label>
                 <input
                   type="number"
                   value={baudRate}
                   onChange={(e) => setBaudRate(e.target.value)}
                   placeholder="e.g. 256000, 115200"
-                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-white/10 rounded-lg text-xs text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white font-mono"
                 />
               </div>
             </div>
           </div>
 
           {/* Sampling & Noise Filtering */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
-            <span className="text-[11px] font-bold uppercase text-purple-400 tracking-wider flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/5 space-y-3">
+            <span className="text-[11px] font-bold uppercase text-purple-600 dark:text-purple-400 tracking-wider flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5" />
               Sampling Frequency & Digital Filtering
             </span>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
                   Interval ({samplingIntervalMs} ms)
                 </label>
                 <input
@@ -219,12 +219,12 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                   step="50"
                   value={samplingIntervalMs}
                   onChange={(e) => setSamplingIntervalMs(Number(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
+                  className="w-full accent-cyan-500 cursor-pointer"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
                   Moving Average Window (Samples)
                 </label>
                 <input
@@ -233,12 +233,12 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                   max="50"
                   value={filterWindowSize}
                   onChange={(e) => setFilterWindowSize(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
                   Digital Debounce (ms)
                 </label>
                 <input
@@ -248,51 +248,51 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                   step="50"
                   value={debounceMs}
                   onChange={(e) => setDebounceMs(Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-white/5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-slate-200 dark:border-white/5">
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">Measurement Unit</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Measurement Unit</label>
                 <input
                   type="text"
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
                   placeholder="e.g. ppm, °C, dB"
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">Min Logical Range</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Min Logical Range</label>
                 <input
                   type="number"
                   value={minValue}
                   onChange={(e) => setMinValue(e.target.value)}
                   placeholder="Min"
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">Max Logical Range</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Max Logical Range</label>
                 <input
                   type="number"
                   value={maxValue}
                   onChange={(e) => setMaxValue(e.target.value)}
                   placeholder="Max"
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 />
               </div>
             </div>
           </div>
 
           {/* Threshold Rules Builder */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/5 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400 tracking-wider flex items-center gap-1.5">
                 <Bell className="w-3.5 h-3.5" />
                 Alert Threshold Triggers ({thresholds.length})
               </span>
@@ -309,7 +309,7 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
             </div>
 
             {thresholds.length === 0 ? (
-              <p className="text-xs text-slate-500 italic p-3 text-center bg-black/20 rounded-lg">
+              <p className="text-xs text-slate-500 italic p-3 text-center bg-slate-100 dark:bg-black/20 rounded-lg">
                 No active threshold triggers configured. Telemetry values will be logged without triggering alerts.
               </p>
             ) : (
@@ -317,14 +317,14 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                 {thresholds.map((t, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 p-2 rounded-lg bg-black/40 border border-white/5"
+                    className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5"
                   >
                     <input
                       type="text"
                       value={t.name}
                       onChange={(e) => handleUpdateThreshold(idx, { name: e.target.value })}
                       placeholder="Rule Name"
-                      className="flex-1 px-2 py-1 bg-slate-950 border border-white/10 rounded text-xs text-white"
+                      className="flex-1 px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded text-xs text-slate-900 dark:text-white"
                     />
 
                     <select
@@ -334,7 +334,7 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                           operator: e.target.value as 'gt' | 'gte' | 'lt' | 'lte' | 'eq',
                         })
                       }
-                      className="px-2 py-1 bg-slate-950 border border-white/10 rounded text-xs text-white"
+                      className="px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded text-xs text-slate-900 dark:text-white"
                     >
                       <option value="gt">&gt; (Greater Than)</option>
                       <option value="gte">&ge; (Greater or Equal)</option>
@@ -349,7 +349,7 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                       onChange={(e) =>
                         handleUpdateThreshold(idx, { value: parseFloat(e.target.value) || 0 })
                       }
-                      className="w-24 px-2 py-1 bg-slate-950 border border-white/10 rounded text-xs text-white font-mono"
+                      className="w-24 px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded text-xs text-slate-900 dark:text-white font-mono"
                     />
 
                     <select
@@ -359,12 +359,12 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                       }
                       className={`px-2 py-1 rounded text-xs font-semibold ${
                         t.severity === 'CRITICAL'
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                          ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40'
                           : t.severity === 'HIGH'
-                          ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40'
+                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border border-orange-500/40'
                           : t.severity === 'WARNING'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                          : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                          ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40'
+                          : 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/40'
                       }`}
                     >
                       <option value="INFO">INFO</option>
@@ -376,7 +376,7 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveThreshold(idx)}
-                      className="p-1 rounded text-rose-400 hover:bg-rose-500/20 transition-all"
+                      className="p-1 rounded text-rose-500 hover:bg-rose-500/20 transition-all"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -387,7 +387,7 @@ export const ConfigureSensorModal: React.FC<ConfigureSensorModalProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
             <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>

@@ -135,13 +135,13 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="lg">
       <div className="p-6">
-        <div className="flex items-center gap-3 pb-4 mb-4 border-b border-white/10">
-          <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+        <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-200 dark:border-white/10">
+          <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
             <Cpu className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Register Hardware Sensor Node</h3>
-            <p className="text-xs text-slate-400">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Register Hardware Sensor Node</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               Provision a physical sensor from catalog specifications into your spatial digital twin.
             </p>
           </div>
@@ -156,16 +156,16 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Hardware Catalog Selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
               <span>Hardware Specification (Catalog Preset)</span>
-              <span className="text-[10px] text-cyan-400 flex items-center gap-1 font-normal">
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 flex items-center gap-1 font-normal">
                 <Sparkles className="w-3 h-3" /> Auto-configures pins & protocols
               </span>
             </label>
             <select
               value={selectedCatalogId}
               onChange={handleCatalogChange}
-              className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500/50"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500/50"
             >
               {catalog.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -177,7 +177,7 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
 
           {/* Sensor Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Sensor Node Label / Name *
             </label>
             <Input
@@ -191,7 +191,7 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
           {/* Spatial Twin Association (Facility & Room) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Assign to Facility
               </label>
               <select
@@ -200,7 +200,7 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
                   setFacilityId(e.target.value);
                   setRoomId('');
                 }}
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500/50"
               >
                 <option value="">-- Unassigned (Fleet / Spare) --</option>
                 {facilities.map((f) => (
@@ -212,13 +212,13 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Assign to Room Digital Twin
               </label>
               <select
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500/50"
               >
                 <option value="">-- No Specific Room --</option>
                 {filteredRooms.map((r) => (
@@ -232,7 +232,7 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
 
           {/* Device ID / ESP32 Controller link */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Microcontroller Device Identifier (Optional)
             </label>
             <Input
@@ -243,18 +243,18 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
           </div>
 
           {/* Hardware Protocol & Electrical Pins */}
-          <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
-            <span className="text-[11px] font-bold uppercase text-cyan-400 tracking-wider block">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5 space-y-3">
+            <span className="text-[11px] font-bold uppercase text-cyan-600 dark:text-cyan-400 tracking-wider block">
               Hardware Bus & Wiring Mapping
             </span>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">Interface Bus</label>
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Interface Bus</label>
                 <select
                   value={interfaceType}
                   onChange={(e) => setInterfaceType(e.target.value as SensorInterface)}
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white"
                 >
                   <option value="UART">UART (Serial)</option>
                   <option value="I2C">I2C Bus</option>
@@ -267,7 +267,7 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
                   GPIO Pin (0-48)
                 </label>
                 <input
@@ -277,12 +277,12 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
                   value={gpioPin}
                   onChange={(e) => setGpioPin(e.target.value)}
                   placeholder="e.g. 18, 21, 34"
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 mb-1">
+                <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
                   I2C Hex Address
                 </label>
                 <input
@@ -290,14 +290,14 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
                   value={i2cAddress}
                   onChange={(e) => setI2cAddress(e.target.value)}
                   placeholder="e.g. 0x62, 0x44"
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white font-mono"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-white/10 rounded-lg text-xs text-slate-900 dark:text-white font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] text-slate-400 mb-1">
-                Sampling Interval: <strong className="text-cyan-400">{samplingIntervalMs} ms</strong>
+              <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">
+                Sampling Interval: <strong className="text-cyan-600 dark:text-cyan-400">{samplingIntervalMs} ms</strong>
               </label>
               <input
                 type="range"
@@ -306,13 +306,13 @@ export const CreateSensorModal: React.FC<CreateSensorModalProps> = ({
                 step="100"
                 value={samplingIntervalMs}
                 onChange={(e) => setSamplingIntervalMs(Number(e.target.value))}
-                className="w-full accent-cyan-400 cursor-pointer"
+                className="w-full accent-cyan-500 cursor-pointer"
               />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
             <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>

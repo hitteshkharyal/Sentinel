@@ -461,12 +461,27 @@ html[data-theme="white"] .bg-\[\#071224\] {
 }
 
 html[data-theme="white"] .bg-slate-900,
-html[data-theme="white"] .bg-slate-900\/80,
 html[data-theme="white"] .bg-slate-900\/90,
+html[data-theme="white"] .bg-slate-900\/80,
+html[data-theme="white"] .bg-slate-900\/70,
+html[data-theme="white"] .bg-slate-900\/60,
 html[data-theme="white"] .bg-slate-900\/50,
+html[data-theme="white"] .bg-slate-900\/40,
+html[data-theme="white"] .bg-slate-900\/30,
+html[data-theme="white"] .bg-slate-900\/20,
 html[data-theme="white"] .bg-slate-800,
 html[data-theme="white"] .bg-slate-800\/80,
-html[data-theme="white"] .bg-slate-800\/50 {
+html[data-theme="white"] .bg-slate-800\/60,
+html[data-theme="white"] .bg-slate-800\/50,
+html[data-theme="white"] .bg-black\/20,
+html[data-theme="white"] .bg-black\/30,
+html[data-theme="white"] .bg-black\/40,
+html[data-theme="white"] .bg-black\/50,
+html[data-theme="white"] .bg-black\/60,
+html[data-theme="white"] .bg-slate-950\/30,
+html[data-theme="white"] .bg-slate-950\/40,
+html[data-theme="white"] .bg-slate-950\/50,
+html[data-theme="white"] .bg-slate-950\/60 {
   background-color: #f1f5f9 !important;
   border-color: rgba(15, 23, 42, 0.12) !important;
   color: #090d16 !important;
@@ -636,9 +651,26 @@ html[data-theme="orange"] .bg-\[\#071224\] {
 }
 
 html[data-theme="orange"] .bg-slate-900,
-html[data-theme="orange"] .bg-slate-900\/80,
 html[data-theme="orange"] .bg-slate-900\/90,
-html[data-theme="orange"] .bg-slate-800 {
+html[data-theme="orange"] .bg-slate-900\/80,
+html[data-theme="orange"] .bg-slate-900\/70,
+html[data-theme="orange"] .bg-slate-900\/60,
+html[data-theme="orange"] .bg-slate-900\/50,
+html[data-theme="orange"] .bg-slate-900\/40,
+html[data-theme="orange"] .bg-slate-900\/30,
+html[data-theme="orange"] .bg-slate-800,
+html[data-theme="orange"] .bg-slate-800\/80,
+html[data-theme="orange"] .bg-slate-800\/60,
+html[data-theme="orange"] .bg-slate-800\/50,
+html[data-theme="orange"] .bg-black\/20,
+html[data-theme="orange"] .bg-black\/30,
+html[data-theme="orange"] .bg-black\/40,
+html[data-theme="orange"] .bg-black\/50,
+html[data-theme="orange"] .bg-black\/60,
+html[data-theme="orange"] .bg-slate-950\/30,
+html[data-theme="orange"] .bg-slate-950\/40,
+html[data-theme="orange"] .bg-slate-950\/50,
+html[data-theme="orange"] .bg-slate-950\/60 {
   background-color: #fed7aa !important;
   border-color: #ea580c !important;
   color: #000000 !important;

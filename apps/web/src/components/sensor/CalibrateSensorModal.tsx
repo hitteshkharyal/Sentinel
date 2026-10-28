@@ -91,19 +91,19 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="md">
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+            <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400">
               <Compass className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 Hardware Calibration
-                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-300 font-mono">
                   {sensor.model}
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 Linear regression and zero-point baseline offsets for field accuracy.
               </p>
             </div>
@@ -114,7 +114,7 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
             variant="ghost"
             size="sm"
             onClick={handleResetDefaults}
-            className="text-slate-400 hover:text-white text-xs flex items-center gap-1"
+            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs flex items-center gap-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset
@@ -128,22 +128,22 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
         )}
 
         {/* Live Calibration Formula Preview */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-slate-900 to-black border border-purple-500/20 mb-5 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-gradient-to-r dark:from-slate-900 dark:to-black border border-purple-500/30 mb-5 space-y-2">
+          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
             <span>Raw Sensor Signal</span>
-            <span className="font-mono text-white font-bold">
+            <span className="font-mono text-slate-900 dark:text-white font-bold">
               {rawValue} {sensor.configuration?.unit || ''}
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-purple-300 font-semibold pt-1 border-t border-white/10">
+          <div className="flex items-center justify-between text-xs text-purple-700 dark:text-purple-300 font-semibold pt-1 border-t border-slate-200 dark:border-white/10">
             <span>Calibrated Output (Preview)</span>
-            <span className="font-mono text-emerald-400 text-sm font-black">
+            <span className="font-mono text-emerald-600 dark:text-emerald-400 text-sm font-black">
               {previewCalibrated.toFixed(2)} {sensor.configuration?.unit || ''}
             </span>
           </div>
 
-          <p className="text-[10px] text-slate-400 font-mono mt-1 text-center">
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 text-center">
             Output = (Raw - {baseline}) × {multiplier} + ({offset})
           </p>
         </div>
@@ -152,7 +152,7 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             {/* Zero Baseline */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Zero Baseline Level
               </label>
               <input
@@ -161,16 +161,16 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
                 value={baseline}
                 onChange={(e) => setBaseline(parseFloat(e.target.value) || 0)}
                 placeholder="0"
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white font-mono"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
                 Atmospheric clean-air baseline
               </span>
             </div>
 
             {/* Calibration Offset */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Calibration Offset (±)
               </label>
               <input
@@ -179,9 +179,9 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
                 value={offset}
                 onChange={(e) => setOffset(parseFloat(e.target.value) || 0)}
                 placeholder="0.0"
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white font-mono"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
                 Static offset shift
               </span>
             </div>
@@ -190,7 +190,7 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             {/* Multiplier Scalar */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Gain Multiplier Factor
               </label>
               <input
@@ -200,16 +200,16 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
                 value={multiplier}
                 onChange={(e) => setMultiplier(parseFloat(e.target.value) || 1)}
                 placeholder="1.0"
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white font-mono"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
                 Linear slope scaling
               </span>
             </div>
 
             {/* Noise Floor Threshold */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Noise Floor Cut-Off
               </label>
               <input
@@ -220,9 +220,9 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
                   setNoiseFloor(e.target.value !== '' ? parseFloat(e.target.value) : '')
                 }
                 placeholder="Optional"
-                className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-xl text-sm text-white font-mono"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white font-mono"
               />
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block">
                 Signals below are clamped to zero
               </span>
             </div>
@@ -230,19 +230,19 @@ export const CalibrateSensorModal: React.FC<CalibrateSensorModalProps> = ({
 
           {/* Audit Trail Info */}
           {sensor.calibration?.calibratedAt && (
-            <div className="p-3 rounded-lg bg-black/30 border border-white/5 text-[11px] text-slate-400 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-slate-100 dark:bg-black/30 border border-slate-200 dark:border-white/5 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                 Last Calibrated
               </span>
-              <span className="font-mono text-slate-300">
+              <span className="font-mono text-slate-700 dark:text-slate-300">
                 {new Date(sensor.calibration.calibratedAt).toLocaleString()}
               </span>
             </div>
           )}
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
             <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
