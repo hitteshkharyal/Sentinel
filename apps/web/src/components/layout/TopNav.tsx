@@ -72,7 +72,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   ];
 
   return (
-    <header className="min-h-[4.5rem] sm:min-h-[5rem] px-4 sm:px-6 py-3 topnav-container backdrop-blur-xl border-b flex items-center justify-between gap-3 sticky top-0 z-20 transition-colors w-full max-w-full overflow-hidden">
+    <header className="min-h-[4.5rem] sm:min-h-[5rem] px-4 sm:px-6 py-3 topnav-container backdrop-blur-xl border-b flex items-center justify-between gap-3 sticky top-0 z-30 transition-colors w-full max-w-full">
       {/* ── Left: Mobile Toggle & Page Title (shrink-0 ensures it NEVER gets crushed) ── */}
       <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
         <button
@@ -178,7 +178,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 className="fixed inset-0 z-30"
                 onClick={() => setNotificationsOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-sm topnav-dropdown rounded-2xl shadow-2xl border p-4 z-40 animate-slide-up font-mono">
+              <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-sm topnav-dropdown rounded-2xl shadow-2xl border p-4 z-50 animate-slide-up font-mono">
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--theme-border)]">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-xs text-[var(--theme-text)] uppercase tracking-wider">
@@ -238,9 +238,11 @@ export const TopNav: React.FC<TopNavProps> = ({
         <div className="relative">
           <button
             type="button"
+            id="profile-dropdown-trigger"
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2 pl-1 border-l border-[var(--theme-border)] hover:opacity-85 transition-opacity focus:outline-none"
+            className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-xl border border-[var(--theme-border)] hover:bg-[var(--sidebar-scope-bg)] transition-colors focus:outline-none cursor-pointer"
             aria-label="User profile menu"
+            aria-expanded={userMenuOpen}
           >
             {user?.avatarUrl ? (
               <img
@@ -253,18 +255,30 @@ export const TopNav: React.FC<TopNavProps> = ({
                 {userInitials}
               </div>
             )}
-            <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-[var(--theme-text-muted)]" />
+            <ChevronDown
+              className={`hidden sm:block w-3.5 h-3.5 text-[var(--theme-text-muted)] transition-transform duration-200 ${
+                userMenuOpen ? 'rotate-180' : ''
+              }`}
+            />
           </button>
 
           {userMenuOpen && (
             <>
-              <div className="fixed inset-0 z-30" onClick={() => setUserMenuOpen(false)} />
-              <div className="absolute right-0 mt-2 w-56 topnav-dropdown rounded-xl shadow-2xl border p-2 z-40 animate-slide-up font-mono">
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setUserMenuOpen(false)}
+              />
+              <div
+                id="profile-dropdown-menu"
+                className="absolute right-0 top-full mt-2 w-60 topnav-dropdown rounded-xl shadow-2xl border p-2 z-50 animate-slide-up font-mono"
+              >
                 <div className="px-3 py-2 border-b border-[var(--theme-border)]">
                   <p className="text-xs font-bold text-[var(--theme-text)] truncate">
                     {user?.displayName || 'Operator'}
                   </p>
-                  <p className="text-[10px] text-[var(--theme-text-muted)] truncate font-semibold">{user?.email}</p>
+                  <p className="text-[10px] text-[var(--theme-text-muted)] truncate font-semibold">
+                    {user?.email}
+                  </p>
                 </div>
                 <button
                   type="button"
@@ -272,19 +286,20 @@ export const TopNav: React.FC<TopNavProps> = ({
                     setUserMenuOpen(false);
                     navigate('/organizations');
                   }}
-                  className="w-full mt-1 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--sidebar-scope-bg)] transition-colors"
+                  className="w-full mt-1 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--sidebar-scope-bg)] transition-colors cursor-pointer"
                 >
                   <Users className="w-3.5 h-3.5 text-[var(--theme-primary)]" />
                   <span>Organizations &amp; Team</span>
                 </button>
                 <button
                   type="button"
+                  id="logout-button"
                   onClick={async () => {
                     setUserMenuOpen(false);
                     await logout();
                     navigate('/login');
                   }}
-                  className="w-full mt-0.5 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors"
+                  className="w-full mt-0.5 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>

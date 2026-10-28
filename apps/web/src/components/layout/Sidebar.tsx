@@ -44,6 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { currentOrganization, userOrganizations, switchOrganization } = useOrganization();
   const [orgPickerOpen, setOrgPickerOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const userInitials =
@@ -315,34 +316,88 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* ── User Footer ── */}
-      <div className="p-3 border-t sidebar-footer">
-        <div className="flex items-center gap-3">
-          {user?.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt={user.displayName}
-              className="w-8 h-8 rounded-lg object-cover shrink-0 border border-[var(--sidebar-border)]"
+      <div className="p-3 border-t sidebar-footer relative">
+        {userMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setUserMenuOpen(false)}
             />
-          ) : (
-            <div className="w-8 h-8 rounded-lg bg-[var(--theme-badge-bg)] border border-[var(--theme-badge-border)] text-[var(--theme-primary)] flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-xs">
-              {userInitials}
+            <div
+              className={`absolute bottom-full mb-2 z-50 rounded-xl shadow-2xl border p-2 animate-slide-up topnav-dropdown font-mono ${
+                isCollapsed ? 'left-2 w-56' : 'left-3 right-3'
+              }`}
+            >
+              <div className="px-3 py-2 border-b border-[var(--theme-border)]">
+                <p className="text-xs font-bold text-[var(--theme-text)] truncate">
+                  {user?.displayName || 'Facility Operator'}
+                </p>
+                <p className="text-[10px] text-[var(--theme-text-muted)] truncate font-semibold">
+                  {user?.email || 'Authenticated'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setUserMenuOpen(false);
+                  navigate('/organizations');
+                }}
+                className="w-full mt-1 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-[var(--theme-text)] hover:bg-[var(--sidebar-scope-bg)] transition-colors cursor-pointer"
+              >
+                <Users className="w-3.5 h-3.5 text-[var(--theme-primary)]" />
+                <span>Organizations &amp; Team</span>
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setUserMenuOpen(false);
+                  await handleLogout();
+                }}
+                className="w-full mt-0.5 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </button>
             </div>
-          )}
-          {!isCollapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-mono font-bold text-[var(--sidebar-text)] truncate">
-                {user?.displayName || 'Facility Operator'}
-              </p>
-              <p className="text-[9px] font-mono text-[var(--sidebar-text-muted)] truncate font-semibold">
-                {user?.email || 'Authenticated'}
-              </p>
-            </div>
-          )}
+          </>
+        )}
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="flex items-center gap-3 min-w-0 flex-1 text-left hover:opacity-85 transition-opacity focus:outline-none cursor-pointer"
+            title="Profile & Options"
+            aria-label="Profile menu"
+            aria-expanded={userMenuOpen}
+          >
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.displayName}
+                className="w-8 h-8 rounded-lg object-cover shrink-0 border border-[var(--sidebar-border)]"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-[var(--theme-badge-bg)] border border-[var(--theme-badge-border)] text-[var(--theme-primary)] flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-xs">
+                {userInitials}
+              </div>
+            )}
+            {!isCollapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-mono font-bold text-[var(--sidebar-text)] truncate">
+                  {user?.displayName || 'Facility Operator'}
+                </p>
+                <p className="text-[9px] font-mono text-[var(--sidebar-text-muted)] truncate font-semibold">
+                  {user?.email || 'Authenticated'}
+                </p>
+              </div>
+            )}
+          </button>
           {!isCollapsed && (
             <button
               type="button"
               onClick={handleLogout}
-              className="p-1.5 rounded-lg text-[var(--sidebar-text-muted)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors focus:outline-none"
+              className="p-1.5 rounded-lg text-[var(--sidebar-text-muted)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors focus:outline-none cursor-pointer"
               title="Sign Out"
               aria-label="Sign Out"
             >
