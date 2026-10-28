@@ -33,6 +33,7 @@ scratch/
 # Firmware build
 firmware/esp32/build/
 firmware/esp32/.pio/
+firmware/hal/dist/
 
 # Secrets — NEVER commit
 *.pem

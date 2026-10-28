@@ -121,13 +121,13 @@ npm run dev:web
 | 5   | Facilities + Floors + Rooms   | ✅ Complete   |
 | 6   | Sensor Catalog + Config       | ✅ Complete   |
 | 7   | ESP32 Device Management       | ✅ Complete   |
-| 8   | MQTT + Telemetry              | ⬜ Pending    |
-| 9   | Sensor Fusion + Event Engine  | ⬜ Pending    |
-| 10  | Automation Engine             | ⬜ Pending    |
-| 11  | Alerts + Notifications        | ⬜ Pending    |
-| 12  | Analytics                     | ⬜ Pending    |
-| 13  | Prediction Layer              | ⬜ Pending    |
-| 14  | ESP32 HAL + Firmware          | ⬜ Pending    |
+| 8   | MQTT + Telemetry              | ✅ Complete   |
+| 9   | Sensor Fusion + Event Engine  | ✅ Complete   |
+| 10  | Automation Engine             | ✅ Complete   |
+| 11  | Alerts + Notifications        | ✅ Complete   |
+| 12  | Analytics                     | ✅ Complete   |
+| 13  | Prediction Layer              | ✅ Complete   |
+| 14  | ESP32 HAL + Firmware          | ✅ Complete   |
 | 15  | Industry Policies             | ⬜ Pending    |
 | 16  | Security Hardening            | ⬜ Pending    |
 | 17  | Testing                       | ⬜ Pending    |

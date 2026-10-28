@@ -1,44 +1,29 @@
 // ─────────────────────────────────────────────
 // SENTINEL Firmware — HAL Interface Definitions
 // ─────────────────────────────────────────────
-// These are C-style header-like definitions documented in TypeScript
-// for shared reference. Actual firmware implementation will use C/C++
-// in the PlatformIO/Arduino framework (Day 14).
-//
-// This file serves as the HAL contract specification.
-// ─────────────────────────────────────────────
 
 /**
  * Hardware Abstraction Layer (HAL) — Sensor Interface Contract
  *
  * Every sensor driver must implement these lifecycle methods:
  *
- *   hal_<sensor>_init(config)     → Initialize sensor hardware
- *   hal_<sensor>_read()           → Read current sensor value
- *   hal_<sensor>_health()         → Check sensor health/connectivity
- *   hal_<sensor>_deinit()         → Release sensor resources
+ *   init(config)     → Initialize sensor hardware registers and bus
+ *   read()           → Read current validated sensor values
+ *   health()         → Verify bus response, ACK, and peripheral connectivity
+ *   deinit()         → Release sensor resources and return actuators to safe state
  *
  * Supported sensor HAL modules:
  *
  *   hal_pir        — Passive Infrared (GPIO digital)
- *   hal_mmwave     — mmWave presence/count (UART)
- *   hal_co2        — CO₂ concentration (I2C / UART)
- *   hal_temperature — Temperature (I2C / analog)
- *   hal_humidity   — Humidity (I2C / analog)
- *   hal_sound      — Sound level (ADC analog)
- *   hal_door       — Magnetic door sensor (GPIO digital)
- *   hal_pressure   — Barometric pressure (I2C)
- *   hal_light      — Light level (ADC / I2C)
- *   hal_relay      — Relay control (GPIO digital output)
- *
- * Supported interfaces:
- *
- *   GPIO   — Digital input/output
- *   ADC    — Analog-to-digital conversion
- *   PWM    — Pulse-width modulation output
- *   I2C    — Inter-Integrated Circuit bus
- *   SPI    — Serial Peripheral Interface
- *   UART   — Universal Asynchronous Receiver-Transmitter
+ *   hal_mmwave     — mmWave presence/count (UART 60GHz)
+ *   hal_co2        — CO₂ concentration (I2C Sensirion SCD30/SCD40)
+ *   hal_temperature — Temperature (I2C Sensirion SHT31)
+ *   hal_humidity   — Humidity (I2C Sensirion SHT31)
+ *   hal_sound      — Sound level (ADC analog SPL)
+ *   hal_door       — Magnetic door sensor (GPIO digital pull-up)
+ *   hal_pressure   — Barometric pressure (I2C Bosch BMP280)
+ *   hal_light      — Light level (I2C Rohm BH1750 / ADC)
+ *   hal_relay      — Relay actuator control (GPIO digital fail-secure)
  */
 
 export interface HalSensorConfig {
@@ -46,16 +31,49 @@ export interface HalSensorConfig {
   interfaceType: 'GPIO' | 'ADC' | 'PWM' | 'I2C' | 'SPI' | 'UART';
   pin?: number;
   i2cAddress?: number;
+  baudRate?: number;
   samplingIntervalMs: number;
   calibrationOffset?: number;
+  calibrationMultiplier?: number;
+  activeHigh?: boolean;
 }
 
-export interface HalSensorReading {
+export interface HalSensorReading<T = number | boolean | Record<string, unknown>> {
   sensorType: string;
-  value: number | boolean | Record<string, unknown>;
+  value: T;
   timestamp: number;
   healthy: boolean;
   error?: string;
+}
+
+export interface MmwaveReadingPayload {
+  presence: boolean;
+  count: number;
+  distance: number;
+  energy: number;
+  stationaryConfidence: number;
+  movementConfidence: number;
+}
+
+export interface TempHumidityReadingPayload {
+  temperature: number;
+  humidity: number;
+}
+
+export interface DoorReadingPayload {
+  state: 'open' | 'closed';
+  transitionCount: number;
+}
+
+export interface SoundReadingPayload {
+  splDb: number;
+  peakAdc: number;
+}
+
+export interface RelayStatePayload {
+  energized: boolean;
+  triggerCount: number;
+  lastTriggerAt?: number;
 }
 
 export interface HalDeviceInfo {
@@ -64,6 +82,19 @@ export interface HalDeviceInfo {
   firmwareVersion: string;
   chipModel: string;
   freeHeap: number;
+  minFreeHeap: number;
   uptime: number;
   wifiRssi: number;
+  ipAddress: string;
+  macAddress: string;
+}
+
+export interface IHalDriver<T = unknown> {
+  readonly sensorType: string;
+  readonly interfaceType: string;
+  isInitialized(): boolean;
+  init(config?: HalSensorConfig): Promise<boolean>;
+  read(): Promise<HalSensorReading<T>>;
+  health(): Promise<boolean>;
+  deinit(): Promise<void>;
 }
