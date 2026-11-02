@@ -106,3 +106,4 @@ export class DatabaseIndexManager {
     return mongoose.connection.readyState === 1;
   }
 }
+

@@ -112,3 +112,4 @@ describe('Production Readiness & Health Diagnostics Integration Tests', () => {
     assert.ok(stats.complianceauditlogs >= 2, 'Compliance audit logs should have compound indexes');
   });
 });
+

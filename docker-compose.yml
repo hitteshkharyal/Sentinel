@@ -68,3 +68,4 @@ services:
       - sentinel-network
     depends_on:
       - sentinel-api
+
