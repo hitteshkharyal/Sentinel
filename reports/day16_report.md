@@ -208,3 +208,4 @@ With Day 16 complete:
 4. **Resilient Public Surfaces**: Volumetric floods, brute-force password attacks, clickjacking, and NoSQL operator injection attacks are neutralized before reaching application logic.
 
 Project Sentinel is now prepared for **Day 17: Comprehensive Testing & End-to-End Test Harness**.
+

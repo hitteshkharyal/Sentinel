@@ -227,3 +227,4 @@ export const SecurityAuditLogsTable: React.FC = () => {
     </div>
   );
 };
+

@@ -87,13 +87,12 @@ export const SecurityScanResultModal: React.FC<SecurityScanResultModalProps> = (
             return (
               <div
                 key={check.id}
-                className={`p-4 rounded-xl border transition-all ${
-                  isPass
+                className={`p-4 rounded-xl border transition-all ${isPass
                     ? 'bg-emerald-500/5 border-emerald-500/20'
                     : isWarn
-                    ? 'bg-amber-500/5 border-amber-500/20'
-                    : 'bg-red-500/5 border-red-500/20'
-                }`}
+                      ? 'bg-amber-500/5 border-amber-500/20'
+                      : 'bg-red-500/5 border-red-500/20'
+                  }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2.5">
@@ -116,9 +115,8 @@ export const SecurityScanResultModal: React.FC<SecurityScanResultModalProps> = (
                   </div>
 
                   <span
-                    className={`font-mono font-bold text-xs shrink-0 ${
-                      isPass ? 'text-emerald-400' : isWarn ? 'text-amber-400' : 'text-red-400'
-                    }`}
+                    className={`font-mono font-bold text-xs shrink-0 ${isPass ? 'text-emerald-400' : isWarn ? 'text-amber-400' : 'text-red-400'
+                      }`}
                   >
                     {check.score}/100
                   </span>
@@ -150,3 +148,4 @@ export const SecurityScanResultModal: React.FC<SecurityScanResultModalProps> = (
     </div>
   );
 };
+

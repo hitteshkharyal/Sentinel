@@ -17,7 +17,10 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md,css}\"",
-    "test": "echo \"Tests will be configured per-workspace\"",
+    "test": "node tests/run-all-tests.mjs",
+    "test:unit": "node tests/run-all-tests.mjs --unit",
+    "test:integration": "node tests/run-all-tests.mjs --integration",
+    "test:e2e": "node tests/run-all-tests.mjs --e2e",
     "clean": "rimraf apps/web/dist apps/api/dist packages/shared/dist packages/validation/dist packages/types/dist"
   },
   "workspaces": [

@@ -409,12 +409,14 @@ export class MqttService {
     if (this.tcpServer) {
       await new Promise<void>((resolve) => {
         this.tcpServer!.close(() => resolve());
+        setTimeout(resolve, 500);
       });
       this.tcpServer = null;
     }
     if (this.aedesInstance) {
       await new Promise<void>((resolve) => {
         this.aedesInstance!.close(() => resolve());
+        setTimeout(resolve, 500);
       });
       this.aedesInstance = null;
     }

@@ -189,3 +189,4 @@ export const SecurityPostureCard: React.FC<SecurityPostureCardProps> = ({ onOpen
     </div>
   );
 };
+

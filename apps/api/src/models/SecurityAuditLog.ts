@@ -140,3 +140,4 @@ export const SecurityAuditLogModel = mongoose.model<ISecurityAuditLogDocument>(
   'SecurityAuditLog',
   SecurityAuditLogSchema
 );
+

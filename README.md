@@ -110,6 +110,18 @@ npm run dev:web
 - **API:** http://localhost:4000/api/v1
 - **Health:** http://localhost:4000/api/v1/health
 
+### Testing
+
+```bash
+# Run all test suites (Unit, Integration, E2E)
+npm test
+
+# Run specific test suites
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+```
+
 ## Build Phases
 
 | Day | Phase                         | Status        |
@@ -130,7 +142,7 @@ npm run dev:web
 | 14  | ESP32 HAL + Firmware          | ✅ Complete   |
 | 15  | Industry Policies             | ✅ Complete   |
 | 16  | Security Hardening            | ✅ Complete   |
-| 17  | Testing                       | ⬜ Pending    |
+| 17  | Testing                       | ✅ Complete   |
 | 18  | Production Readiness          | ⬜ Pending    |
 
 ## License
