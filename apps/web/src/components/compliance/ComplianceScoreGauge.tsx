@@ -167,3 +167,4 @@ export const ComplianceScoreGauge: React.FC<ComplianceScoreGaugeProps> = ({
     </div>
   );
 };
+

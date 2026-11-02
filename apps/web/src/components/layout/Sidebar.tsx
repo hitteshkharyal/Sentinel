@@ -132,6 +132,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'PRO',
       badgeVariant: 'primary' as const,
     },
+    {
+      to: '/security',
+      label: 'Security & Zero-Trust',
+      icon: <Lock className="w-4 h-4 shrink-0" />,
+      badge: 'ARMOR',
+      badgeVariant: 'primary' as const,
+    },
   ];
 
   const sidebarContent = (

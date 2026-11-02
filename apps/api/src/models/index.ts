@@ -15,3 +15,6 @@ export * from './Event.js';
 export * from './AutomationRule.js';
 export * from './AutomationExecution.js';
 export * from './Alert.js';
+export * from './ComplianceProfile.js';
+export * from './ComplianceAuditLog.js';
+export * from './SecurityAuditLog.js';

@@ -14,4 +14,5 @@ export * from './automation.js';
 export * from './analytics.js';
 export * from './prediction.js';
 export * from './compliance.js';
+export * from './security.js';
 export * from './api.js';

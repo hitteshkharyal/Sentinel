@@ -203,3 +203,25 @@ export const DEFAULTS = {
   ALERT_COOLDOWN_MS: 60_000,
   SENSOR_SAMPLING_INTERVAL_MS: 5_000,
 } as const;
+
+/**
+ * Security, rate limiting and zero-trust perimeter constants.
+ */
+export const SECURITY_CONFIG = {
+  BCRYPT_SALT_ROUNDS: 12,
+  MIN_PASSWORD_LENGTH: 8,
+  RATE_LIMITS: {
+    API_WINDOW_MS: 60 * 1000,
+    API_MAX_REQUESTS: 120,
+    AUTH_WINDOW_MS: 15 * 60 * 1000,
+    AUTH_MAX_REQUESTS: 10,
+    TELEMETRY_WINDOW_MS: 60 * 1000,
+    TELEMETRY_MAX_REQUESTS: 300,
+  },
+  TOKEN_EXPIRY: {
+    ACCESS_TOKEN: '15m',
+    REFRESH_TOKEN_DAYS: 7,
+  },
+  MAX_CLOCK_DRIFT_PAST_MS: 24 * 60 * 60 * 1000,
+  MAX_CLOCK_DRIFT_FUTURE_MS: 5 * 60 * 1000,
+} as const;

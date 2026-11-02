@@ -15,6 +15,7 @@ import {
 } from '../utils/jwt.js';
 import { GoogleUserInfo } from '../utils/google-auth.js';
 import { AppError } from '../middleware/error-handler.js';
+import { SecurityAuditService } from './security-audit.service.js';
 import { config } from '../config.js';
 import type {
   User as UserType,
@@ -199,6 +200,14 @@ export class AuthService {
 
     const user = await UserModel.findOne({ email: normalizedEmail });
     if (!user) {
+      void SecurityAuditService.logEvent({
+        action: 'AUTH_FAILURE',
+        severity: 'MEDIUM',
+        actorType: 'ANONYMOUS',
+        actorEmail: normalizedEmail,
+        status: 'BLOCKED',
+        details: { reason: 'User not found' },
+      });
       throw new AppError(401, 'Invalid email or password.');
     }
 
@@ -212,6 +221,15 @@ export class AuthService {
 
     const isMatch = await verifyPassword(password, user.passwordHash);
     if (!isMatch) {
+      void SecurityAuditService.logEvent({
+        action: 'AUTH_FAILURE',
+        severity: 'MEDIUM',
+        actorType: 'USER',
+        actorId: user._id.toString(),
+        actorEmail: user.email,
+        status: 'BLOCKED',
+        details: { reason: 'Password mismatch' },
+      });
       throw new AppError(401, 'Invalid email or password.');
     }
 
@@ -258,6 +276,15 @@ export class AuthService {
     });
 
     const refreshToken = await this.createRefreshToken(user._id.toString());
+
+    void SecurityAuditService.logEvent({
+      action: 'AUTH_SUCCESS',
+      severity: 'INFO',
+      actorType: 'USER',
+      actorId: user._id.toString(),
+      actorEmail: user.email,
+      status: 'SUCCESS',
+    });
 
     return {
       user: user.toSafeUser(),
@@ -486,11 +513,21 @@ export class AuthService {
   static async refreshAccessToken(
     refreshTokenString: string
   ): Promise<{ token: string; refreshToken: string }> {
-    const record = await RefreshTokenModel.findOne({
-      token: refreshTokenString,
-      revoked: false,
-    });
+    const existing = await RefreshTokenModel.findOne({ token: refreshTokenString });
+    if (existing && existing.revoked) {
+      await RefreshTokenModel.updateMany({ userId: existing.userId }, { $set: { revoked: true } });
+      void SecurityAuditService.logEvent({
+        action: 'TOKEN_REUSE_DETECTED',
+        severity: 'CRITICAL',
+        actorType: 'USER',
+        actorId: existing.userId.toString(),
+        status: 'BLOCKED',
+        details: { reason: 'Revoked refresh token reuse detected. Invalidated entire token family.' },
+      });
+      throw new AppError(401, 'Security alert: Refresh token reuse detected.');
+    }
 
+    const record = existing;
     if (!record || record.expiresAt < new Date()) {
       throw new AppError(401, 'Invalid or expired refresh token.');
     }

@@ -14,6 +14,7 @@ import {
 } from 'aedes';
 import { DeviceModel, DeviceCredentialModel, IDeviceDocument } from '../models/index.js';
 import { TelemetryValidator } from './telemetry-validator.js';
+import { SecurityAuditService } from './security-audit.service.js';
 import type {
   MqttTopicContext,
   DeviceCommandPayload,
@@ -74,6 +75,14 @@ export class MqttService {
     ) => {
       try {
         if (!username || !password) {
+          void SecurityAuditService.logEvent({
+            action: 'AUTH_FAILURE',
+            severity: 'MEDIUM',
+            actorType: 'DEVICE',
+            status: 'BLOCKED',
+            details: { reason: 'Missing deviceId or secret token in MQTT CONNECT frame' },
+          });
+
           const authError = Object.assign(
             new Error('Authentication required: Missing deviceId or token.'),
             { returnCode: 4 }
@@ -91,6 +100,15 @@ export class MqttService {
         });
 
         if (!credential) {
+          void SecurityAuditService.logEvent({
+            action: 'ROGUE_DEVICE_BLOCKED',
+            severity: 'HIGH',
+            actorType: 'DEVICE',
+            actorId: deviceId,
+            status: 'BLOCKED',
+            details: { reason: 'No active credential found for device' },
+          });
+
           const authError = Object.assign(
             new Error(`Unauthorized device: "${deviceId}".`),
             { returnCode: 5 }
@@ -100,6 +118,16 @@ export class MqttService {
 
         const isValid = credential.verifySecret(token);
         if (!isValid) {
+          void SecurityAuditService.logEvent({
+            action: 'ROGUE_DEVICE_BLOCKED',
+            severity: 'HIGH',
+            actorType: 'DEVICE',
+            actorId: deviceId,
+            organizationId: credential.organizationId.toString(),
+            status: 'BLOCKED',
+            details: { reason: 'Cryptographic SHA-256 token verification mismatch' },
+          });
+
           const authError = Object.assign(
             new Error(`Invalid secret credentials for device "${deviceId}".`),
             { returnCode: 4 }
@@ -109,6 +137,16 @@ export class MqttService {
 
         const device = await DeviceModel.findOne({ deviceId });
         if (!device || device.status === 'DISABLED') {
+          void SecurityAuditService.logEvent({
+            action: 'AUTH_LOCKOUT',
+            severity: 'MEDIUM',
+            actorType: 'DEVICE',
+            actorId: deviceId,
+            organizationId: credential.organizationId.toString(),
+            status: 'BLOCKED',
+            details: { reason: 'Device is disabled or not found in registry' },
+          });
+
           const authError = Object.assign(
             new Error(`Device "${deviceId}" is disabled or not found.`),
             { returnCode: 5 }
@@ -118,6 +156,16 @@ export class MqttService {
 
         // Attach verified device session to client
         (client as SentinelClient).device = device;
+
+        void SecurityAuditService.logEvent({
+          action: 'AUTH_SUCCESS',
+          severity: 'INFO',
+          actorType: 'DEVICE',
+          actorId: deviceId,
+          organizationId: device.organizationId.toString(),
+          status: 'SUCCESS',
+        });
+
         callback(null, true);
       } catch (err: unknown) {
         const authError = Object.assign(
@@ -156,6 +204,21 @@ export class MqttService {
         parsed.facilityId !== device.facilityId.toString() ||
         parsed.deviceId !== device.deviceId
       ) {
+        void SecurityAuditService.logEvent({
+          action: 'CROSS_TENANT_ACCESS_DENIED',
+          severity: 'CRITICAL',
+          actorType: 'DEVICE',
+          actorId: device.deviceId,
+          organizationId: device.organizationId.toString(),
+          status: 'BLOCKED',
+          resource: packet.topic,
+          details: {
+            reason: 'Impersonation blocked: Device tried to publish to foreign hierarchy',
+            deviceOrgId: device.organizationId.toString(),
+            targetOrgId: parsed.orgId,
+          },
+        });
+
         return callback(
           new Error(
             `Impersonation blocked: Device "${device.deviceId}" cannot publish to foreign topic "${packet.topic}".`
@@ -165,6 +228,17 @@ export class MqttService {
 
       // Only allow publishing on telemetry, status, and ack channels
       if (!['telemetry', 'status', 'ack'].includes(parsed.channel)) {
+        void SecurityAuditService.logEvent({
+          action: 'UNAUTHORIZED_PUBLISH_ATTEMPT',
+          severity: 'HIGH',
+          actorType: 'DEVICE',
+          actorId: device.deviceId,
+          organizationId: device.organizationId.toString(),
+          status: 'BLOCKED',
+          resource: packet.topic,
+          details: { channel: parsed.channel },
+        });
+
         return callback(new Error(`Client cannot publish to channel: "${parsed.channel}".`));
       }
 
@@ -193,6 +267,17 @@ export class MqttService {
         parsed.facilityId !== device.facilityId.toString() ||
         parsed.deviceId !== device.deviceId
       ) {
+        void SecurityAuditService.logEvent({
+          action: 'UNAUTHORIZED_SUBSCRIBE_ATTEMPT',
+          severity: 'CRITICAL',
+          actorType: 'DEVICE',
+          actorId: device.deviceId,
+          organizationId: device.organizationId.toString(),
+          status: 'BLOCKED',
+          resource: subscription.topic,
+          details: { reason: 'Cross-device or cross-tenant subscription attempted' },
+        });
+
         return callback(new Error('Cross-device subscription blocked.'));
       }
 

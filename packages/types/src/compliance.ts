@@ -148,3 +148,4 @@ export interface RemediateViolationDTO {
   action: 'AUTO_FIX' | 'SUPPRESS' | 'DISMISS';
   notes?: string;
 }
+

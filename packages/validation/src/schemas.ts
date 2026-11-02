@@ -808,3 +808,43 @@ export const remediateViolationSchema = z.object({
   action: z.enum(['AUTO_FIX', 'SUPPRESS', 'DISMISS']),
   notes: z.string().max(500).optional(),
 });
+
+// ── Security Validation Schemas (Day 16) ──
+
+export const securityActionSchema = z.enum([
+  'AUTH_SUCCESS',
+  'AUTH_FAILURE',
+  'AUTH_LOCKOUT',
+  'TOKEN_ROTATED',
+  'TOKEN_REVOKED',
+  'TOKEN_REUSE_DETECTED',
+  'ROGUE_DEVICE_BLOCKED',
+  'DEVICE_CREDENTIAL_ROTATED',
+  'CROSS_TENANT_ACCESS_DENIED',
+  'UNAUTHORIZED_SUBSCRIBE_ATTEMPT',
+  'UNAUTHORIZED_PUBLISH_ATTEMPT',
+  'RATE_LIMIT_EXCEEDED',
+  'SUSPICIOUS_PAYLOAD_BLOCKED',
+  'SECURITY_SCAN_EXECUTED',
+]);
+
+export const securitySeveritySchema = z.enum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL']);
+
+export const securityActorTypeSchema = z.enum(['USER', 'DEVICE', 'SYSTEM', 'ANONYMOUS']);
+
+export const securityEventStatusSchema = z.enum(['SUCCESS', 'BLOCKED', 'FLAGGED']);
+
+export const securityAuditFilterSchema = paginationSchema.extend({
+  severity: securitySeveritySchema.optional(),
+  action: securityActionSchema.optional(),
+  actorType: securityActorTypeSchema.optional(),
+  actorId: z.string().optional(),
+  status: securityEventStatusSchema.optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
+export const runSecurityAuditScanSchema = z.object({
+  deepScan: z.boolean().optional().default(true),
+});
+

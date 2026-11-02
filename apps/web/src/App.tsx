@@ -17,6 +17,7 @@ import { AlertProvider } from './context/AlertContext';
 import { AnalyticsProvider } from './context/AnalyticsContext';
 import { PredictionProvider } from './context/PredictionContext';
 import { ComplianceProvider } from './context/ComplianceContext';
+import { SecurityProvider } from './context/SecurityContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -33,6 +34,7 @@ import { AlertsPage } from './pages/AlertsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { PredictionsPage } from './pages/PredictionsPage';
 import { CompliancePage } from './pages/CompliancePage';
+import { SecurityPage } from './pages/SecurityPage';
 import { AppShell } from './components/layout/AppShell';
 
 const queryClient = new QueryClient({
@@ -61,41 +63,44 @@ export function App() {
                         <AnalyticsProvider>
                           <PredictionProvider>
                             <ComplianceProvider>
-                              <BrowserRouter>
-                                <Routes>
-                                  {/* Public High-Impact Landing Page */}
-                                  <Route path="/" element={<LandingPage />} />
+                              <SecurityProvider>
+                                <BrowserRouter>
+                                  <Routes>
+                                    {/* Public High-Impact Landing Page */}
+                                    <Route path="/" element={<LandingPage />} />
 
-                                  {/* Authentication Routes */}
-                                  <Route path="/login" element={<LoginPage />} />
-                                  <Route path="/register" element={<RegisterPage />} />
+                                    {/* Authentication Routes */}
+                                    <Route path="/login" element={<LoginPage />} />
+                                    <Route path="/register" element={<RegisterPage />} />
 
-                                  {/* Authenticated / Enterprise Platform Shell (Protected) */}
-                                  <Route
-                                    element={
-                                      <ProtectedRoute>
-                                        <AppShell />
-                                      </ProtectedRoute>
-                                    }
-                                  >
-                                    <Route path="/dashboard" element={<DashboardOverviewPage />} />
-                                    <Route path="/organizations" element={<OrganizationsPage />} />
-                                    <Route path="/facilities" element={<FacilitiesPage />} />
-                                    <Route path="/devices" element={<DevicesPage />} />
-                                    <Route path="/sensors" element={<SensorsPage />} />
-                                    <Route path="/telemetry" element={<TelemetryPage />} />
-                                    <Route path="/events" element={<EventsPage />} />
-                                    <Route path="/automations" element={<AutomationsPage />} />
-                                    <Route path="/alerts" element={<AlertsPage />} />
-                                    <Route path="/analytics" element={<AnalyticsPage />} />
-                                    <Route path="/predictions" element={<PredictionsPage />} />
-                                    <Route path="/compliance" element={<CompliancePage />} />
-                                  </Route>
+                                    {/* Authenticated / Enterprise Platform Shell (Protected) */}
+                                    <Route
+                                      element={
+                                        <ProtectedRoute>
+                                          <AppShell />
+                                        </ProtectedRoute>
+                                      }
+                                    >
+                                      <Route path="/dashboard" element={<DashboardOverviewPage />} />
+                                      <Route path="/organizations" element={<OrganizationsPage />} />
+                                      <Route path="/facilities" element={<FacilitiesPage />} />
+                                      <Route path="/devices" element={<DevicesPage />} />
+                                      <Route path="/sensors" element={<SensorsPage />} />
+                                      <Route path="/telemetry" element={<TelemetryPage />} />
+                                      <Route path="/events" element={<EventsPage />} />
+                                      <Route path="/automations" element={<AutomationsPage />} />
+                                      <Route path="/alerts" element={<AlertsPage />} />
+                                      <Route path="/analytics" element={<AnalyticsPage />} />
+                                      <Route path="/predictions" element={<PredictionsPage />} />
+                                      <Route path="/compliance" element={<CompliancePage />} />
+                                      <Route path="/security" element={<SecurityPage />} />
+                                    </Route>
 
-                                  {/* Catch-all Fallback */}
-                                  <Route path="*" element={<Navigate to="/" replace />} />
-                                </Routes>
-                              </BrowserRouter>
+                                    {/* Catch-all Fallback */}
+                                    <Route path="*" element={<Navigate to="/" replace />} />
+                                  </Routes>
+                                </BrowserRouter>
+                              </SecurityProvider>
                             </ComplianceProvider>
                           </PredictionProvider>
                         </AnalyticsProvider>
