@@ -116,3 +116,4 @@ describe('Automation Evaluator Unit Tests', () => {
     assert.equal(isRuleInCooldown(expiredExec, cooldownMs, now), false);
   });
 });
+

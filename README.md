@@ -122,6 +122,17 @@ npm run test:integration
 npm run test:e2e
 ```
 
+### Production Deployment
+
+```bash
+# Build and deploy the entire production stack (Nginx, API, MongoDB, MQTT)
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+# Verify container liveness & readiness probes
+curl -f http://localhost:4000/api/v1/health/live
+curl -f http://localhost:4000/api/v1/health/ready
+```
+
 ## Build Phases
 
 | Day | Phase                         | Status        |
@@ -143,7 +154,7 @@ npm run test:e2e
 | 15  | Industry Policies             | ✅ Complete   |
 | 16  | Security Hardening            | ✅ Complete   |
 | 17  | Testing                       | ✅ Complete   |
-| 18  | Production Readiness          | ⬜ Pending    |
+| 18  | Production Readiness          | ✅ Complete   |
 
 ## License
 

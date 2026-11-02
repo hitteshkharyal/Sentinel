@@ -76,6 +76,10 @@ const ComplianceAuditLogSchema = new Schema<IComplianceAuditLogDocument>(
   }
 );
 
+// ── Compound Indexes for Fast Audit Retrieval ──
+ComplianceAuditLogSchema.index({ organizationId: 1, auditedAt: -1 });
+ComplianceAuditLogSchema.index({ organizationId: 1, overallStatus: 1 });
+
 ComplianceAuditLogSchema.methods.toSafeResult = function (): ComplianceAuditResult {
   return {
     organizationId: this.organizationId.toString(),

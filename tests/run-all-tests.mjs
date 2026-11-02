@@ -47,6 +47,7 @@ const TEST_MANIFEST = [
   { category: 'INTEGRATION', file: 'tests/integration/automation-alerts.test.mjs', name: 'Automation Rules & Alert Incident Lifecycle' },
   { category: 'INTEGRATION', file: 'tests/integration/compliance-policies.test.mjs', name: 'Compliance Profiles & Sector Policy Packs' },
   { category: 'INTEGRATION', file: 'tests/integration/zero-trust-security.test.mjs', name: 'Zero-Trust Security Perimeter & Sanitization' },
+  { category: 'INTEGRATION', file: 'tests/integration/production-readiness.test.mjs', name: 'Production Readiness & Health Diagnostics' },
 
   // ── 3. End-to-End Scenario ──
   { category: 'E2E', file: 'tests/e2e/closed-loop-scenario.test.mjs', name: 'Full Closed-Loop Operational Scenario' },
@@ -175,3 +176,4 @@ runAll().catch((err) => {
   console.error(`${colors.red}Unhandled test orchestrator error:${colors.reset}`, err);
   process.exit(1);
 });
+

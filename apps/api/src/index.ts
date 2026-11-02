@@ -4,7 +4,7 @@
 
 import http from 'node:http';
 import { app } from './app.js';
-import { config } from './config.js';
+import { config, validateProductionConfig } from './config.js';
 import { connectDatabase } from './db.js';
 import { MqttService } from './services/mqtt.service.js';
 import { WebSocketService } from './services/websocket.service.js';
@@ -13,6 +13,20 @@ import { AlertService } from './services/alert.service.js';
 
 async function startServer() {
   try {
+    // ── 1. Production Configuration Guard ──
+    const configCheck = validateProductionConfig();
+    if (!configCheck.valid) {
+      console.error('[Config] Insecure production configuration detected:');
+      configCheck.errors.forEach((e) => console.error(`  - ${e}`));
+      if (config.env === 'production') {
+        console.error('[Config] Server terminating due to production security violations.');
+        process.exit(1);
+      }
+    }
+    if (configCheck.warnings.length > 0) {
+      configCheck.warnings.forEach((w) => console.warn(`[Config] Security Warning: ${w}`));
+    }
+
     await connectDatabase();
 
     const server = http.createServer(app);
@@ -43,9 +57,61 @@ async function startServer() {
 ║  Environment: ${config.env.padEnd(30)}║
 ║  API Base:    /api/v1                        ║
 ║  Health:      /api/v1/health                 ║
+║  Liveness:    /api/v1/health/live            ║
+║  Readiness:   /api/v1/health/ready           ║
 ╚══════════════════════════════════════════════╝
       `);
     });
+
+    // ── 2. Production Graceful Shutdown Lifecycle ──
+    let isShuttingDown = false;
+    const shutdown = async (signal: string) => {
+      if (isShuttingDown) return;
+      isShuttingDown = true;
+      console.warn(`\n[Shutdown] Received ${signal}. Initiating graceful shutdown...`);
+
+      // Force exit fallback timeout (10 seconds)
+      const forceTimer = setTimeout(() => {
+        console.error('[Shutdown] Forcefully shutting down after timeout expired.');
+        process.exit(1);
+      }, 10000);
+      forceTimer.unref();
+
+      try {
+        // Stop accepting new HTTP requests
+        await new Promise<void>((resolve) => {
+          server.close((err) => {
+            if (err) console.error('[Shutdown] HTTP server close error:', err);
+            else console.warn('[Shutdown] HTTP server closed to new connections.');
+            resolve();
+          });
+        });
+
+        // Close active WebSocket connections
+        WebSocketService.close();
+        console.warn('[Shutdown] WebSocket gateway terminated.');
+
+        // Stop MQTT broker
+        await MqttService.stopBroker();
+        console.warn('[Shutdown] MQTT broker stopped.');
+
+        // Disconnect database connection
+        const { default: mongoose } = await import('mongoose');
+        if (mongoose.connection.readyState !== 0) {
+          await mongoose.disconnect();
+          console.warn('[Shutdown] Database connection closed.');
+        }
+
+        console.warn('[Shutdown] All subsystem shutdown routines completed successfully.');
+        process.exit(0);
+      } catch (err) {
+        console.error('[Shutdown] Error occurred during graceful shutdown:', err);
+        process.exit(1);
+      }
+    };
+
+    process.on('SIGTERM', () => void shutdown('SIGTERM'));
+    process.on('SIGINT', () => void shutdown('SIGINT'));
   } catch (error) {
     console.error('Failed to start SENTINEL API server:', error);
     process.exit(1);

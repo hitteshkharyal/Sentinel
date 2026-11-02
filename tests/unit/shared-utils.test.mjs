@@ -54,3 +54,4 @@ describe('Shared Utilities & RBAC Unit Tests', () => {
     assert.equal(SECURITY_CONFIG.RATE_LIMITS.TELEMETRY_MAX_REQUESTS, 300);
   });
 });
+

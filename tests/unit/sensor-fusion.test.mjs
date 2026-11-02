@@ -101,3 +101,4 @@ describe('Sensor Fusion & Correlation Unit Tests', () => {
     assert.ok(Math.abs(afterTwoHalfLives - 0.25) < 0.01);
   });
 });
+

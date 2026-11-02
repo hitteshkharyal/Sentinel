@@ -47,3 +47,41 @@ export const config = {
   },
 } as const;
 
+export interface ConfigValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+/**
+ * Validates critical production security requirements and environment sanity.
+ */
+export function validateProductionConfig(customConfig?: Partial<typeof config>): ConfigValidationResult {
+  const cfg = { ...config, ...customConfig };
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (cfg.env === 'production') {
+    if (!cfg.jwt.secret || cfg.jwt.secret === 'CHANGE_ME_IN_PRODUCTION') {
+      errors.push('JWT_SECRET must be configured with a cryptographically secure key in production.');
+    } else if (cfg.jwt.secret.length < 32) {
+      warnings.push('JWT_SECRET should be at least 32 characters long for high cryptographic entropy.');
+    }
+
+    if (!cfg.mongodb.uri) {
+      errors.push('MONGODB_URI must be provided in production.');
+    } else if (cfg.mongodb.uri.includes('localhost')) {
+      warnings.push('MONGODB_URI points to localhost; ensure containerized cluster or replica set endpoint is used in production.');
+    }
+
+    if (cfg.cors.origin === '*') {
+      errors.push('Wildcard CORS_ORIGIN is prohibited in production; specify authoritative domain.');
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+  };
+}

@@ -302,6 +302,13 @@ export class WebSocketService {
     });
   }
 
+  static getStatus(): { isRunning: boolean; clientCount: number } {
+    return {
+      isRunning: this.wss !== null,
+      clientCount: this.wss ? this.wss.clients.size : 0,
+    };
+  }
+
   static close(): void {
     if (this.pingInterval) {
       clearInterval(this.pingInterval);

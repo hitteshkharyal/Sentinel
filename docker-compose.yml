@@ -1,0 +1,70 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────
+# SENTINEL — Production Stack Orchestration
+# ─────────────────────────────────────────────
+
+networks:
+  sentinel-network:
+    driver: bridge
+
+volumes:
+  sentinel-mongo-data:
+    driver: local
+
+services:
+  # ── 1. MongoDB Database Engine ──
+  sentinel-mongo:
+    image: mongo:7.0
+    container_name: sentinel-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - sentinel-mongo-data:/data/db
+    networks:
+      - sentinel-network
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── 2. Sentinel Core API & Ingestion Engine ──
+  sentinel-api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: sentinel-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+      - '1883:1883'
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - MQTT_PORT=1883
+      - MONGODB_URI=mongodb://sentinel-mongo:27017/sentinel
+      - JWT_SECRET=production_sentinel_crypto_jwt_master_secret_key_32bytes_min
+      - CORS_ORIGIN=http://localhost:80
+      - FRONTEND_URL=http://localhost:80
+    networks:
+      - sentinel-network
+    depends_on:
+      sentinel-mongo:
+        condition: service_healthy
+
+  # ── 3. Sentinel Web Dashboard & Reverse Proxy Gateway ──
+  sentinel-web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: sentinel-web
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    networks:
+      - sentinel-network
+    depends_on:
+      - sentinel-api

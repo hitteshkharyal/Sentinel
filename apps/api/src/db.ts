@@ -21,6 +21,11 @@ export async function connectDatabase(): Promise<typeof mongoose | null> {
     // Ensure bootstrap admin exists with known credentials in development
     await seedBootstrapAdmin();
 
+    // In background, ensure production indexes are synchronized
+    void import('./db/indexes.js').then(({ DatabaseIndexManager }) => {
+      void DatabaseIndexManager.syncAllIndexes();
+    });
+
     return conn;
   } catch (error) {
     console.error(`[Database] MongoDB connection failed: ${(error as Error).message}`);
@@ -80,3 +85,5 @@ async function seedBootstrapAdmin(): Promise<void> {
 export function isDatabaseConnected(): boolean {
   return isConnected && mongoose.connection.readyState === 1;
 }
+
+export { DatabaseIndexManager } from './db/indexes.js';

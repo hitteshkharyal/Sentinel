@@ -82,3 +82,4 @@ describe('Predictive Anomaly Detector Unit Tests', () => {
     assert.ok(Math.abs(slope - 0.5) < 0.0001);
   });
 });
+
