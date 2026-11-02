@@ -10,6 +10,8 @@ import {
   AllowedEmailModel,
 } from '../models/index.js';
 import { FacilityService } from './facility.service.js';
+import { IndustryPolicyService } from './industry-policy.service.js';
+import { ComplianceService } from './compliance.service.js';
 import { canManageRole } from '@sentinel/shared';
 import { AppError } from '../middleware/error-handler.js';
 import type {
@@ -17,6 +19,7 @@ import type {
   OrganizationWithRole,
   OrganizationMember,
   Role,
+  IndustryType,
   CreateOrganizationDTO,
   UpdateOrganizationDTO,
 } from '@sentinel/types';
@@ -511,6 +514,10 @@ export class OrganizationService {
 
       // Seed default representative facilities and rooms for this sector
       await FacilityService.seedDefaultFacilities(org._id.toString(), orgData.industry);
+
+      // Day 15: Seed Industry Policies & initialize Compliance Profile
+      await IndustryPolicyService.applyPolicyPack(org._id.toString(), orgData.industry as IndustryType);
+      await ComplianceService.getOrCreateProfile(org._id.toString(), orgData.industry as IndustryType);
     }
   }
 }

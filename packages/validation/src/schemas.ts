@@ -760,3 +760,51 @@ export const predictionQuerySchema = z.object({
   horizonHours: predictionHorizonSchema.optional(),
   inputWindow: predictionInputWindowSchema.optional(),
 });
+
+
+// ── Compliance & Industry Policies (Day 15) ──
+
+export const complianceFrameworkSchema = z.enum([
+  'ASHRAE_55',
+  'ASHRAE_62_1',
+  'HIPAA',
+  'FERPA_COPPA',
+  'GDPR_ART9',
+  'OSHA_1910',
+  'HACCP_FSMA',
+  'WELL_LEED',
+]);
+
+export const complianceStrictnessSchema = z.enum(['STRICT', 'BALANCED', 'PERMISSIVE']);
+
+export const updateComplianceProfileSchema = z.object({
+  enabledFrameworks: z.array(complianceFrameworkSchema).optional(),
+  strictness: complianceStrictnessSchema.optional(),
+  autoRemediationEnabled: z.boolean().optional(),
+  auditFrequencyHours: z.coerce.number().int().min(1).max(168).optional(),
+  privacyLevel: z.enum(['ZERO_VIDEO', 'AGGREGATED_ONLY', 'ANONYMIZED']).optional(),
+});
+
+export const applyIndustryPolicyPackSchema = z.object({
+  industry: z.enum([
+    'hotel',
+    'hospital',
+    'school',
+    'transport',
+    'office',
+    'mall',
+    'factory',
+    'warehouse',
+    'parking',
+    'public_facility',
+    'general',
+  ]),
+  overwriteExisting: z.boolean().optional().default(false),
+  enableRulesImmediately: z.boolean().optional().default(true),
+});
+
+export const remediateViolationSchema = z.object({
+  violationId: z.string().min(1, 'Violation ID is required'),
+  action: z.enum(['AUTO_FIX', 'SUPPRESS', 'DISMISS']),
+  notes: z.string().max(500).optional(),
+});

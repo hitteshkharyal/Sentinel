@@ -20,6 +20,7 @@ import {
   Cpu,
   Activity,
   BrainCircuit,
+  ShieldCheck,
   X,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
@@ -122,6 +123,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Predictions & AI',
       icon: <BrainCircuit className="w-4 h-4 shrink-0" />,
       badge: 'ML',
+      badgeVariant: 'primary' as const,
+    },
+    {
+      to: '/compliance',
+      label: 'Compliance & Policies',
+      icon: <ShieldCheck className="w-4 h-4 shrink-0" />,
+      badge: 'PRO',
       badgeVariant: 'primary' as const,
     },
   ];
