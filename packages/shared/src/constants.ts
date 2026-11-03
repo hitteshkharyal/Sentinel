@@ -42,6 +42,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'automation.delete',
     'analytics.read',
     'firmware.manage',
+    'firmware.generate',
+    'deployment.create',
+    'deployment.read',
+    'deployment.update',
+    'deployment.delete',
+    'deployment.test',
     'audit.read',
   ],
   ORGANIZATION_ADMIN: [
@@ -75,6 +81,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'automation.delete',
     'analytics.read',
     'firmware.manage',
+    'firmware.generate',
+    'deployment.create',
+    'deployment.read',
+    'deployment.update',
+    'deployment.delete',
+    'deployment.test',
     'audit.read',
   ],
   FACILITY_ADMIN: [
@@ -82,7 +94,6 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'member.read',
     'facility.read',
     'facility.update',
-
     'room.create',
     'room.read',
     'room.update',
@@ -101,6 +112,11 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'automation.update',
     'analytics.read',
     'firmware.manage',
+    'firmware.generate',
+    'deployment.create',
+    'deployment.read',
+    'deployment.update',
+    'deployment.test',
     'audit.read',
   ],
   MANAGER: [
@@ -117,6 +133,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'automation.read',
     'automation.update',
     'analytics.read',
+    'deployment.read',
+    'deployment.test',
     'audit.read',
   ],
   OPERATOR: [
@@ -130,6 +148,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'alert.acknowledge',
     'automation.read',
     'analytics.read',
+    'deployment.read',
+    'deployment.test',
   ],
   SECURITY: [
     'organization.read',
@@ -142,6 +162,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'alert.acknowledge',
     'alert.resolve',
     'analytics.read',
+    'deployment.read',
     'audit.read',
   ],
   TECHNICIAN: [
@@ -157,6 +178,9 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'alert.read',
     'alert.acknowledge',
     'firmware.manage',
+    'firmware.generate',
+    'deployment.read',
+    'deployment.test',
   ],
   VIEWER: [
     'organization.read',
@@ -167,6 +191,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'telemetry.read',
     'alert.read',
     'analytics.read',
+    'deployment.read',
   ],
 };
 
@@ -180,7 +205,6 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   TECHNICIAN: 30,
   VIEWER: 10,
 };
-
 
 /**
  * MQTT topic templates.

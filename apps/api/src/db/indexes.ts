@@ -18,6 +18,9 @@ import {
   AlertModel,
   UserModel,
   SecurityAuditLogModel,
+  DeploymentModel,
+  FirmwareBuildModel,
+  HardwareTestSessionModel,
 } from '../models/index.js';
 import { ComplianceAuditLogModel } from '../models/ComplianceAuditLog.js';
 import { ComplianceProfileModel } from '../models/ComplianceProfile.js';
@@ -47,6 +50,9 @@ export class DatabaseIndexManager {
     SecurityAuditLogModel,
     ComplianceAuditLogModel,
     ComplianceProfileModel,
+    DeploymentModel,
+    FirmwareBuildModel,
+    HardwareTestSessionModel,
   ];
 
   /**

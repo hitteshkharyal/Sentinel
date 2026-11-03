@@ -47,6 +47,7 @@ const TEST_MANIFEST = [
   { category: 'INTEGRATION', file: 'tests/integration/automation-alerts.test.mjs', name: 'Automation Rules & Alert Incident Lifecycle' },
   { category: 'INTEGRATION', file: 'tests/integration/compliance-policies.test.mjs', name: 'Compliance Profiles & Sector Policy Packs' },
   { category: 'INTEGRATION', file: 'tests/integration/zero-trust-security.test.mjs', name: 'Zero-Trust Security Perimeter & Sanitization' },
+  { category: 'INTEGRATION', file: 'tests/integration/deployment-wizard.test.mjs', name: 'Deployment Wizard & Firmware Generator' },
   { category: 'INTEGRATION', file: 'tests/integration/production-readiness.test.mjs', name: 'Production Readiness & Health Diagnostics' },
 
   // ── 3. End-to-End Scenario ──

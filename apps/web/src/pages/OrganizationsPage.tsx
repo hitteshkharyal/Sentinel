@@ -31,6 +31,7 @@ const INDUSTRY_ICONS: Record<IndustryType, string> = {
   hospital: '🏥',
   hotel: '🏨',
   school: '🏫',
+  school_bus: '🚌',
   transport: '🚌',
   office: '🏢',
   factory: '🏭',
@@ -38,6 +39,7 @@ const INDUSTRY_ICONS: Record<IndustryType, string> = {
   mall: '🛍️',
   parking: '🅿️',
   public_facility: '🏛️',
+  custom: '⚙️',
   general: '🌐',
 };
 

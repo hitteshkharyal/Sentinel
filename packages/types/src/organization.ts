@@ -17,6 +17,7 @@ export type IndustryType =
   | 'hotel'
   | 'hospital'
   | 'school'
+  | 'school_bus'
   | 'transport'
   | 'office'
   | 'mall'
@@ -24,6 +25,7 @@ export type IndustryType =
   | 'warehouse'
   | 'parking'
   | 'public_facility'
+  | 'custom'
   | 'general';
 
 export type Role =
@@ -69,6 +71,12 @@ export type Permission =
   | 'automation.delete'
   | 'analytics.read'
   | 'firmware.manage'
+  | 'firmware.generate'
+  | 'deployment.create'
+  | 'deployment.read'
+  | 'deployment.update'
+  | 'deployment.delete'
+  | 'deployment.test'
   | 'audit.read';
 
 export interface Membership {
@@ -124,4 +132,3 @@ export interface InviteMemberDTO {
   role: Role;
   facilityIds?: string[];
 }
-

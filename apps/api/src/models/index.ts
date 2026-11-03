@@ -18,3 +18,6 @@ export * from './Alert.js';
 export * from './ComplianceProfile.js';
 export * from './ComplianceAuditLog.js';
 export * from './SecurityAuditLog.js';
+export * from './Deployment.js';
+export * from './FirmwareBuild.js';
+export * from './HardwareTestSession.js';

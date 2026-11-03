@@ -16,7 +16,9 @@ import {
   Zap,
   ChevronRight,
   Sparkles,
+  Rocket,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
@@ -168,6 +170,40 @@ export const DashboardOverviewPage: React.FC = () => {
             <span className="text-2xl sm:text-3xl font-black text-rose-500">3</span>
             <span className="text-[11px] text-rose-500 font-bold">Require action</span>
           </div>
+        </div>
+      </div>
+
+      {/* ── Deployment Center Quick Access Banner ── */}
+      <div className="p-4 sm:p-5 rounded-xl border border-primary/30 bg-primary/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-primary text-white shadow-sm">
+            <Rocket className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-text-primary text-sm flex items-center gap-2">
+              Installer Deployment Wizard &amp; Dynamic Firmware Generator
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                ACTIVE SYSTEM
+              </span>
+            </h3>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Guided 4-step wizard for Hotels, Hospitals, Schools, Buses &amp; Industrial IoT. Custom PlatformIO ZIPs with modular HAL drivers &amp; live 7-point scorecard diagnostics.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/deployments"
+            className="px-3.5 py-2 rounded-lg bg-surface hover:bg-surface-hover border border-border text-text-primary text-xs font-semibold transition-colors"
+          >
+            Deployment Center
+          </Link>
+          <Link
+            to="/deployments/new"
+            className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-sm transition-all"
+          >
+            New Deployment
+          </Link>
         </div>
       </div>
 

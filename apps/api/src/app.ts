@@ -22,6 +22,7 @@ import { predictionsRouter } from './routes/predictions.js';
 import { complianceRouter } from './routes/compliance.js';
 import { policiesRouter } from './routes/policies.js';
 import { securityRouter } from './routes/security.js';
+import { deploymentRouter } from './routes/deployments.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { apiRateLimiter, authRateLimiter, telemetryRateLimiter } from './middleware/rate-limiter.js';
 import { sanitizeInputs } from './middleware/sanitize.js';
@@ -87,6 +88,7 @@ app.use('/api/v1/predictions', predictionsRouter);
 app.use('/api/v1/compliance', complianceRouter);
 app.use('/api/v1/policies', policiesRouter);
 app.use('/api/v1/security', securityRouter);
+app.use('/api/v1/deployments', deploymentRouter);
 
 // ── Info Endpoint ──
 app.get('/api/v1', (_req, res) => {

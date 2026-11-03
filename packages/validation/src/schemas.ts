@@ -848,3 +848,126 @@ export const runSecurityAuditScanSchema = z.object({
   deepScan: z.boolean().optional().default(true),
 });
 
+// ─────────────────────────────────────────────
+// Deployment Center & Dynamic Firmware Schemas
+// ─────────────────────────────────────────────
+
+export const deploymentStatusSchema = z.enum([
+  'DRAFT',
+  'CONFIGURED',
+  'FIRMWARE_GENERATED',
+  'PROVISIONING',
+  'TESTING',
+  'ACTIVE',
+  'FAILED',
+  'ARCHIVED',
+]);
+
+export const selectedSensorConfigSchema = z.object({
+  sensorType: sensorTypeSchema,
+  model: z.string().min(1).max(100),
+  manufacturer: z.string().min(1).max(100),
+  category: sensorCategorySchema,
+  interfaceType: sensorInterfaceSchema,
+  assignedPins: z.array(z.number().int().min(0).max(48)),
+  i2cAddress: z.string().optional(),
+  samplingIntervalMs: z.number().int().min(100).max(3600000).default(5000),
+  isMandatory: z.boolean().default(false),
+  requiredAmplifierModule: z.string().optional(),
+  isolatedInterfaceRequired: z.boolean().optional(),
+});
+
+export const selectedActuatorConfigSchema = z.object({
+  actuatorType: z.enum(['RELAY', 'BUZZER', 'STATUS_LED', 'SERVO', 'MOTOR']),
+  model: z.string().min(1).max(100),
+  assignedPin: z.number().int().min(0).max(48),
+  activeLevel: z.enum(['HIGH', 'LOW']).default('HIGH'),
+});
+
+export const deploymentHardwareConfigSchema = z.object({
+  chipModel: chipModelSchema,
+  boardName: z.string().min(1).max(100),
+  operatingVoltage: z.enum(['3.3V', '5V']),
+  powerSource: powerSourceSchema,
+  sensors: z.array(selectedSensorConfigSchema),
+  actuators: z.array(selectedActuatorConfigSchema).default([]),
+  i2cBus: z.object({
+    sdaPin: z.number().int().min(0).max(48).default(21),
+    sclPin: z.number().int().min(0).max(48).default(22),
+    frequencyHz: z.number().int().min(10000).max(400000).default(100000),
+  }),
+  uart2: z
+    .object({
+      rxPin: z.number().int().min(0).max(48).default(16),
+      txPin: z.number().int().min(0).max(48).default(17),
+      baudRate: z.number().int().default(115200),
+    })
+    .optional(),
+});
+
+export const createDeploymentSchema = z.object({
+  name: z.string().min(2).max(150),
+  description: z.string().max(1000).optional(),
+  facilityId: z.string().min(1),
+  roomId: z.string().optional(),
+  industry: z.enum([
+    'hotel',
+    'hospital',
+    'school',
+    'school_bus',
+    'transport',
+    'office',
+    'mall',
+    'factory',
+    'warehouse',
+    'parking',
+    'public_facility',
+    'custom',
+    'general',
+  ]),
+  useCaseId: z.string().min(1),
+  useCaseName: z.string().min(1),
+  hardwareConfig: deploymentHardwareConfigSchema,
+});
+
+export const updateDeploymentSchema = z.object({
+  name: z.string().min(2).max(150).optional(),
+  description: z.string().max(1000).optional(),
+  facilityId: z.string().min(1).optional(),
+  roomId: z.string().optional(),
+  hardwareConfig: deploymentHardwareConfigSchema.optional(),
+  status: deploymentStatusSchema.optional(),
+});
+
+export const deploymentFilterSchema = paginationSchema.extend({
+  industry: z.string().optional(),
+  status: deploymentStatusSchema.optional(),
+  facilityId: z.string().optional(),
+  search: z.string().optional(),
+});
+
+export const generateFirmwareSchema = z.object({
+  deploymentId: z.string().min(1).optional(),
+  version: z.string().optional(),
+  baudRate: z.number().int().default(115200),
+  includeWatchdog: z.boolean().default(true),
+  offlineBuffering: z.boolean().default(true),
+});
+
+export const hardwareTestScorecardSchema = z.object({
+  deploymentId: z.string().min(1),
+  deviceId: z.string().min(1),
+  checks: z.object({
+    deviceConnection: z.enum(['PASS', 'FAIL', 'PENDING']),
+    mqttConnection: z.enum(['PASS', 'FAIL', 'PENDING']),
+    sensorValidation: z.enum(['PASS', 'FAIL', 'PENDING']),
+    telemetryReception: z.enum(['PASS', 'FAIL', 'PENDING']),
+    eventDetection: z.enum(['PASS', 'FAIL', 'PENDING']),
+    automationTrigger: z.enum(['PASS', 'FAIL', 'PENDING']),
+    alertDelivery: z.enum(['PASS', 'FAIL', 'PENDING']),
+  }),
+  notes: z.string().optional(),
+  readinessSignOff: z.boolean().default(false),
+});
+
+
