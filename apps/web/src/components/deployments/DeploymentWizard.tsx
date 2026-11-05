@@ -201,23 +201,23 @@ export const DeploymentWizard: React.FC = () => {
       } else if (rs.sensorType === 'DOOR_MAGNETIC') {
         defaultPins = [14];
         iface = 'GPIO';
-        category = 'SECURITY';
+        category = 'ACCESS_TELEMETRY';
       } else if (rs.sensorType === 'SOUND_LEVEL') {
         defaultPins = [34];
         iface = 'ADC';
-        category = 'ACOUSTIC';
+        category = 'ENVIRONMENTAL';
       } else if (rs.sensorType === 'VIBRATION') {
         defaultPins = [25];
         iface = 'GPIO';
-        category = 'INDUSTRIAL';
+        category = 'STRUCTURAL_POWER';
       } else if (rs.sensorType === 'CURRENT') {
         defaultPins = [35];
         iface = 'ADC';
-        category = 'ELECTRICAL';
+        category = 'STRUCTURAL_POWER';
       } else if (rs.sensorType === 'GPS') {
         defaultPins = [16, 17];
         iface = 'UART';
-        category = 'LOCATION';
+        category = 'ACCESS_TELEMETRY';
       }
 
       return {

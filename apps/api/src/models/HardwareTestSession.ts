@@ -108,3 +108,4 @@ export const HardwareTestSessionModel = mongoose.model<IHardwareTestSessionDocum
   'HardwareTestSession',
   HardwareTestSessionSchema
 );
+

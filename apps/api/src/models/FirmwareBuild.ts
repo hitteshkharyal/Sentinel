@@ -92,3 +92,4 @@ export const FirmwareBuildModel = mongoose.model<IFirmwareBuildDocument>(
   'FirmwareBuild',
   FirmwareBuildSchema
 );
+
