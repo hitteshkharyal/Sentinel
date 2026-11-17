@@ -12,6 +12,7 @@ import { organizationRouter } from './routes/organizations.js';
 import { facilityRouter } from './routes/facilities.js';
 import { roomRouter } from './routes/rooms.js';
 import { sensorRouter } from './routes/sensors.js';
+import { sensorDataRouter } from './routes/sensor-data.js';
 import { deviceRouter } from './routes/devices.js';
 import { telemetryRouter } from './routes/telemetry.js';
 import { eventRouter } from './routes/events.js';
@@ -70,6 +71,7 @@ app.use('/api/v1', apiRateLimiter);
 app.use('/api/v1/auth/login', authRateLimiter);
 app.use('/api/v1/auth/register', authRateLimiter);
 app.use('/api/v1/telemetry', telemetryRateLimiter);
+app.use('/api/v1/sensors/data', telemetryRateLimiter);
 
 // ── Routes ──
 app.use('/api/v1/health', healthRouter);
@@ -77,6 +79,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/organizations', organizationRouter);
 app.use('/api/v1/facilities', facilityRouter);
 app.use('/api/v1/rooms', roomRouter);
+app.use('/api/v1/sensors', sensorDataRouter);
 app.use('/api/v1/sensors', sensorRouter);
 app.use('/api/v1/devices', deviceRouter);
 app.use('/api/v1/telemetry', telemetryRouter);

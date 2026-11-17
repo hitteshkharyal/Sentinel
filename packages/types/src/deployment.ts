@@ -16,6 +16,68 @@ export type DeploymentStatus =
   | 'FAILED'
   | 'ARCHIVED';
 
+export type DeploymentRole =
+  | 'SUPERVISOR'
+  | 'TECHNICIAN'
+  | 'OPERATOR'
+  | 'SECURITY'
+  | 'VIEWER'
+  | 'INSTALLER';
+
+export type BoardType =
+  | 'ESP32_DEV'
+  | 'ESP32_DEVKIT'
+  | 'ESP8266_NODEMCU'
+  | 'ESP8266_WEMOS_D1';
+
+export interface DeploymentTeamMember {
+  userId?: string;
+  email: string;
+  displayName?: string;
+  role: DeploymentRole;
+  assignedAt: string;
+  assignedBy: string;
+  status: 'ACTIVE' | 'INVITED' | 'REMOVED';
+}
+
+export interface SingleFileFirmwareConfig {
+  boardType: BoardType;
+  wifiSsid: string;
+  wifiPassword?: string;
+  serverUrl: string;
+  telemetryIntervalMs?: number;
+  deviceId?: string;
+  apiKey?: string;
+}
+
+export interface SingleFileFirmwareResult {
+  filename: string;
+  content: string;
+  boardType: BoardType;
+  requiredLibraries: string[];
+  installGuide: string;
+  generatedAt: string;
+  sensorsCount: number;
+  pinSummary: { sensor: string; pins: string; interfaceType: string }[];
+}
+
+export interface DeviceApiKeyInfo {
+  deviceId: string;
+  deploymentId: string;
+  keyPrefix: string;
+  maskedKey: string;
+  fullKey?: string;
+  status: 'ACTIVE' | 'REVOKED';
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
+export interface SensorDataPayload {
+  deviceId?: string;
+  sensors: Record<string, number | boolean | string | Record<string, unknown>>;
+  timestamp?: string;
+}
+
 export type HardwareCompatibilitySeverity = 'ERROR' | 'WARNING' | 'INFO';
 
 export interface PinAssignment {
@@ -199,6 +261,7 @@ export interface Deployment {
   latestFirmwareVersion?: string;
   activeTestSessionId?: string;
   isReadinessApproved: boolean;
+  team?: DeploymentTeamMember[];
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -213,6 +276,7 @@ export interface CreateDeploymentDTO {
   useCaseId: string;
   useCaseName: string;
   hardwareConfig: DeploymentHardwareConfig;
+  team?: { email: string; role: DeploymentRole }[];
 }
 
 export interface UpdateDeploymentDTO {
@@ -222,4 +286,5 @@ export interface UpdateDeploymentDTO {
   roomId?: string;
   hardwareConfig?: DeploymentHardwareConfig;
   status?: DeploymentStatus;
+  team?: { email: string; role: DeploymentRole }[];
 }

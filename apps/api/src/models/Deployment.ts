@@ -8,6 +8,7 @@ import type {
   DeploymentStatus,
   DeploymentHardwareConfig,
   IndustryType,
+  DeploymentTeamMember,
 } from '@sentinel/types';
 
 export interface IDeploymentDocument extends Document {
@@ -28,6 +29,7 @@ export interface IDeploymentDocument extends Document {
   latestFirmwareVersion?: string;
   activeTestSessionId?: mongoose.Types.ObjectId;
   isReadinessApproved: boolean;
+  team?: DeploymentTeamMember[];
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -114,6 +116,25 @@ const DeploymentSchema = new Schema<IDeploymentDocument>(
       default: false,
       index: true,
     },
+    team: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: 'User' },
+        email: { type: String, required: true },
+        displayName: { type: String },
+        role: {
+          type: String,
+          enum: ['SUPERVISOR', 'TECHNICIAN', 'OPERATOR', 'SECURITY', 'VIEWER', 'INSTALLER'],
+          default: 'TECHNICIAN',
+        },
+        assignedAt: { type: Date, default: Date.now },
+        assignedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        status: {
+          type: String,
+          enum: ['ACTIVE', 'INVITED', 'REMOVED'],
+          default: 'ACTIVE',
+        },
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -149,6 +170,17 @@ DeploymentSchema.methods.toSafeDeployment = function (this: IDeploymentDocument)
     latestFirmwareVersion: this.latestFirmwareVersion,
     activeTestSessionId: this.activeTestSessionId ? this.activeTestSessionId.toString() : undefined,
     isReadinessApproved: this.isReadinessApproved,
+    team: Array.isArray(this.team)
+      ? this.team.map((m: DeploymentTeamMember) => ({
+          userId: m.userId ? m.userId.toString() : undefined,
+          email: m.email,
+          displayName: m.displayName,
+          role: m.role,
+          assignedAt: m.assignedAt instanceof Date ? m.assignedAt.toISOString() : (m.assignedAt || new Date().toISOString()),
+          assignedBy: m.assignedBy ? m.assignedBy.toString() : '',
+          status: m.status || 'ACTIVE',
+        }))
+      : [],
     createdBy: this.createdBy.toString(),
     createdAt: this.createdAt.toISOString(),
     updatedAt: this.updatedAt.toISOString(),

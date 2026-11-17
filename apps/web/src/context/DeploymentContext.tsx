@@ -15,6 +15,11 @@ import type {
   UpdateDeploymentDTO,
   Device,
   DeviceRegistrationCredentials,
+  BoardType,
+  SingleFileFirmwareResult,
+  DeviceApiKeyInfo,
+  DeploymentRole,
+  DeploymentTeamMember,
 } from '@sentinel/types';
 import { useAuth } from './AuthContext';
 import { useOrganization } from './OrganizationContext';
@@ -52,6 +57,30 @@ interface DeploymentContextType {
   startHardwareTest: (deploymentId: string, simulate?: boolean) => Promise<HardwareTestScorecard>;
   fetchHardwareTestStatus: (deploymentId: string) => Promise<HardwareTestScorecard | null>;
   signOffHardwareTest: (deploymentId: string, sessionId: string, notes?: string) => Promise<HardwareTestScorecard>;
+  generateSingleFileIno: (
+    deploymentId: string,
+    config: {
+      boardType: BoardType;
+      wifiSsid: string;
+      wifiPassword?: string;
+      serverUrl: string;
+      telemetryIntervalMs?: number;
+      deviceId?: string;
+    }
+  ) => Promise<SingleFileFirmwareResult>;
+  getDeviceApiKey: (deploymentId: string) => Promise<DeviceApiKeyInfo>;
+  rotateDeviceApiKey: (deploymentId: string) => Promise<DeviceApiKeyInfo>;
+  getDeploymentTeam: (deploymentId: string) => Promise<DeploymentTeamMember[]>;
+  addTeamMember: (
+    deploymentId: string,
+    member: { email: string; role: DeploymentRole; displayName?: string }
+  ) => Promise<DeploymentTeamMember[]>;
+  updateTeamMemberRole: (
+    deploymentId: string,
+    email: string,
+    role: DeploymentRole
+  ) => Promise<DeploymentTeamMember[]>;
+  removeTeamMember: (deploymentId: string, email: string) => Promise<DeploymentTeamMember[]>;
   setActiveDeployment: (deployment: Deployment | null) => void;
 }
 
@@ -413,6 +442,124 @@ export const DeploymentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     [activeDeployment, getHeaders]
   );
 
+  // Generate single file .ino firmware
+  const generateSingleFileIno = useCallback(
+    async (
+      deploymentId: string,
+      config: {
+        boardType: BoardType;
+        wifiSsid: string;
+        wifiPassword?: string;
+        serverUrl: string;
+        telemetryIntervalMs?: number;
+        deviceId?: string;
+      }
+    ): Promise<SingleFileFirmwareResult> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/firmware/generate-ino`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(config),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to generate single-file firmware');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Get device API key
+  const getDeviceApiKey = useCallback(
+    async (deploymentId: string): Promise<DeviceApiKeyInfo> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/devices/api-key`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to fetch device API key');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Rotate device API key
+  const rotateDeviceApiKey = useCallback(
+    async (deploymentId: string): Promise<DeviceApiKeyInfo> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/devices/api-key/rotate`, {
+        method: 'POST',
+        headers: getHeaders(),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to rotate device API key');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Get deployment team
+  const getDeploymentTeam = useCallback(
+    async (deploymentId: string): Promise<DeploymentTeamMember[]> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/team`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to fetch deployment team');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Add team member
+  const addTeamMember = useCallback(
+    async (
+      deploymentId: string,
+      member: { email: string; role: DeploymentRole; displayName?: string }
+    ): Promise<DeploymentTeamMember[]> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/team`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(member),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to add team member');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Update team member role
+  const updateTeamMemberRole = useCallback(
+    async (
+      deploymentId: string,
+      email: string,
+      role: DeploymentRole
+    ): Promise<DeploymentTeamMember[]> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/team/${encodeURIComponent(email)}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ role }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to update member role');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
+  // Remove team member
+  const removeTeamMember = useCallback(
+    async (deploymentId: string, email: string): Promise<DeploymentTeamMember[]> => {
+      const res = await fetch(`${API_BASE}/deployments/${deploymentId}/team/${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Failed to remove team member');
+      return json.data;
+    },
+    [getHeaders]
+  );
+
   useEffect(() => {
     if (currentOrganization) {
       fetchTemplates();
@@ -444,6 +591,13 @@ export const DeploymentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         startHardwareTest,
         fetchHardwareTestStatus,
         signOffHardwareTest,
+        generateSingleFileIno,
+        getDeviceApiKey,
+        rotateDeviceApiKey,
+        getDeploymentTeam,
+        addTeamMember,
+        updateTeamMemberRole,
+        removeTeamMember,
         setActiveDeployment,
       }}
     >

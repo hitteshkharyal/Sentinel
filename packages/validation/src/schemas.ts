@@ -928,6 +928,10 @@ export const createDeploymentSchema = z.object({
   useCaseId: z.string().min(1),
   useCaseName: z.string().min(1),
   hardwareConfig: deploymentHardwareConfigSchema,
+  team: z.array(z.object({
+    email: z.string().email(),
+    role: z.enum(['SUPERVISOR', 'TECHNICIAN', 'OPERATOR', 'SECURITY', 'VIEWER', 'INSTALLER']),
+  })).optional(),
 });
 
 export const updateDeploymentSchema = z.object({
@@ -937,6 +941,10 @@ export const updateDeploymentSchema = z.object({
   roomId: z.string().optional(),
   hardwareConfig: deploymentHardwareConfigSchema.optional(),
   status: deploymentStatusSchema.optional(),
+  team: z.array(z.object({
+    email: z.string().email(),
+    role: z.enum(['SUPERVISOR', 'TECHNICIAN', 'OPERATOR', 'SECURITY', 'VIEWER', 'INSTALLER']),
+  })).optional(),
 });
 
 export const deploymentFilterSchema = paginationSchema.extend({
@@ -969,5 +977,47 @@ export const hardwareTestScorecardSchema = z.object({
   notes: z.string().optional(),
   readinessSignOff: z.boolean().default(false),
 });
+
+export const deploymentRoleSchema = z.enum([
+  'SUPERVISOR',
+  'TECHNICIAN',
+  'OPERATOR',
+  'SECURITY',
+  'VIEWER',
+  'INSTALLER',
+]);
+
+export const boardTypeSchema = z.enum([
+  'ESP32_DEV',
+  'ESP32_DEVKIT',
+  'ESP8266_NODEMCU',
+  'ESP8266_WEMOS_D1',
+]);
+
+export const addTeamMemberSchema = z.object({
+  email: z.string().email(),
+  role: deploymentRoleSchema.default('TECHNICIAN'),
+  displayName: z.string().max(100).optional(),
+});
+
+export const updateTeamMemberRoleSchema = z.object({
+  role: deploymentRoleSchema,
+});
+
+export const generateSingleFileFirmwareSchema = z.object({
+  boardType: boardTypeSchema.default('ESP32_DEV'),
+  wifiSsid: z.string().min(1).max(64),
+  wifiPassword: z.string().max(64).optional().default(''),
+  serverUrl: z.string().min(1),
+  telemetryIntervalMs: z.number().int().min(1000).max(3600000).default(5000),
+  deviceId: z.string().optional(),
+});
+
+export const sensorDataIngestionSchema = z.object({
+  deviceId: z.string().optional(),
+  sensors: z.record(z.union([z.number(), z.boolean(), z.string(), z.record(z.unknown())])),
+  timestamp: z.string().optional(),
+});
+
 
 
