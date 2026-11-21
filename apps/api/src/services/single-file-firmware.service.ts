@@ -103,22 +103,31 @@ bool shtReady_${index} = false;`,
 
   // ── DHT11 / DHT22 (Digital 1-Wire) ──
   DHT: {
-    sensorTypes: ['DHT11', 'DHT22', 'AM2302'],
+    sensorTypes: ['DHT11', 'DHT22', 'AM2302', 'DHT-11', 'DHT-22', 'DHT', 'TEMPERATURE_HUMIDITY'],
     libraries: ['DHT sensor library by Adafruit', 'Adafruit Unified Sensor'],
     includes: ['#include <DHT.h>'],
     pinDefinitions: (board, sensor, index) => {
       const pin = sensor.assignedPins?.[0] ?? (board.startsWith('ESP8266') ? 14 : 4); // D5 or GPIO4
       const dhtType = sensor.model?.toUpperCase().includes('22') ? 'DHT22' : 'DHT11';
-      return `#define PIN_DHT_${index} ${pin}
+      return `#define PIN_DHT_${index} ${pin} // ${sensor.model || 'DHT11'}
 #define DHTTYPE_${index} ${dhtType}`;
     },
     globals: (_sensor, index) => `DHT dht_${index}(PIN_DHT_${index}, DHTTYPE_${index});`,
     setupCode: (_sensor, index) => `  dht_${index}.begin();
   Serial.println("[DHT] Initialized on pin " + String(PIN_DHT_${index}));`,
-    readCode: (_sensor, index) => `  float dhtT = dht_${index}.readTemperature();
-  float dhtH = dht_${index}.readHumidity();
-  if (!isnan(dhtT)) sensors["temperature"] = round(dhtT * 10.0) / 10.0;
-  if (!isnan(dhtH)) sensors["humidity"] = round(dhtH * 10.0) / 10.0;`,
+    readCode: (sensor, index) => {
+      const keyPrefix = (sensor.model || 'dht11').toLowerCase().replace(/[^a-z0-9]/g, '');
+      return `  float dhtT_${index} = dht_${index}.readTemperature();
+  float dhtH_${index} = dht_${index}.readHumidity();
+  if (!isnan(dhtT_${index})) {
+    sensors["temperature"] = round(dhtT_${index} * 10.0) / 10.0;
+    sensors["${keyPrefix}_temp"] = round(dhtT_${index} * 10.0) / 10.0;
+  }
+  if (!isnan(dhtH_${index})) {
+    sensors["humidity"] = round(dhtH_${index} * 10.0) / 10.0;
+    sensors["${keyPrefix}_hum"] = round(dhtH_${index} * 10.0) / 10.0;
+  }`;
+    },
   },
 
   // ── SCD41 CO2 (I2C) ──
@@ -171,21 +180,40 @@ bool bhReady_${index} = false;`,
   }`,
   },
 
-  // ── MQ-2 / MQ-135 Gas / Smoke (Analog) ──
+  // ── MQ-2 / MQ-3 / MQ-4 / MQ-5 / MQ-6 / MQ-7 / MQ-8 / MQ-9 / MQ-135 Gas / Smoke (Analog ADC) ──
   MQ_GAS: {
-    sensorTypes: ['MQ2', 'MQ135', 'GAS', 'SMOKE', 'AIR_QUALITY'],
+    sensorTypes: [
+      'MQ2', 'MQ3', 'MQ4', 'MQ5', 'MQ6', 'MQ7', 'MQ8', 'MQ9', 'MQ135',
+      'MQ-2', 'MQ-3', 'MQ-4', 'MQ-5', 'MQ-6', 'MQ-7', 'MQ-8', 'MQ-9', 'MQ-135',
+      'GAS', 'SMOKE', 'AIR_QUALITY', 'ALCOHOL', 'METHANE', 'CO', 'HYDROGEN', 'BUTANE', 'LPG',
+    ],
     libraries: [],
     includes: [],
     pinDefinitions: (board, sensor, index) => {
-      const pin = sensor.assignedPins?.[0] ?? (board.startsWith('ESP8266') ? 0 : 36); // A0 (ADC0) or GPIO36 (VP)
+      // Default to GPIO 34 (ADC1_CH6 - input only, WiFi safe) on ESP32, A0 on ESP8266
+      const pin = sensor.assignedPins?.[0] ?? (board.startsWith('ESP8266') ? 0 : 34);
       return `#define PIN_GAS_${index} ${pin} // Analog Gas/Smoke sensor (${sensor.model || 'MQ Series'})`;
     },
     globals: () => '',
     setupCode: (_sensor, index) => `  // Analog pin PIN_GAS_${index} configured as analog input
   Serial.println("[GAS] Configured on analog pin " + String(PIN_GAS_${index}));`,
-    readCode: (sensor, index) => `  int rawGas_${index} = analogRead(PIN_GAS_${index});
-  sensors["${sensor.model?.toLowerCase() || 'gas_level'}"] = rawGas_${index};
-  sensors["smoke_detected"] = (rawGas_${index} > 1200);`,
+    readCode: (sensor, index) => {
+      const model = (sensor.model || sensor.sensorType || 'mq2').toLowerCase().replace(/[^a-z0-9]/g, '');
+      let alertField = 'gas_detected';
+      if (model.includes('mq2') || model.includes('smoke')) alertField = 'smoke_detected';
+      else if (model.includes('mq3') || model.includes('alcohol')) alertField = 'alcohol_detected';
+      else if (model.includes('mq4') || model.includes('methane')) alertField = 'methane_detected';
+      else if (model.includes('mq5') || model.includes('lpg')) alertField = 'lpg_detected';
+      else if (model.includes('mq6') || model.includes('butane')) alertField = 'butane_detected';
+      else if (model.includes('mq7') || model.includes('co')) alertField = 'co_detected';
+      else if (model.includes('mq8') || model.includes('hydrogen')) alertField = 'hydrogen_detected';
+      else if (model.includes('mq9')) alertField = 'flammable_gas_alert';
+      else if (model.includes('mq135') || model.includes('air')) alertField = 'air_quality_alert';
+
+      return `  int rawGas_${index} = analogRead(PIN_GAS_${index});
+  sensors["${model}"] = rawGas_${index};
+  sensors["${alertField}"] = (rawGas_${index} > 1200);`;
+    },
   },
 
   // ── Water Leak Sensor (Digital/Analog) ──

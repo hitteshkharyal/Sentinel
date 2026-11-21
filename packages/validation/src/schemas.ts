@@ -1015,8 +1015,8 @@ export const generateSingleFileFirmwareSchema = z.object({
 
 export const sensorDataIngestionSchema = z.object({
   deviceId: z.string().optional(),
-  sensors: z.record(z.union([z.number(), z.boolean(), z.string(), z.record(z.unknown())])),
-  timestamp: z.string().optional(),
+  sensors: z.record(z.union([z.number(), z.boolean(), z.string(), z.record(z.unknown()), z.null()])),
+  timestamp: z.union([z.string(), z.number()]).optional(),
 });
 
 

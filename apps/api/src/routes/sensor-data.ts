@@ -99,11 +99,24 @@ sensorDataRouter.post(
       const rssi = typeof sensorMap.rssi === 'number' ? sensorMap.rssi : undefined;
       const uptime = typeof sensorMap.uptime_sec === 'number' ? sensorMap.uptime_sec : undefined;
 
+      let validIsoTimestamp = new Date().toISOString();
+      if (parsed.data.timestamp) {
+        if (typeof parsed.data.timestamp === 'number') {
+          // If valid epoch ms (after year 2020), use it; otherwise default to current server time
+          if (parsed.data.timestamp > 1577836800000) {
+            validIsoTimestamp = new Date(parsed.data.timestamp).toISOString();
+          }
+        } else {
+          const parsedMs = Date.parse(parsed.data.timestamp);
+          if (!isNaN(parsedMs)) {
+            validIsoTimestamp = new Date(parsedMs).toISOString();
+          }
+        }
+      }
+
       const telemetryPayload: TelemetryMessage = {
         deviceId: verifiedDeviceId,
-        timestamp: parsed.data.timestamp
-          ? (typeof parsed.data.timestamp === 'number' ? new Date(parsed.data.timestamp).toISOString() : new Date(parsed.data.timestamp).toISOString())
-          : new Date().toISOString(),
+        timestamp: validIsoTimestamp,
         sensors: sensorMap,
         metadata: {
           wifiRssiDbm: rssi,

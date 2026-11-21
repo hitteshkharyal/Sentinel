@@ -9,6 +9,7 @@ import { connectDatabase } from '../../apps/api/dist/db.js';
 import { SingleFileFirmwareGeneratorService } from '../../apps/api/dist/services/single-file-firmware.service.js';
 import { DeploymentTeamService } from '../../apps/api/dist/services/deployment-team.service.js';
 import { TelemetryValidator } from '../../apps/api/dist/services/telemetry-validator.js';
+import { sensorDataIngestionSchema } from '../../packages/validation/dist/index.js';
 import {
   OrganizationModel,
   FacilityModel,
@@ -254,5 +255,29 @@ describe('Phases 20–26: Deployment Team, Single-File Firmware & HTTP Ingestion
     const doc = await TelemetryModel.findById(result.telemetry.id);
     assert.ok(doc);
     assert.strictEqual(doc.deviceId, deviceId);
+  });
+
+  it('5. should accept numeric timestamp and basic sensors (DHT11, MQ2, HC-SR04P) in HTTP ingestion schema', () => {
+    const rawPayload = {
+      deviceId,
+      timestamp: 133625, // Arduino millis() number
+      sensors: {
+        'hc-sr04p': -1,
+        'ekmc1601111': true,
+        presence_detected: true,
+        dht11_temp: 26.5,
+        mq2: 450,
+        rssi: -27,
+        uptime_sec: 133,
+      },
+    };
+
+    const parsed = sensorDataIngestionSchema.safeParse(rawPayload);
+    assert.strictEqual(parsed.success, true);
+    if (parsed.success) {
+      assert.strictEqual(parsed.data.timestamp, 133625);
+      assert.strictEqual(parsed.data.sensors['hc-sr04p'], -1);
+      assert.strictEqual(parsed.data.sensors['mq2'], 450);
+    }
   });
 });

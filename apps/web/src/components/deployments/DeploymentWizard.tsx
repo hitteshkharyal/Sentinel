@@ -15,6 +15,7 @@ import type {
   HardwareValidationResult,
   SensorInterface,
   SensorCategory,
+  SensorType,
 } from '@sentinel/types';
 import {
   Building2,
@@ -116,6 +117,31 @@ const INDUSTRIES: IndustryOption[] = [
   },
 ];
 
+const BASIC_SENSOR_PRESETS: {
+  label: string;
+  sensorType: SensorType;
+  model: string;
+  interfaceType: SensorInterface;
+  assignedPins: number[];
+  category: SensorCategory;
+}[] = [
+  { label: 'DHT11 — Temperature & Humidity (GPIO 4)', sensorType: 'TEMPERATURE', model: 'DHT11', interfaceType: 'GPIO', assignedPins: [4], category: 'ENVIRONMENTAL' },
+  { label: 'DHT22 — High-Precision Temp & Humidity (GPIO 4)', sensorType: 'TEMPERATURE', model: 'DHT22', interfaceType: 'GPIO', assignedPins: [4], category: 'ENVIRONMENTAL' },
+  { label: 'MQ-2 — Smoke & Combustible Gas (ADC 34)', sensorType: 'SMOKE', model: 'MQ-2', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-3 — Alcohol & Ethanol Vapor (ADC 34)', sensorType: 'GAS', model: 'MQ-3', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-4 — Methane & Natural Gas (ADC 34)', sensorType: 'GAS', model: 'MQ-4', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-5 — LPG & Town Gas (ADC 34)', sensorType: 'GAS', model: 'MQ-5', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-6 — Isobutane & Propane (ADC 34)', sensorType: 'GAS', model: 'MQ-6', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-7 — Carbon Monoxide CO (ADC 34)', sensorType: 'GAS', model: 'MQ-7', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-8 — Hydrogen Gas H2 (ADC 34)', sensorType: 'GAS', model: 'MQ-8', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-9 — CO & Flammable Gas (ADC 34)', sensorType: 'GAS', model: 'MQ-9', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'MQ-135 — Air Quality & Benzene (ADC 34)', sensorType: 'GAS', model: 'MQ-135', interfaceType: 'ADC', assignedPins: [34], category: 'SAFETY_HAZARD' },
+  { label: 'HC-SR04P — Ultrasonic Distance (TRIG 5, ECHO 18)', sensorType: 'ULTRASONIC', model: 'HC-SR04P', interfaceType: 'GPIO', assignedPins: [5, 18], category: 'PRESENCE_MOTION' },
+  { label: 'EKMC1601111 — PIR Motion (GPIO 13)', sensorType: 'PIR', model: 'EKMC1601111', interfaceType: 'GPIO', assignedPins: [13], category: 'PRESENCE_MOTION' },
+  { label: 'BH1750 — Ambient Lux Light (I2C 21/22)', sensorType: 'LIGHT', model: 'BH1750', interfaceType: 'I2C', assignedPins: [21, 22], category: 'ENVIRONMENTAL' },
+  { label: 'Water Leak Probe — Digital Flood (GPIO 25)', sensorType: 'WATER_LEAK', model: 'WL-01', interfaceType: 'GPIO', assignedPins: [25], category: 'SAFETY_HAZARD' },
+];
+
 export const DeploymentWizard: React.FC = () => {
   const navigate = useNavigate();
   const { templates, fetchTemplates, validateHardware, createDeployment, isLoading } =
@@ -183,8 +209,13 @@ export const DeploymentWizard: React.FC = () => {
         iface = 'I2C';
         category = 'ENVIRONMENTAL';
       } else if (rs.sensorType === 'TEMPERATURE' || rs.sensorType === 'HUMIDITY') {
-        defaultPins = [21, 22];
-        iface = 'I2C';
+        if (rs.model?.toUpperCase().includes('DHT')) {
+          defaultPins = [4];
+          iface = 'GPIO';
+        } else {
+          defaultPins = [21, 22];
+          iface = 'I2C';
+        }
         category = 'ENVIRONMENTAL';
       } else if (rs.sensorType === 'PRESSURE') {
         defaultPins = [21, 22];
@@ -222,6 +253,10 @@ export const DeploymentWizard: React.FC = () => {
         defaultPins = [5, 18]; // TRIG = GPIO 5, ECHO = GPIO 18
         iface = 'GPIO';
         category = 'PRESENCE_MOTION';
+      } else if (rs.sensorType === 'GAS' || rs.sensorType === 'SMOKE' || rs.sensorType === 'FLAME') {
+        defaultPins = [34];
+        iface = 'ADC';
+        category = 'SAFETY_HAZARD';
       }
 
       return {
@@ -535,10 +570,43 @@ export const DeploymentWizard: React.FC = () => {
 
           {/* Active Sensors Table */}
           <div className="bg-surface rounded-xl border border-border p-5 space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h3 className="font-semibold text-text-primary text-sm flex items-center gap-2">
                 <Layers className="w-4 h-4 text-primary" /> Configured Sensors ({sensors.length})
               </h3>
+              <div className="flex items-center gap-2">
+                <select
+                  defaultValue=""
+                  onChange={(e) => {
+                    const presetIdx = parseInt(e.target.value, 10);
+                    if (!isNaN(presetIdx) && BASIC_SENSOR_PRESETS[presetIdx]) {
+                      const p = BASIC_SENSOR_PRESETS[presetIdx];
+                      setSensors((prev) => [
+                        ...prev,
+                        {
+                          sensorType: p.sensorType,
+                          model: p.model,
+                          manufacturer: 'Sentinel Certified',
+                          category: p.category,
+                          interfaceType: p.interfaceType,
+                          assignedPins: [...p.assignedPins],
+                          samplingIntervalMs: 5000,
+                          isMandatory: false,
+                        },
+                      ]);
+                      e.target.value = '';
+                    }
+                  }}
+                  className="bg-surface-hover border border-border rounded-lg px-2.5 py-1.5 text-xs text-text-primary focus:border-primary outline-none"
+                >
+                  <option value="" disabled>+ Add Basic Sensor (DHT11, MQ-2..8, etc.)</option>
+                  {BASIC_SENSOR_PRESETS.map((p, pIdx) => (
+                    <option key={pIdx} value={pIdx}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="overflow-x-auto rounded-lg border border-border">
