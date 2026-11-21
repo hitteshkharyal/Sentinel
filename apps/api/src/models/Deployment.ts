@@ -176,7 +176,10 @@ DeploymentSchema.methods.toSafeDeployment = function (this: IDeploymentDocument)
           email: m.email,
           displayName: m.displayName,
           role: m.role,
-          assignedAt: m.assignedAt instanceof Date ? m.assignedAt.toISOString() : (m.assignedAt || new Date().toISOString()),
+          assignedAt:
+            (m.assignedAt as unknown) instanceof Date
+              ? ((m.assignedAt as unknown) as Date).toISOString()
+              : String(m.assignedAt || new Date().toISOString()),
           assignedBy: m.assignedBy ? m.assignedBy.toString() : '',
           status: m.status || 'ACTIVE',
         }))

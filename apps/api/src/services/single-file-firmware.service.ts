@@ -220,6 +220,57 @@ bool bhReady_${index} = false;`,
   Serial.println("[RELAY] Initialized on pin " + String(PIN_RELAY_${index}));`,
     readCode: (_sensor, index) => `  sensors["relay_${index}_state"] = relayState_${index};`,
   },
+
+  // ── Ultrasonic Distance Sensor (HC-SR04 / HC-SR04P / JSN-SR04T) ──
+  ULTRASONIC: {
+    sensorTypes: ['ULTRASONIC', 'HC-SR04', 'HC-SR04P', 'JSN-SR04T', 'DISTANCE', 'SONAR'],
+    libraries: [],
+    includes: [],
+    pinDefinitions: (board, sensor, index) => {
+      const isEsp8266 = board.startsWith('ESP8266');
+      // TRIG defaults: GPIO5 (ESP32) or D1/GPIO5 (ESP8266)
+      // ECHO defaults: GPIO18 (ESP32) or D2/GPIO4 (ESP8266)
+      // If user had assigned 1 pin (e.g. pin 4 or 5), use that as TRIG, and fallback ECHO to 18 (or 4 on ESP8266)
+      const trigPin = sensor.assignedPins?.[0] ?? (isEsp8266 ? 5 : 5);
+      const echoPin = sensor.assignedPins?.[1] ?? (sensor.assignedPins?.[0] === 18 ? 5 : (isEsp8266 ? 4 : 18));
+      return `#define PIN_TRIG_${index} ${trigPin} // ${sensor.model || 'Ultrasonic'} Trigger (Output)
+#define PIN_ECHO_${index} ${echoPin} // ${sensor.model || 'Ultrasonic'} Echo (Input)`;
+    },
+    globals: (_sensor, index) => `// Read ultrasonic distance in centimeters (35ms timeout ~5m max range)
+float readUltrasonicCm_${index}() {
+  digitalWrite(PIN_TRIG_${index}, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PIN_TRIG_${index}, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG_${index}, LOW);
+
+  unsigned long duration = pulseIn(PIN_ECHO_${index}, HIGH, 35000UL);
+  if (duration == 0) {
+    return -1.0; // Out of range or sensor timeout
+  }
+  float dist = (duration * 0.0343) / 2.0;
+  if (dist < 2.0 || dist > 450.0) {
+    return -1.0;
+  }
+  return dist;
+}`,
+    setupCode: (_sensor, index) => `  pinMode(PIN_TRIG_${index}, OUTPUT);
+  pinMode(PIN_ECHO_${index}, INPUT);
+  digitalWrite(PIN_TRIG_${index}, LOW);
+  Serial.println("[ULTRASONIC] Initialized: TRIG=" + String(PIN_TRIG_${index}) + ", ECHO=" + String(PIN_ECHO_${index}));`,
+    readCode: (sensor, index) => `  float dist_${index} = readUltrasonicCm_${index}();
+  if (dist_${index} > 0) {
+    float roundedDist = round(dist_${index} * 10.0) / 10.0;
+    sensors["${sensor.model?.toLowerCase() || 'ultrasonic'}"] = roundedDist;
+    sensors["distance_cm"] = roundedDist;
+    // Parking stall vehicle presence threshold: distance < 180cm indicates vehicle present
+    bool bayOccupied = (dist_${index} < 180.0);
+    sensors["presence_detected"] = bayOccupied;
+    sensors["bay_occupied"] = bayOccupied;
+  } else {
+    sensors["${sensor.model?.toLowerCase() || 'ultrasonic'}"] = -1;
+  }`,
+  },
 };
 
 function matchSensorDriver(sensor: SelectedSensorConfig): SensorDriverTemplate | null {
@@ -306,9 +357,16 @@ export class SingleFileFirmwareGeneratorService {
         const read = driver.readCode(sensor, idx);
         if (read) readCallsList.push(read);
 
-        const pinsDesc = sensor.assignedPins && sensor.assignedPins.length > 0
-          ? sensor.assignedPins.map((p: number) => `GPIO${p}`).join(', ')
-          : (sensor.interfaceType === 'I2C' ? 'SDA/SCL' : 'Default Pin');
+        let pinsDesc: string;
+        if (sensor.sensorType === 'ULTRASONIC' || (sensor.model || '').toUpperCase().includes('SR04')) {
+          const trigPin = sensor.assignedPins?.[0] ?? (isEsp32 ? 5 : 5);
+          const echoPin = sensor.assignedPins?.[1] ?? (isEsp32 ? 18 : 4);
+          pinsDesc = `TRIG: GPIO${trigPin}, ECHO: GPIO${echoPin}`;
+        } else if (sensor.assignedPins && sensor.assignedPins.length > 0) {
+          pinsDesc = sensor.assignedPins.map((p: number) => `GPIO${p}`).join(', ');
+        } else {
+          pinsDesc = sensor.interfaceType === 'I2C' ? 'SDA/SCL' : 'Default Pin';
+        }
 
         pinSummary.push({
           sensor: sensor.model || sensor.sensorType,

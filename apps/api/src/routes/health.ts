@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────
 
 import { Router } from 'express';
+import os from 'node:os';
 import mongoose from 'mongoose';
 import { isDatabaseConnected } from '../db.js';
 import { config } from '../config.js';
@@ -10,6 +11,46 @@ import { MqttService } from '../services/mqtt.service.js';
 import { WebSocketService } from '../services/websocket.service.js';
 
 export const healthRouter = Router();
+
+/**
+ * GET /api/v1/health/network
+ * Returns host local IPv4 addresses so UI can pre-fill device firmware server URLs accurately
+ */
+healthRouter.get('/network', (_req, res): void => {
+  const interfaces = os.networkInterfaces();
+  const addresses: { interface: string; ip: string; isWiFi: boolean; isEthernet: boolean }[] = [];
+
+  for (const [name, netList] of Object.entries(interfaces)) {
+    if (!netList) continue;
+    for (const net of netList) {
+      if (net.family === 'IPv4' && !net.internal) {
+        const lowerName = name.toLowerCase();
+        addresses.push({
+          interface: name,
+          ip: net.address,
+          isWiFi: lowerName.includes('wi-fi') || lowerName.includes('wireless') || lowerName.includes('wlan'),
+          isEthernet: lowerName.includes('ethernet') || lowerName.includes('eth'),
+        });
+      }
+    }
+  }
+
+  // Prioritize Wi-Fi interface, then Ethernet, then other LAN interfaces
+  addresses.sort((a, b) => (b.isWiFi ? 1 : 0) - (a.isWiFi ? 1 : 0));
+
+  const primaryIp = addresses[0]?.ip || 'localhost';
+  const port = config.port;
+
+  res.status(200).json({
+    success: true,
+    data: {
+      primaryIp,
+      port,
+      recommendedServerUrl: `http://${primaryIp}:${port}`,
+      interfaces: addresses,
+    },
+  });
+});
 
 /**
  * GET /api/v1/health/live

@@ -218,6 +218,10 @@ export const DeploymentWizard: React.FC = () => {
         defaultPins = [16, 17];
         iface = 'UART';
         category = 'ACCESS_TELEMETRY';
+      } else if (rs.sensorType === 'ULTRASONIC') {
+        defaultPins = [5, 18]; // TRIG = GPIO 5, ECHO = GPIO 18
+        iface = 'GPIO';
+        category = 'PRESENCE_MOTION';
       }
 
       return {
@@ -560,26 +564,38 @@ export const DeploymentWizard: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-1 font-mono">
-                          {s.assignedPins.map((p, pIdx) => (
-                            <input
-                              key={pIdx}
-                              type="number"
-                              value={p}
-                              onChange={(e) => {
-                                const newP = parseInt(e.target.value, 10) || 0;
-                                setSensors((prev) =>
-                                  prev.map((item, i) => {
-                                    if (i !== idx) return item;
-                                    const nextPins = [...item.assignedPins];
-                                    nextPins[pIdx] = newP;
-                                    return { ...item, assignedPins: nextPins };
-                                  })
-                                );
-                              }}
-                              className="w-14 rounded bg-surface border border-border px-1.5 py-0.5 text-center text-xs font-mono text-text-primary"
-                            />
-                          ))}
+                        <div className="flex flex-wrap items-center gap-1.5 font-mono">
+                          {s.assignedPins.map((p, pIdx) => {
+                            let pinRole = '';
+                            if (s.sensorType === 'ULTRASONIC') {
+                              pinRole = pIdx === 0 ? 'TRIG:' : 'ECHO:';
+                            } else if (s.interfaceType === 'I2C') {
+                              pinRole = pIdx === 0 ? 'SDA:' : 'SCL:';
+                            }
+                            return (
+                              <div key={pIdx} className="flex items-center gap-1">
+                                {pinRole && (
+                                  <span className="text-[10px] text-text-muted font-semibold">{pinRole}</span>
+                                )}
+                                <input
+                                  type="number"
+                                  value={p}
+                                  onChange={(e) => {
+                                    const newP = parseInt(e.target.value, 10) || 0;
+                                    setSensors((prev) =>
+                                      prev.map((item, i) => {
+                                        if (i !== idx) return item;
+                                        const nextPins = [...item.assignedPins];
+                                        nextPins[pIdx] = newP;
+                                        return { ...item, assignedPins: nextPins };
+                                      })
+                                    );
+                                  }}
+                                  className="w-14 rounded bg-surface border border-border px-1.5 py-0.5 text-center text-xs font-mono text-text-primary"
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </td>
                       <td className="py-2.5 px-3">

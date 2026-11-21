@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────
 
 import { Router, Request, Response, NextFunction } from 'express';
-import { DeviceCredentialModel, DeviceModel } from '../models/index.js';
+import { DeviceCredentialModel, DeviceModel, DeploymentModel } from '../models/index.js';
 import { TelemetryValidator } from '../services/telemetry-validator.js';
 import { sensorDataIngestionSchema } from '@sentinel/validation';
 import { AppError } from '../middleware/error-handler.js';
@@ -111,10 +111,35 @@ sensorDataRouter.post(
         },
       };
 
-      // 6. Process through authoritative TelemetryValidator
+      // 6. Ensure device registration exists before authoritative validation
+      const device = await DeviceModel.findOne({ deviceId: verifiedDeviceId });
+      if (!device) {
+        const deployment = await DeploymentModel.findOne({
+          $or: [
+            { deviceId: verifiedDeviceId },
+            { name: { $regex: verifiedDeviceId.replace(/^SENT-/, '').slice(0, 6), $options: 'i' } },
+          ],
+        });
+
+        await DeviceModel.create({
+          deviceId: verifiedDeviceId,
+          organizationId: credential.organizationId,
+          facilityId: deployment?.facilityId || credential.organizationId,
+          roomId: deployment?.roomId,
+          name: deployment ? `${deployment.name} Node` : `Sensor Node ${verifiedDeviceId}`,
+          macAddress: `00:00:00:00:${verifiedDeviceId.slice(-4).match(/.{2}/g)?.join(':') || '00:01'}`,
+          chipModel: deployment?.hardwareConfig?.chipModel || 'ESP32-WROOM-32D',
+          hardwareVersion: 'v1.0',
+          firmwareVersion: '1.0.0-standalone',
+          status: 'ONLINE',
+          registeredAt: new Date(),
+        });
+      }
+
+      // 7. Process through authoritative TelemetryValidator
       const result = await TelemetryValidator.validateAndProcess(telemetryPayload);
 
-      // 7. Update device status to ONLINE
+      // 8. Update device status to ONLINE
       await DeviceModel.updateOne(
         { deviceId: verifiedDeviceId },
         {

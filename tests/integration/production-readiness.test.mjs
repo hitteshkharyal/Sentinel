@@ -12,13 +12,14 @@ import { validateProductionConfig } from '../../apps/api/dist/config.js';
 import { DatabaseIndexManager } from '../../apps/api/dist/db/indexes.js';
 
 describe('Production Readiness & Health Diagnostics Integration Tests', () => {
-  const testPort = 64555;
+  let testPort;
   let server;
 
   before(async () => {
     await connectDatabase();
     server = http.createServer(app);
-    await new Promise((resolve) => server.listen(testPort, resolve));
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    testPort = server.address().port;
   });
 
   after(async () => {

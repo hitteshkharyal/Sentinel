@@ -72,7 +72,14 @@ export const DeploymentSensorsTab: React.FC<SensorsTabProps> = ({ deployment }) 
                         {sensor.interfaceType}
                       </span>
                       <p className="text-[11px] text-slate-400 mt-1">
-                        Pins: {sensor.assignedPins?.length > 0 ? sensor.assignedPins.join(', ') : 'Default Bus'}
+                        Pins:{' '}
+                        {sensor.sensorType === 'ULTRASONIC' && sensor.assignedPins?.length >= 2
+                          ? `TRIG: ${sensor.assignedPins[0]}, ECHO: ${sensor.assignedPins[1]}`
+                          : sensor.sensorType === 'ULTRASONIC' && sensor.assignedPins?.length === 1
+                          ? `TRIG: ${sensor.assignedPins[0]}, ECHO: 18`
+                          : sensor.assignedPins?.length > 0
+                          ? sensor.assignedPins.join(', ')
+                          : 'Default Bus'}
                       </p>
                     </div>
                   </div>
@@ -113,7 +120,11 @@ export const DeploymentSensorsTab: React.FC<SensorsTabProps> = ({ deployment }) 
               <div>
                 <span className="text-slate-500">GPIO Pin Assignments</span>
                 <p className="font-mono bg-slate-100 text-slate-800 px-2 py-1 rounded mt-1">
-                  {selectedSensor.assignedPins && selectedSensor.assignedPins.length > 0
+                  {selectedSensor.sensorType === 'ULTRASONIC' && selectedSensor.assignedPins?.length >= 2
+                    ? `TRIG: GPIO ${selectedSensor.assignedPins[0]}, ECHO: GPIO ${selectedSensor.assignedPins[1]}`
+                    : selectedSensor.sensorType === 'ULTRASONIC' && selectedSensor.assignedPins?.length === 1
+                    ? `TRIG: GPIO ${selectedSensor.assignedPins[0]}, ECHO: GPIO 18`
+                    : selectedSensor.assignedPins && selectedSensor.assignedPins.length > 0
                     ? selectedSensor.assignedPins.map((p) => `GPIO ${p}`).join(', ')
                     : selectedSensor.interfaceType === 'I2C'
                     ? 'I2C (SDA=21, SCL=22 / D2, D1)'

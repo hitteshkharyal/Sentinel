@@ -9,7 +9,7 @@ import { FirmwareGeneratorService } from '../services/firmware-generator.service
 import { SingleFileFirmwareGeneratorService } from '../services/single-file-firmware.service.js';
 import { DeploymentTeamService } from '../services/deployment-team.service.js';
 import { HardwareTestService } from '../services/hardware-test.service.js';
-import { DeviceCredentialModel } from '../models/index.js';
+import { DeviceCredentialModel, DeviceModel } from '../models/index.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requirePermission } from '../middleware/rbac.js';
 import {
@@ -540,6 +540,24 @@ deploymentRouter.post(
         plainApiKey = secret.token;
       }
 
+      // Ensure device registration profile exists for telemetry validation
+      const device = await DeviceModel.findOne({ deviceId: targetDeviceId });
+      if (!device) {
+        await DeviceModel.create({
+          deviceId: targetDeviceId,
+          organizationId,
+          facilityId: deployment.facilityId,
+          roomId: deployment.roomId,
+          name: `${deployment.name} Node`,
+          macAddress: `00:00:00:00:${deployment.id.slice(-4).match(/.{2}/g)?.join(':') || '00:01'}`,
+          chipModel: deployment.hardwareConfig?.chipModel || 'ESP32-WROOM-32D',
+          hardwareVersion: 'v1.0',
+          firmwareVersion: '1.0.0-standalone',
+          status: 'ONLINE',
+          registeredAt: new Date(),
+        });
+      }
+
       // Generate the single file .ino firmware
       const result = SingleFileFirmwareGeneratorService.generateIno(deployment, {
         boardType: parsed.data.boardType,
@@ -612,6 +630,24 @@ deploymentRouter.get(
           lastRotatedAt: new Date(),
         });
         fullKey = secret.token;
+      }
+
+      // Ensure device registration profile exists
+      const device = await DeviceModel.findOne({ deviceId });
+      if (!device) {
+        await DeviceModel.create({
+          deviceId,
+          organizationId,
+          facilityId: deployment.facilityId,
+          roomId: deployment.roomId,
+          name: `${deployment.name} Node`,
+          macAddress: `00:00:00:00:${deployment.id.slice(-4).match(/.{2}/g)?.join(':') || '00:01'}`,
+          chipModel: deployment.hardwareConfig?.chipModel || 'ESP32-WROOM-32D',
+          hardwareVersion: 'v1.0',
+          firmwareVersion: '1.0.0-standalone',
+          status: 'ONLINE',
+          registeredAt: new Date(),
+        });
       }
 
       const info: DeviceApiKeyInfo = {

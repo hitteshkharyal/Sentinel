@@ -3,7 +3,7 @@
 // Standalone sentinel_firmware.ino sketch generation & flashing guide
 // ─────────────────────────────────────────────
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileCode,
   Download,
@@ -13,12 +13,27 @@ import {
   Key,
   Eye,
   EyeOff,
+  Network,
+  HelpCircle,
 } from 'lucide-react';
 import type { BoardType, Deployment, SingleFileFirmwareResult } from '@sentinel/types';
 import { useDeployment } from '../../../context/DeploymentContext';
 
 interface FirmwareTabProps {
   deployment: Deployment;
+}
+
+interface NetworkInfo {
+  recommendedServerUrl: string;
+  recommendedIp: string;
+  port: number;
+  interfaces: {
+    name: string;
+    ip: string;
+    mac: string;
+    family: string;
+    internal: boolean;
+  }[];
 }
 
 const BOARD_OPTIONS: { value: BoardType; label: string; desc: string }[] = [
@@ -37,15 +52,38 @@ export const DeploymentFirmwareTab: React.FC<FirmwareTabProps> = ({ deployment }
   const [showPassword, setShowPassword] = useState(false);
   const [serverUrl, setServerUrl] = useState(
     window.location.origin.includes('localhost')
-      ? 'http://192.168.1.100:4000'
+      ? 'http://192.168.1.11:4000'
       : window.location.origin
   );
+  const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
   const [telemetryInterval] = useState(5000);
 
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<SingleFileFirmwareResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeView, setActiveView] = useState<'code' | 'guide'>('code');
+
+  useEffect(() => {
+    // Attempt to detect host network LAN IP for ESP32 connectivity
+    fetch('/api/v1/health/network')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && data?.data) {
+          const net = data.data as NetworkInfo;
+          setNetworkInfo(net);
+          // If serverUrl is pointing to dummy .100 or localhost, update to real LAN IP
+          setServerUrl((prev) => {
+            if (prev.includes('192.168.1.100') || prev.includes('localhost') || prev.includes('127.0.0.1')) {
+              return net.recommendedServerUrl;
+            }
+            return prev;
+          });
+        }
+      })
+      .catch(() => {
+        // Ignore network detection errors
+      });
+  }, []);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,19 +165,49 @@ export const DeploymentFirmwareTab: React.FC<FirmwareTabProps> = ({ deployment }
 
             {/* Server Endpoint URL */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                SENTINEL Server URL *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700">
+                  SENTINEL Server URL *
+                </label>
+                {networkInfo && (
+                  <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                    <Network className="w-3 h-3" /> Auto-detected host IP
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 required
                 value={serverUrl}
                 onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="http://192.168.1.100:4000"
+                placeholder="http://192.168.1.11:4000"
                 className="w-full text-xs px-3 py-2.5 border border-[#DCE3EC] rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-slate-800"
               />
+              {networkInfo && networkInfo.interfaces.length > 0 && (
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span className="text-slate-400">Available LAN IPs:</span>
+                  {networkInfo.interfaces.map((iface) => {
+                    const targetUrl = `http://${iface.ip}:${networkInfo.port}`;
+                    const isSelected = serverUrl.includes(iface.ip);
+                    return (
+                      <button
+                        type="button"
+                        key={iface.name}
+                        onClick={() => setServerUrl(targetUrl)}
+                        className={`px-2 py-0.5 rounded font-mono border transition-all ${
+                          isSelected
+                            ? 'bg-blue-50 text-blue-700 border-blue-300 font-semibold'
+                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        {iface.name}: {iface.ip}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               <p className="text-[11px] text-slate-400 mt-1">
-                Microcontroller must be able to reach this HTTP URL over your local network
+                Microcontroller must be able to reach this HTTP URL over your 2.4GHz Wi-Fi network (avoid localhost/127.0.0.1)
               </p>
             </div>
 
@@ -206,6 +274,27 @@ export const DeploymentFirmwareTab: React.FC<FirmwareTabProps> = ({ deployment }
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Troubleshooting notice for connection refused */}
+      <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 flex items-start gap-3">
+        <HelpCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-semibold text-amber-950">
+            Troubleshooting ESP32 &ldquo;POST failed, error: connection refused&rdquo;
+          </p>
+          <ul className="list-disc list-inside space-y-0.5 text-amber-800 text-[11px] leading-relaxed">
+            <li>
+              <strong>LAN IP Requirement:</strong> The ESP32 is an external network device. Never use <code className="bg-amber-100 px-1 py-0.2 rounded font-mono">localhost</code> or <code className="bg-amber-100 px-1 py-0.2 rounded font-mono">127.0.0.1</code>. Always select your host machine&apos;s LAN IP (e.g. {networkInfo?.recommendedServerUrl || 'http://192.168.1.11:4000'}).
+            </li>
+            <li>
+              <strong>Same Subnet / 2.4 GHz Wi-Fi:</strong> Ensure your ESP32 and host computer are connected to the exact same Wi-Fi router. ESP32 chips only communicate over 2.4 GHz Wi-Fi bands.
+            </li>
+            <li>
+              <strong>Windows Defender Firewall:</strong> Allow inbound TCP traffic on port 4000 so the ESP32 can deliver HTTP POST telemetry to the SENTINEL API server.
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Generated Firmware Display */}
