@@ -40,7 +40,7 @@ export const HardwareTestDashboard: React.FC<HardwareTestDashboardProps> = ({
       }).catch(() => {});
     };
     pollStatus();
-    const interval = setInterval(pollStatus, 3000);
+    const interval = setInterval(pollStatus, 1500);
     return () => {
       mounted = false;
       clearInterval(interval);

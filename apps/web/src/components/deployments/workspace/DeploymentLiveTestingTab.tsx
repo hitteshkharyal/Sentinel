@@ -40,8 +40,8 @@ export const DeploymentLiveTestingTab: React.FC<LiveTestingTabProps> = ({
     };
 
     pollStatus();
-    // Poll every 3 seconds for real-time live telemetry stream
-    const timer = setInterval(pollStatus, 3000);
+    // Poll every 1.5 seconds for instant real-time live telemetry stream
+    const timer = setInterval(pollStatus, 1500);
 
     return () => {
       mounted = false;

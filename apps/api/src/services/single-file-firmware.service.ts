@@ -264,32 +264,40 @@ bool bhReady_${index} = false;`,
       return `#define PIN_TRIG_${index} ${trigPin} // ${sensor.model || 'Ultrasonic'} Trigger (Output)
 #define PIN_ECHO_${index} ${echoPin} // ${sensor.model || 'Ultrasonic'} Echo (Input)`;
     },
-    globals: (_sensor, index) => `// Read ultrasonic distance in centimeters (35ms timeout ~5m max range)
+    globals: (_sensor, index) => `// Read ultrasonic distance in centimeters with diagnostic feedback
 float readUltrasonicCm_${index}() {
-  digitalWrite(PIN_TRIG_${index}, LOW);
-  delayMicroseconds(2);
-  digitalWrite(PIN_TRIG_${index}, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG_${index}, LOW);
+  for (int attempt = 0; attempt < 2; attempt++) {
+    // Ensure clean LOW before triggering
+    digitalWrite(PIN_TRIG_${index}, LOW);
+    delayMicroseconds(4);
+    digitalWrite(PIN_TRIG_${index}, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(PIN_TRIG_${index}, LOW);
 
-  unsigned long duration = pulseIn(PIN_ECHO_${index}, HIGH, 35000UL);
-  if (duration == 0) {
-    return -1.0; // Out of range or sensor timeout
+    // pulseIn measures duration of ECHO HIGH pulse (50ms timeout ~8m max range)
+    unsigned long duration = pulseIn(PIN_ECHO_${index}, HIGH, 50000UL);
+    if (duration > 0) {
+      float dist = (duration * 0.0343) / 2.0;
+      if (dist >= 2.0 && dist <= 450.0) {
+        Serial.println("[ULTRASONIC] Echo detected: " + String(dist, 1) + " cm (pulse " + String(duration) + " us)");
+        return dist;
+      }
+    }
+    delay(10);
   }
-  float dist = (duration * 0.0343) / 2.0;
-  if (dist < 2.0 || dist > 450.0) {
-    return -1.0;
-  }
-  return dist;
+  Serial.println("[ULTRASONIC] No echo pulse (returned -1). Check: 1) VCC to 5V/VIN, 2) TRIG=GPIO" + String(PIN_TRIG_${index}) + ", 3) ECHO=GPIO" + String(PIN_ECHO_${index}));
+  return -1.0;
 }`,
     setupCode: (_sensor, index) => `  pinMode(PIN_TRIG_${index}, OUTPUT);
   pinMode(PIN_ECHO_${index}, INPUT);
   digitalWrite(PIN_TRIG_${index}, LOW);
-  Serial.println("[ULTRASONIC] Initialized: TRIG=" + String(PIN_TRIG_${index}) + ", ECHO=" + String(PIN_ECHO_${index}));`,
+  delay(20);
+  Serial.println("[ULTRASONIC] Initialized on TRIG=GPIO" + String(PIN_TRIG_${index}) + ", ECHO=GPIO" + String(PIN_ECHO_${index}) + " (Requires 5V VCC)");`,
     readCode: (sensor, index) => `  float dist_${index} = readUltrasonicCm_${index}();
   if (dist_${index} > 0) {
     float roundedDist = round(dist_${index} * 10.0) / 10.0;
     sensors["${sensor.model?.toLowerCase() || 'ultrasonic'}"] = roundedDist;
+    sensors["ultrasonic"] = roundedDist;
     sensors["distance_cm"] = roundedDist;
     // Parking stall vehicle presence threshold: distance < 180cm indicates vehicle present
     bool bayOccupied = (dist_${index} < 180.0);
@@ -297,6 +305,8 @@ float readUltrasonicCm_${index}() {
     sensors["bay_occupied"] = bayOccupied;
   } else {
     sensors["${sensor.model?.toLowerCase() || 'ultrasonic'}"] = -1;
+    sensors["ultrasonic"] = -1;
+    sensors["distance_cm"] = -1;
   }`,
   },
 };
@@ -338,7 +348,7 @@ export class SingleFileFirmwareGeneratorService {
       wifiSsid,
       wifiPassword = '',
       serverUrl,
-      telemetryIntervalMs = 5000,
+      telemetryIntervalMs = 2500,
       deviceId = deployment.deviceId || `sentinel_${deployment.id.substring(0, 8)}`,
       apiKey = 'YOUR_DEVICE_API_KEY_HERE',
     } = config;

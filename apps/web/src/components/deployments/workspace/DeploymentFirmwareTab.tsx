@@ -56,7 +56,7 @@ export const DeploymentFirmwareTab: React.FC<FirmwareTabProps> = ({ deployment }
       : window.location.origin
   );
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
-  const [telemetryInterval] = useState(5000);
+  const [telemetryInterval, setTelemetryInterval] = useState(2500);
 
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<SingleFileFirmwareResult | null>(null);
@@ -256,6 +256,26 @@ export const DeploymentFirmwareTab: React.FC<FirmwareTabProps> = ({ deployment }
               </div>
               <p className="text-[11px] text-slate-400 mt-1">
                 Embedded directly into the generated sketch; never stored on the server
+              </p>
+            </div>
+
+            {/* Telemetry Ingestion Interval */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Telemetry Dispatch Interval
+              </label>
+              <select
+                value={telemetryInterval}
+                onChange={(e) => setTelemetryInterval(Number(e.target.value))}
+                className="w-full text-xs px-3 py-2.5 border border-[#DCE3EC] rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-[#172033]"
+              >
+                <option value={2000}>Every 2 seconds (Fastest / Live Demo)</option>
+                <option value={2500}>Every 2.5 seconds (Recommended Testing)</option>
+                <option value={3000}>Every 3 seconds (Standard Fast)</option>
+                <option value={5000}>Every 5 seconds (Production)</option>
+              </select>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Sets loop delay on ESP32/ESP8266 to transmit sensor payloads every 2–3 seconds
               </p>
             </div>
           </div>

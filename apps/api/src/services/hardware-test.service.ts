@@ -389,20 +389,92 @@ export class HardwareTestService {
   }
 
   /**
-   * Get latest test scorecard for a deployment.
+   * Get latest test scorecard for a deployment with real-time live sensor values.
    */
   static async getLatestScorecard(
     organizationId: string,
     deploymentId: string
   ): Promise<HardwareTestScorecard | null> {
+    const orgObjId = new mongoose.Types.ObjectId(organizationId);
+    const deployObjId = new mongoose.Types.ObjectId(deploymentId);
+
     const session = await HardwareTestSessionModel.findOne({
-      organizationId: new mongoose.Types.ObjectId(organizationId),
-      deploymentId: new mongoose.Types.ObjectId(deploymentId),
+      organizationId: orgObjId,
+      deploymentId: deployObjId,
     })
       .sort({ createdAt: -1 })
       .exec();
 
-    return session ? session.toSafeScorecard() : null;
+    if (!session) return null;
+
+    const scorecard = session.toSafeScorecard();
+
+    // Dynamically inject latest real-time sensor readings from active telemetry & sensor models
+    const deployment = await DeploymentModel.findById(deployObjId);
+    const deviceId = deployment?.deviceId || session.deviceId;
+
+    if (deviceId) {
+      const dbSensors = await SensorModel.find({
+        deviceId,
+        organizationId: orgObjId,
+      });
+      const latestTelemetry = await TelemetryModel.findOne({
+        deviceId,
+        organizationId: orgObjId,
+      }).sort({ receivedAt: -1, _id: -1 });
+
+      const sensorMap = new Map(dbSensors.map((s) => [s.sensorType, s]));
+
+      scorecard.sensorReadings = scorecard.sensorReadings.map((reading) => {
+        const foundInDb = sensorMap.get(reading.sensorType);
+        if (foundInDb && foundInDb.lastReading && foundInDb.lastReading.value !== undefined) {
+          return {
+            ...reading,
+            status: 'WORKING',
+            value: foundInDb.lastReading.value as string | number | boolean | Record<string, unknown>,
+            unit: foundInDb.lastReading.unit || reading.unit,
+            lastReceivedAt: new Date(foundInDb.lastReading.timestamp).toISOString(),
+            isSimulated: false,
+          };
+        }
+
+        if (latestTelemetry && latestTelemetry.sensors) {
+          const tel = latestTelemetry.sensors as Record<string, unknown>;
+          let liveVal: unknown = undefined;
+          if (reading.sensorType === 'ULTRASONIC') {
+            liveVal = tel['hc-sr04p'] ?? tel['hc-sr04'] ?? tel['distance_cm'] ?? tel['ultrasonic'];
+          } else if (reading.sensorType === 'PIR') {
+            liveVal = tel['ekmc1601111'] ?? tel['presence_detected'] ?? tel['motion'] ?? tel['pir'];
+          } else if (reading.sensorType === 'LIGHT') {
+            liveVal = tel['bh1750'] ?? tel['light'] ?? tel['lux'] ?? tel['ambient_light'];
+          } else if (reading.sensorType === 'TEMPERATURE') {
+            liveVal = tel['temperature'] ?? tel['dht11_temp'] ?? tel['dht22_temp'];
+          } else if (reading.sensorType === 'HUMIDITY') {
+            liveVal = tel['humidity'] ?? tel['dht11_hum'] ?? tel['dht22_hum'];
+          } else if (reading.sensorType === 'GAS' || reading.sensorType === 'SMOKE') {
+            liveVal = tel['gas'] ?? tel['smoke'] ?? tel['mq2'];
+          }
+
+          if (liveVal !== undefined) {
+            return {
+              ...reading,
+              status: 'WORKING',
+              value: liveVal as string | number | boolean | Record<string, unknown>,
+              lastReceivedAt: new Date(latestTelemetry.receivedAt || latestTelemetry.timestamp).toISOString(),
+              isSimulated: false,
+            };
+          }
+        }
+
+        return reading;
+      });
+
+      if (latestTelemetry) {
+        scorecard.testedAt = new Date(latestTelemetry.receivedAt || latestTelemetry.timestamp).toISOString();
+      }
+    }
+
+    return scorecard;
   }
 
   /**
