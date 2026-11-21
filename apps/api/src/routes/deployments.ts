@@ -525,9 +525,8 @@ deploymentRouter.post(
         status: 'ACTIVE',
       });
 
-      let plainApiKey = 'sent_dev_placeholder_key';
+      const secret = DeviceCredentialModel.generateSecret();
       if (!cred) {
-        const secret = DeviceCredentialModel.generateSecret();
         cred = await DeviceCredentialModel.create({
           deviceId: targetDeviceId,
           organizationId,
@@ -537,8 +536,13 @@ deploymentRouter.post(
           status: 'ACTIVE',
           lastRotatedAt: new Date(),
         });
-        plainApiKey = secret.token;
+      } else {
+        cred.keyPrefix = secret.prefix;
+        cred.hashedSecret = secret.hashed;
+        cred.lastRotatedAt = new Date();
+        await cred.save();
       }
+      const plainApiKey = secret.token;
 
       // Ensure device registration profile exists for telemetry validation
       const device = await DeviceModel.findOne({ deviceId: targetDeviceId });
