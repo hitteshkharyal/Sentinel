@@ -160,6 +160,18 @@ sensorDataRouter.post(
         });
       }
 
+      // Ensure deployment deviceId is synced with transmitting hardware
+      await DeploymentModel.updateOne(
+        {
+          organizationId: credential.organizationId,
+          $or: [
+            { deviceId: verifiedDeviceId },
+            { name: { $regex: verifiedDeviceId.replace(/^SENT-/, '').slice(0, 6), $options: 'i' } },
+          ],
+        },
+        { $set: { deviceId: verifiedDeviceId } }
+      ).catch(() => {});
+
       // 7. Process through authoritative TelemetryValidator
       const result = await TelemetryValidator.validateAndProcess(telemetryPayload);
 

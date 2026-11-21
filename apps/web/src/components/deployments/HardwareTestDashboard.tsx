@@ -33,9 +33,18 @@ export const HardwareTestDashboard: React.FC<HardwareTestDashboardProps> = ({
   const [showSignOffModal, setShowSignOffModal] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchHardwareTestStatus(deployment.id).then((sc) => {
-      if (sc) setScorecard(sc);
-    });
+    let mounted = true;
+    const pollStatus = () => {
+      fetchHardwareTestStatus(deployment.id).then((sc) => {
+        if (mounted && sc) setScorecard(sc);
+      }).catch(() => {});
+    };
+    pollStatus();
+    const interval = setInterval(pollStatus, 3000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [deployment.id, fetchHardwareTestStatus]);
 
   const handleRunDiagnostics = async () => {
@@ -250,42 +259,62 @@ export const HardwareTestDashboard: React.FC<HardwareTestDashboardProps> = ({
             </thead>
             <tbody className="divide-y divide-border">
               {scorecard?.sensorReadings.length ? (
-                scorecard.sensorReadings.map((r, i) => (
-                  <tr key={i} className="hover:bg-surface-hover transition-colors">
-                    <td className="py-2.5 px-4 font-medium text-text-primary">
-                      {r.sensorType}
-                    </td>
-                    <td className="py-2.5 px-4 font-mono font-semibold text-text-primary">
-                      {typeof r.value === 'object' ? JSON.stringify(r.value) : String(r.value)}
-                    </td>
-                    <td className="py-2.5 px-4 text-text-secondary">{r.unit || '—'}</td>
-                    <td className="py-2.5 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          r.status === 'WORKING'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                        }`}
-                      >
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-medium ${
-                          r.isSimulated
-                            ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-                            : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                        }`}
-                      >
-                        {r.isSimulated ? 'Simulated Bench' : 'Physical ESP32'}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-4 text-text-muted font-mono text-[11px]">
-                      {new Date(r.lastReceivedAt).toLocaleTimeString()}
-                    </td>
-                  </tr>
-                ))
+                scorecard.sensorReadings.map((r, i) => {
+                  let formattedValue = typeof r.value === 'object' ? JSON.stringify(r.value) : String(r.value);
+                  if (r.sensorType === 'ULTRASONIC') {
+                    const num = Number(r.value);
+                    if (num === -1 || num <= 0) {
+                      formattedValue = 'Standby / Out of Range (>450cm)';
+                    } else {
+                      formattedValue = `${num} cm`;
+                    }
+                  } else if (r.sensorType === 'PIR') {
+                    if (typeof r.value === 'boolean') {
+                      formattedValue = r.value ? 'Motion Detected (Occupied)' : 'Clear (No Motion)';
+                    } else if (r.value === 1 || r.value === '1') {
+                      formattedValue = 'Motion Detected (Occupied)';
+                    } else if (r.value === 0 || r.value === '0') {
+                      formattedValue = 'Clear (No Motion)';
+                    }
+                  }
+
+                  return (
+                    <tr key={i} className="hover:bg-surface-hover transition-colors">
+                      <td className="py-2.5 px-4 font-medium text-text-primary">
+                        {r.sensorType}
+                      </td>
+                      <td className="py-2.5 px-4 font-mono font-semibold text-text-primary">
+                        {formattedValue}
+                      </td>
+                      <td className="py-2.5 px-4 text-text-secondary">{r.unit || '—'}</td>
+                      <td className="py-2.5 px-4">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            r.status === 'WORKING'
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                          }`}
+                        >
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                            r.isSimulated
+                              ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                              : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                          }`}
+                        >
+                          {r.isSimulated ? 'Simulated Bench' : 'Physical ESP32'}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4 text-text-muted font-mono text-[11px]">
+                        {new Date(r.lastReceivedAt).toLocaleTimeString()}
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={6} className="py-6 text-center text-text-muted">

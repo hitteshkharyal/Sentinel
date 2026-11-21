@@ -31,13 +31,21 @@ export const DeploymentLiveTestingTab: React.FC<LiveTestingTabProps> = ({
 
   useEffect(() => {
     let mounted = true;
-    fetchHardwareTestStatus(deployment.id)
-      .then((sc) => {
-        if (mounted && sc) setScorecard(sc);
-      })
-      .catch(() => {});
+    const pollStatus = () => {
+      fetchHardwareTestStatus(deployment.id)
+        .then((sc) => {
+          if (mounted && sc) setScorecard(sc);
+        })
+        .catch(() => {});
+    };
+
+    pollStatus();
+    // Poll every 3 seconds for real-time live telemetry stream
+    const timer = setInterval(pollStatus, 3000);
+
     return () => {
       mounted = false;
+      clearInterval(timer);
     };
   }, [deployment.id, fetchHardwareTestStatus]);
 
@@ -220,30 +228,59 @@ export const DeploymentLiveTestingTab: React.FC<LiveTestingTabProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#DCE3EC]">
-                {scorecard.sensorReadings.map((reading, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="px-5 py-3 font-medium text-[#172033]">
-                      {reading.sensorType}
-                    </td>
-                    <td className="px-5 py-3 font-mono text-[#2563EB] font-bold">
-                      {typeof reading.value === 'object'
-                        ? JSON.stringify(reading.value)
-                        : String(reading.value)} {reading.unit || ''}
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {reading.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-slate-500 text-[11px]">
-                      {reading.isSimulated ? (
-                        <span className="text-amber-600 font-medium">Simulated Test</span>
-                      ) : (
-                        <span className="text-emerald-600 font-medium">Live Hardware</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {scorecard.sensorReadings.map((reading, idx) => {
+                  let formattedValue = typeof reading.value === 'object'
+                    ? JSON.stringify(reading.value)
+                    : String(reading.value);
+
+                  if (reading.sensorType === 'ULTRASONIC') {
+                    const num = Number(reading.value);
+                    if (num === -1 || num <= 0) {
+                      formattedValue = 'Standby / Out of Range (>450cm)';
+                    } else {
+                      formattedValue = `${num} cm`;
+                    }
+                  } else if (reading.sensorType === 'PIR') {
+                    if (typeof reading.value === 'boolean') {
+                      formattedValue = reading.value ? 'Motion Detected (Occupied)' : 'Clear (No Motion)';
+                    } else if (reading.value === 1 || reading.value === '1') {
+                      formattedValue = 'Motion Detected (Occupied)';
+                    } else if (reading.value === 0 || reading.value === '0') {
+                      formattedValue = 'Clear (No Motion)';
+                    }
+                  } else if (reading.unit && reading.unit !== 'None' && reading.value !== 'N/A') {
+                    formattedValue = `${formattedValue} ${reading.unit}`;
+                  }
+
+                  return (
+                    <tr key={idx} className="hover:bg-slate-50/50">
+                      <td className="px-5 py-3 font-medium text-[#172033]">
+                        {reading.sensorType}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-[#2563EB] font-bold">
+                        {formattedValue}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                            reading.status === 'WORKING'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}
+                        >
+                          {reading.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-500 text-[11px]">
+                        {reading.isSimulated ? (
+                          <span className="text-amber-600 font-medium">Simulated Test</span>
+                        ) : (
+                          <span className="text-emerald-600 font-medium">Live Hardware</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

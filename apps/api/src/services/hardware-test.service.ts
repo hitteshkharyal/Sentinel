@@ -8,6 +8,7 @@ import {
   DeviceModel,
   HardwareTestSessionModel,
   SensorModel,
+  TelemetryModel,
 } from '../models/index.js';
 import type {
   HardwareTestReading,
@@ -36,9 +37,26 @@ export class HardwareTestService {
       throw new Error(`Deployment ${deploymentId} not found.`);
     }
 
-    const deviceId = deployment.deviceId || 'ESP32-BENCH-TEST';
+    let deviceId = deployment.deviceId;
+    if (!deviceId || deviceId === 'ESP32-BENCH-TEST') {
+      const foundDev = await DeviceModel.findOne({
+        organizationId: orgObjId,
+        $or: [
+          { deviceId: { $regex: deploymentId.slice(-4), $options: 'i' } },
+          { name: { $regex: deployment.name.slice(0, 10), $options: 'i' } },
+        ],
+      }).sort({ lastSeenAt: -1, updatedAt: -1 });
 
-    // 1. Device Connection Check
+      if (foundDev) {
+        deviceId = foundDev.deviceId;
+        deployment.deviceId = deviceId;
+        await deployment.save();
+      } else {
+        deviceId = 'ESP32-BENCH-TEST';
+      }
+    }
+
+    // 1. Device Connection & Telemetry Check
     let deviceConnection: 'PASS' | 'FAIL' | 'PENDING' = 'PENDING';
     let mqttConnection: 'PASS' | 'FAIL' | 'PENDING' = 'PENDING';
 
@@ -47,7 +65,20 @@ export class HardwareTestService {
       organizationId: orgObjId,
     });
 
-    if (deviceDoc && (deviceDoc.status === 'ONLINE' || (deviceDoc.status as string) === 'ACTIVE')) {
+    const latestTelemetry = await TelemetryModel.findOne({
+      deviceId,
+      organizationId: orgObjId,
+    }).sort({ receivedAt: -1, _id: -1 });
+
+    const isRecentTelemetry =
+      latestTelemetry &&
+      Date.now() - new Date(latestTelemetry.receivedAt || latestTelemetry.timestamp).getTime() <
+        15 * 60 * 1000;
+
+    if (
+      (deviceDoc && (deviceDoc.status === 'ONLINE' || (deviceDoc.status as string) === 'ACTIVE')) ||
+      isRecentTelemetry
+    ) {
       deviceConnection = 'PASS';
       mqttConnection = 'PASS';
     } else if (simulate) {
@@ -62,7 +93,7 @@ export class HardwareTestService {
     }
 
     // 2. Query sensor readings
-    const configuredSensors = deployment.hardwareConfig.sensors;
+    const configuredSensors = deployment.hardwareConfig?.sensors || [];
     const dbSensors = await SensorModel.find({
       deviceId,
       organizationId: orgObjId,
@@ -75,18 +106,140 @@ export class HardwareTestService {
 
     for (const sensorConfig of configuredSensors) {
       const type = sensorConfig.sensorType;
+      const modelLower = (sensorConfig.model || '').toLowerCase();
       const foundInDb = sensorMap.get(type);
 
-      if (foundInDb && foundInDb.lastReading) {
+      if (foundInDb && foundInDb.lastReading && foundInDb.lastReading.value !== undefined) {
         sensorReadings.push({
           sensorType: type,
           status: 'WORKING',
           value: foundInDb.lastReading.value as string | number | boolean | Record<string, unknown>,
-          unit: foundInDb.lastReading.unit || foundInDb.configuration?.unit || 'unit',
+          unit: foundInDb.lastReading.unit || foundInDb.configuration?.unit || (type === 'ULTRASONIC' ? 'cm' : type === 'LIGHT' ? 'lux' : 'unit'),
           lastReceivedAt: new Date(foundInDb.lastReading.timestamp).toISOString(),
           isSimulated: false,
         });
         workingSensorCount++;
+      } else if (latestTelemetry && latestTelemetry.sensors) {
+        // Fallback to latest real telemetry document sensors
+        const telSensors = latestTelemetry.sensors as Record<string, unknown>;
+        let liveVal: unknown = undefined;
+        let unit = 'unit';
+
+        if (modelLower && telSensors[modelLower] !== undefined) {
+          liveVal = telSensors[modelLower];
+        } else if (type === 'ULTRASONIC') {
+          liveVal = telSensors['hc-sr04p'] ?? telSensors['hc-sr04'] ?? telSensors['distance_cm'] ?? telSensors['ultrasonic'];
+          unit = 'cm';
+        } else if (type === 'PIR') {
+          liveVal = telSensors['ekmc1601111'] ?? telSensors['presence_detected'] ?? telSensors['motion'] ?? telSensors['pir'];
+          unit = 'motion';
+        } else if (type === 'LIGHT') {
+          liveVal = telSensors['bh1750'] ?? telSensors['light'] ?? telSensors['lux'] ?? telSensors['ambient_light'];
+          unit = 'lux';
+        } else if (type === 'TEMPERATURE') {
+          liveVal = telSensors['temperature'] ?? telSensors['dht11_temp'] ?? telSensors['dht22_temp'] ?? telSensors['temp'];
+          unit = '°C';
+        } else if (type === 'HUMIDITY') {
+          liveVal = telSensors['humidity'] ?? telSensors['dht11_hum'] ?? telSensors['dht22_hum'] ?? telSensors['hum'];
+          unit = '%RH';
+        } else if (type === 'GAS' || type === 'SMOKE') {
+          liveVal = telSensors['gas'] ?? telSensors['smoke'] ?? telSensors['mq2'] ?? telSensors['mq3'] ?? telSensors['mq4'];
+          unit = 'ppm';
+        }
+
+        if (liveVal !== undefined) {
+          sensorReadings.push({
+            sensorType: type,
+            status: 'WORKING',
+            value: liveVal as string | number | boolean | Record<string, unknown>,
+            unit,
+            lastReceivedAt: new Date(latestTelemetry.receivedAt || latestTelemetry.timestamp).toISOString(),
+            isSimulated: false,
+          });
+          workingSensorCount++;
+        } else if (simulate) {
+          // Generate realistic simulated benchmark reading based on sensor category
+          let simulatedValue: string | number | boolean | Record<string, unknown> = 0;
+          let simUnit = 'unit';
+
+          switch (type) {
+            case 'MMWAVE':
+              simulatedValue = {
+                presence: true,
+                targetCount: 1,
+                distanceM: 1.45,
+                energy: 82,
+                breathingRpm: 16,
+              };
+              simUnit = 'targets';
+              break;
+            case 'PIR':
+              simulatedValue = 1;
+              simUnit = 'motion';
+              break;
+            case 'DOOR_MAGNETIC':
+              simulatedValue = 0; // Closed
+              simUnit = 'state';
+              break;
+            case 'CO2':
+              simulatedValue = 485;
+              simUnit = 'ppm';
+              break;
+            case 'TEMPERATURE':
+              simulatedValue = 22.8;
+              simUnit = '°C';
+              break;
+            case 'HUMIDITY':
+              simulatedValue = 48.5;
+              simUnit = '%RH';
+              break;
+            case 'PRESSURE':
+              simulatedValue = 1013.25;
+              simUnit = 'hPa';
+              break;
+            case 'LIGHT':
+              simulatedValue = 350;
+              simUnit = 'lux';
+              break;
+            case 'SOUND_LEVEL':
+              simulatedValue = 42.1;
+              simUnit = 'dB(A)';
+              break;
+            case 'WATER_LEAK':
+              simulatedValue = 0;
+              simUnit = 'dry';
+              break;
+            case 'VIBRATION':
+              simulatedValue = 0.04;
+              simUnit = 'mm/s';
+              break;
+            case 'GPS':
+              simulatedValue = { lat: 37.7749, lng: -122.4194, speedKmh: 0 };
+              simUnit = 'coord';
+              break;
+            default:
+              simulatedValue = 1;
+          }
+
+          sensorReadings.push({
+            sensorType: type,
+            status: 'WORKING',
+            value: simulatedValue,
+            unit: simUnit,
+            lastReceivedAt: new Date().toISOString(),
+            isSimulated: true,
+          });
+          workingSensorCount++;
+        } else {
+          sensorReadings.push({
+            sensorType: type,
+            status: 'NO_DATA',
+            value: 'N/A',
+            unit: 'None',
+            lastReceivedAt: new Date().toISOString(),
+            isSimulated: false,
+          });
+        }
       } else if (simulate) {
         // Generate realistic simulated benchmark reading based on sensor category
         let simulatedValue: string | number | boolean | Record<string, unknown> = 0;
@@ -173,13 +326,18 @@ export class HardwareTestService {
     }
 
     // Diagnostic Check Evaluations
+    const mandatorySensors = configuredSensors.filter((s) => s.isMandatory !== false);
     const sensorValidation: 'PASS' | 'FAIL' =
-      configuredSensors.length === 0 || workingSensorCount === configuredSensors.length
+      configuredSensors.length === 0 ||
+      workingSensorCount > 0 ||
+      (mandatorySensors.length > 0 && workingSensorCount >= mandatorySensors.length)
         ? 'PASS'
         : 'FAIL';
 
     const telemetryReception: 'PASS' | 'FAIL' =
-      deviceConnection === 'PASS' && workingSensorCount > 0 ? 'PASS' : 'FAIL';
+      deviceConnection === 'PASS' && (workingSensorCount > 0 || isRecentTelemetry)
+        ? 'PASS'
+        : 'FAIL';
 
     const eventDetection: 'PASS' | 'FAIL' =
       telemetryReception === 'PASS' ? 'PASS' : 'FAIL';

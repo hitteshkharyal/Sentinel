@@ -7,6 +7,7 @@ import {
   RoomModel,
   SensorModel,
   TelemetryModel,
+  DeploymentModel,
   ITelemetryDocument,
 } from '../models/index.js';
 import type {
@@ -89,8 +90,14 @@ export class TelemetryValidator {
     const sanitizedSensors: TelemetrySensorData = {};
 
     // Temperature (-50 to 125 C)
-    if (rawSensors.temperature !== undefined) {
-      const val = Number(rawSensors.temperature);
+    const rawTemp =
+      rawSensors.temperature ??
+      rawSensors.temp ??
+      rawSensors.dht11_temp ??
+      rawSensors.dht22_temp ??
+      rawSensors.bme280_temp;
+    if (rawTemp !== undefined) {
+      const val = Number(rawTemp);
       if (isNaN(val) || !isFinite(val)) {
         validationErrors.push('Invalid temperature: value must be a finite number.');
       } else if (val < -50 || val > 125) {
@@ -103,8 +110,14 @@ export class TelemetryValidator {
     }
 
     // Humidity (0 to 100 %)
-    if (rawSensors.humidity !== undefined) {
-      const val = Number(rawSensors.humidity);
+    const rawHum =
+      rawSensors.humidity ??
+      rawSensors.hum ??
+      rawSensors.dht11_hum ??
+      rawSensors.dht22_hum ??
+      rawSensors.bme280_hum;
+    if (rawHum !== undefined) {
+      const val = Number(rawHum);
       if (isNaN(val) || !isFinite(val) || val < 0 || val > 100) {
         validationErrors.push(
           `Humidity out of physical range: ${val} % (expected 0 to 100).`
@@ -134,9 +147,15 @@ export class TelemetryValidator {
       }
     }
 
-    // PIR Motion (boolean)
-    if (rawSensors.pir !== undefined) {
-      sanitizedSensors.pir = Boolean(rawSensors.pir);
+    // PIR Motion (boolean) - accepts raw pir, presence_detected, motion, or model name ekmc1601111
+    const rawPir =
+      rawSensors.pir ??
+      rawSensors.ekmc1601111 ??
+      rawSensors['ekmc-1601111'] ??
+      rawSensors.presence_detected ??
+      rawSensors.motion;
+    if (rawPir !== undefined) {
+      sanitizedSensors.pir = Boolean(rawPir);
     }
 
     // mmWave Radar (presence, count, distance, confidence)
@@ -185,9 +204,14 @@ export class TelemetryValidator {
       }
     }
 
-    // Ambient Light (0 to 150,000 lux)
-    if (rawSensors.light !== undefined) {
-      const val = Number(rawSensors.light);
+    // Ambient Light (0 to 150,000 lux) - accepts raw light, bh1750, lux, ambient_light
+    const rawLight =
+      rawSensors.light ??
+      rawSensors.bh1750 ??
+      rawSensors.lux ??
+      rawSensors.ambient_light;
+    if (rawLight !== undefined) {
+      const val = Number(rawLight);
       if (isNaN(val) || val < 0) {
         validationErrors.push(`Ambient light out of range: ${val} lux.`);
       } else {
@@ -201,9 +225,20 @@ export class TelemetryValidator {
         typeof rawSensors.smoke === 'number' ? Number(rawSensors.smoke) : Boolean(rawSensors.smoke);
     }
 
-    // Gas / VOC
-    if (rawSensors.gas !== undefined) {
-      sanitizedSensors.gas = Number(rawSensors.gas);
+    // Gas / VOC - accepts raw gas, or MQ analog readings (mq2, mq3, mq4, mq5, mq6, mq7, mq8, mq9, mq135)
+    const rawGas =
+      rawSensors.gas ??
+      rawSensors.mq2 ??
+      rawSensors.mq3 ??
+      rawSensors.mq4 ??
+      rawSensors.mq5 ??
+      rawSensors.mq6 ??
+      rawSensors.mq7 ??
+      rawSensors.mq8 ??
+      rawSensors.mq9 ??
+      rawSensors.mq135;
+    if (rawGas !== undefined) {
+      sanitizedSensors.gas = Number(rawGas);
     }
 
     // Flame
@@ -216,9 +251,14 @@ export class TelemetryValidator {
       sanitizedSensors.waterLeak = Boolean(rawSensors.waterLeak);
     }
 
-    // Ultrasonic Sonar
-    if (rawSensors.ultrasonic !== undefined) {
-      sanitizedSensors.ultrasonic = Number(rawSensors.ultrasonic);
+    // Ultrasonic Sonar - accepts raw ultrasonic, distance_cm, hc-sr04p, hc-sr04
+    const rawUltra =
+      rawSensors.ultrasonic ??
+      rawSensors['hc-sr04p'] ??
+      rawSensors['hc-sr04'] ??
+      rawSensors.distance_cm;
+    if (rawUltra !== undefined) {
+      sanitizedSensors.ultrasonic = Number(rawUltra);
     }
 
     // Current Clamp
@@ -253,11 +293,57 @@ export class TelemetryValidator {
     const isValid = validationErrors.length === 0;
 
     // ── 4. Apply Calibration to Configured Peripherals ──
-    const attachedSensors = await SensorModel.find({
+    let attachedSensors = await SensorModel.find({
       organizationId: device.organizationId,
       deviceId: device.deviceId,
       enabled: true,
     });
+
+    if (attachedSensors.length === 0) {
+      // Auto-provision sensor documents from deployment hardware config if available
+      const deployment = await DeploymentModel.findOne({
+        organizationId: device.organizationId,
+        $or: [
+          { deviceId: device.deviceId },
+          { name: { $regex: device.deviceId.replace(/^SENT-/, '').slice(0, 6), $options: 'i' } },
+        ],
+      });
+      if (deployment?.hardwareConfig?.sensors?.length) {
+        for (const sCfg of deployment.hardwareConfig.sensors) {
+          try {
+            await SensorModel.create({
+              deviceId: device.deviceId,
+              name: `${sCfg.sensorType} (${sCfg.model})`,
+              organizationId: deployment.organizationId,
+              facilityId: deployment.facilityId,
+              roomId: deployment.roomId,
+              sensorType: sCfg.sensorType,
+              model: sCfg.model,
+              manufacturer: sCfg.manufacturer || 'Sentinel Certified',
+              category: sCfg.category || 'PRESENCE_MOTION',
+              interfaceType: sCfg.interfaceType || 'GPIO',
+              assignedPins: sCfg.assignedPins || [],
+              samplingIntervalMs: sCfg.samplingIntervalMs || 5000,
+              status: 'ONLINE',
+              enabled: true,
+              isMandatory: sCfg.isMandatory ?? true,
+              unit: sCfg.sensorType === 'ULTRASONIC' ? 'cm' : sCfg.sensorType === 'LIGHT' ? 'lux' : 'unit',
+              configuration: {
+                samplingIntervalMs: 5000,
+                unit: sCfg.sensorType === 'ULTRASONIC' ? 'cm' : sCfg.sensorType === 'LIGHT' ? 'lux' : 'unit',
+              },
+            });
+          } catch {
+            // Sensor may have been created concurrently
+          }
+        }
+        attachedSensors = await SensorModel.find({
+          organizationId: device.organizationId,
+          deviceId: device.deviceId,
+          enabled: true,
+        });
+      }
+    }
 
     let calibratedTemp = sanitizedSensors.temperature;
     let calibratedCo2 = sanitizedSensors.co2;
@@ -266,11 +352,27 @@ export class TelemetryValidator {
       const typeKey = sensorDoc.sensorType.toLowerCase();
       let matchedVal = sanitizedSensors[typeKey as keyof TelemetrySensorData];
 
-      // Special alias mapping
+      // Special alias & model mapping
       if (matchedVal === undefined) {
-        if (sensorDoc.sensorType === 'DOOR_MAGNETIC') matchedVal = sanitizedSensors.door;
-        if (sensorDoc.sensorType === 'SOUND_LEVEL') matchedVal = sanitizedSensors.soundLevel;
-        if (sensorDoc.sensorType === 'WATER_LEAK') matchedVal = sanitizedSensors.waterLeak;
+        const modelKey = sensorDoc.model?.toLowerCase();
+        if (modelKey && rawSensors[modelKey] !== undefined) {
+          matchedVal = rawSensors[modelKey];
+        } else if (sensorDoc.sensorType === 'DOOR_MAGNETIC') matchedVal = sanitizedSensors.door;
+        else if (sensorDoc.sensorType === 'SOUND_LEVEL') matchedVal = sanitizedSensors.soundLevel;
+        else if (sensorDoc.sensorType === 'WATER_LEAK') matchedVal = sanitizedSensors.waterLeak;
+        else if (sensorDoc.sensorType === 'ULTRASONIC') {
+          matchedVal = sanitizedSensors.ultrasonic ?? rawSensors['hc-sr04p'] ?? rawSensors['hc-sr04'] ?? rawSensors.distance_cm;
+        } else if (sensorDoc.sensorType === 'PIR') {
+          matchedVal = sanitizedSensors.pir ?? rawSensors['ekmc1601111'] ?? rawSensors.presence_detected ?? rawSensors.motion;
+        } else if (sensorDoc.sensorType === 'LIGHT') {
+          matchedVal = sanitizedSensors.light ?? rawSensors['bh1750'] ?? rawSensors.lux ?? rawSensors.ambient_light;
+        } else if (sensorDoc.sensorType === 'TEMPERATURE') {
+          matchedVal = sanitizedSensors.temperature ?? rawSensors.temp ?? rawSensors.dht11_temp;
+        } else if (sensorDoc.sensorType === 'HUMIDITY') {
+          matchedVal = sanitizedSensors.humidity ?? rawSensors.hum ?? rawSensors.dht11_hum;
+        } else if (sensorDoc.sensorType === 'GAS' || sensorDoc.sensorType === 'SMOKE') {
+          matchedVal = sanitizedSensors.gas ?? sanitizedSensors.smoke ?? rawSensors.mq2 ?? rawSensors.mq3;
+        }
       }
 
       if (matchedVal !== undefined) {
@@ -302,7 +404,7 @@ export class TelemetryValidator {
         // Update sensor document's lastReading
         sensorDoc.lastReading = {
           value: finalValue as number | string | boolean | Record<string, unknown>,
-          unit: sensorDoc.configuration?.unit,
+          unit: sensorDoc.configuration?.unit || (sensorDoc.sensorType === 'ULTRASONIC' ? 'cm' : sensorDoc.sensorType === 'LIGHT' ? 'lux' : 'unit'),
           timestamp: message.timestamp,
         };
         sensorDoc.status = 'ONLINE';
@@ -311,6 +413,11 @@ export class TelemetryValidator {
     }
 
     // ── 5. Persist Telemetry Entity in MongoDB ──
+    const combinedSensors = {
+      ...rawSensors,
+      ...sanitizedSensors,
+    };
+
     const telemetryDoc = new TelemetryModel({
       organizationId: device.organizationId,
       facilityId: device.facilityId,
@@ -318,7 +425,7 @@ export class TelemetryValidator {
       deviceId: device.deviceId,
       timestamp: isNaN(msgTime) ? new Date() : msgDate,
       receivedAt: new Date(),
-      sensors: sanitizedSensors,
+      sensors: combinedSensors,
       valid: isValid,
       validationErrors: validationErrors.length > 0 ? validationErrors : undefined,
       metadata: message.metadata || {},

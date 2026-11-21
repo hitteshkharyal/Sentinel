@@ -433,13 +433,21 @@ deploymentRouter.get(
     try {
       const organizationId = req.organizationId!;
       const deploymentId = req.params.id as string;
-      const scorecard = await HardwareTestService.getLatestScorecard(
+      const userId = req.user!.userId;
+      let scorecard = await HardwareTestService.getLatestScorecard(
         organizationId,
         deploymentId
       );
 
-      if (!scorecard) {
-        throw new AppError(404, 'No test session found for this deployment.');
+      // If no scorecard exists yet, or if previous checks had FAIL and live hardware is streaming,
+      // run a live diagnostic check to refresh results
+      if (!scorecard || scorecard.overallResult === 'FAIL') {
+        scorecard = await HardwareTestService.runDiagnosticTest(
+          organizationId,
+          deploymentId,
+          userId,
+          false
+        );
       }
 
       const response: ApiResponse<typeof scorecard> = {
